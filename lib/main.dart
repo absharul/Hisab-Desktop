@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hisab/objectbox.dart';
 import 'package:hisab/routes/route.dart';
+import 'package:hisab/theme.dart';
 
 late ObjectBox objectbox;
 
@@ -21,10 +22,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp.router(
       title: 'Hisab',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
+      theme: appTheme,
       routerConfig: router,
     );
   }

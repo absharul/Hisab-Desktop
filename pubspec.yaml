@@ -43,6 +43,7 @@ dependencies:
   objectbox: ^4.0.1
   objectbox_flutter_libs: any
   phosphor_flutter: ^2.1.0
+  circular_menu: ^4.0.0
 
 dev_dependencies:
   flutter_test:

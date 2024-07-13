@@ -11,42 +11,36 @@ class ScreenFirmListing extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: Colors.blue,
-        title: const Text("Firms"),
-        centerTitle: true,
-      ),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: Column(children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.end,
-            children: [
-              ElevatedButton(
-                onPressed: () {
-                  addFirmPressed(context);
+        child: Column(
+          children: [
+            Expanded(
+              child: ListView.builder(
+                itemCount: 10,
+                itemBuilder: (context, index) {
+                  return ListTile(
+                    title: Text("Firm $index"),
+                    subtitle: Text("Address $index"),
+                    trailing: IconButton(
+                      icon: Icon(PhosphorIcons.chair()),
+                      onPressed: () {},
+                    ),
+                  );
                 },
-                child: const Text("Add Firm"),
               ),
-            ],
-          ),
-          const SizedBox(height: 20),
-          Expanded(
-            child: ListView.builder(
-              itemCount: 10,
-              itemBuilder: (context, index) {
-                return ListTile(
-                  title: Text("Firm $index"),
-                  subtitle: Text("Address $index"),
-                  trailing: IconButton(
-                    icon: Icon(PhosphorIcons.chair()),
-                    onPressed: () {},
-                  ),
-                );
-              },
-            ),
-          )
-        ]),
+            )
+          ],
+        ),
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () => addFirmPressed(context),
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(50))),
+        child: Icon(
+          PhosphorIcons.plus(),
+          color: Colors.white,
+        ),
       ),
     );
   }
