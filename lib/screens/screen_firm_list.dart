@@ -1,8 +1,15 @@
 import 'dart:developer';
+import 'dart:io';
 
+import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
-// import 'package:hisab/models/model_firm.dart';
+import 'package:go_router/go_router.dart';
+import 'package:hisab/database/app_database.dart';
+import 'package:hisab/main.dart';
+import 'package:hisab/routes/route.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:path/path.dart' as p;
 
 class ScreenFirmListing extends StatelessWidget {
   const ScreenFirmListing({super.key});
@@ -10,27 +17,26 @@ class ScreenFirmListing extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 16.0),
-        child: Column(
-          children: [
-            Expanded(
-              child: ListView.builder(
-                itemCount: 10,
-                itemBuilder: (context, index) {
-                  return ListTile(
-                    title: Text("Firm $index"),
-                    subtitle: Text("Address $index"),
-                    trailing: IconButton(
-                      icon: Icon(PhosphorIcons.chair()),
-                      onPressed: () {},
-                    ),
-                  );
-                },
-              ),
-            )
-          ],
-        ),
+      body: StreamBuilder<List<Firm>>(
+        stream: database!.watchAllFirms(),
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return const Center(child: CircularProgressIndicator());
+          }
+
+          final firms = snapshot.data ?? [];
+
+          return ListView.builder(
+            itemCount: firms.length,
+            itemBuilder: (context, index) {
+              final task = firms[index];
+
+              return ListTile(
+                title: Text(task.name),
+              );
+            },
+          );
+        },
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () => addFirmPressed(context),
@@ -66,8 +72,16 @@ class ScreenFirmListing extends StatelessWidget {
                   const SizedBox(height: 10),
                   ElevatedButton(
                     onPressed: () {
-                      // final firm = ModelFirm();
-                      // firm.name = nameController.text;
+                      try {
+                        final newFirm = FirmsCompanion(
+                          name: drift.Value(nameController.text),
+                          address: const drift.Value('Kuch toh hai'),
+                        );
+                        database!.insertFirm(newFirm);
+                        router.pop();
+                      } catch (e) {
+                        log("Error" + e.toString());
+                      }
                     },
                     child: const Text("Add"),
                   )
@@ -76,5 +90,13 @@ class ScreenFirmListing extends StatelessWidget {
             ),
           );
         });
+  }
+
+  Future<void> deleteDatabase() async {
+    final dbFolder = await getApplicationDocumentsDirectory();
+    final file = File(p.join(dbFolder.path, 'db.sqlite'));
+    if (await file.exists()) {
+      await file.delete();
+    }
   }
 }
