@@ -3,10 +3,10 @@ import 'dart:io';
 
 import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hisab/database/app_database.dart';
 import 'package:hisab/main.dart';
 import 'package:hisab/routes/route.dart';
+import 'package:hisab/utils/helper_functions.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:path/path.dart' as p;
@@ -52,13 +52,14 @@ class ScreenFirmListing extends StatelessWidget {
 
   void addFirmPressed(BuildContext context) async {
     final nameController = TextEditingController();
+    final addressController = TextEditingController();
     return showDialog(
         context: context,
         builder: (ctx) {
           return Dialog(
             child: Container(
               width: 200,
-              height: 150,
+              height: 200,
               padding: const EdgeInsets.all(10),
               color: Colors.white,
               child: Column(
@@ -70,16 +71,27 @@ class ScreenFirmListing extends StatelessWidget {
                     decoration: const InputDecoration(hintText: "Name"),
                   ),
                   const SizedBox(height: 10),
+                  TextField(
+                    controller: addressController,
+                    decoration: const InputDecoration(hintText: "Address"),
+                  ),
                   ElevatedButton(
                     onPressed: () {
                       try {
                         final newFirm = FirmsCompanion(
                           name: drift.Value(nameController.text),
-                          address: const drift.Value('Kuch toh hai'),
+                          address: drift.Value(addressController.text),
                         );
                         database!.insertFirm(newFirm);
+                        HFunction.showFlushBarSuccess(
+                            context: context,
+                            message: "Successfully Added the firm",
+                            afterPop: () {});
                         router.pop();
                       } catch (e) {
+                        HFunction.showFlushBarError(
+                            context: context,
+                            message: "Successfully Added the firm");
                         log("Error" + e.toString());
                       }
                     },

@@ -56,10 +56,18 @@ class AppDatabase extends _$AppDatabase {
   @override
   int get schemaVersion => 1;
 
+  // FIRMS
   Future<List<Firm>> getAllFirms() => select(firms).get();
-
   Stream<List<Firm>> watchAllFirms() => select(firms).watch();
   Future<int> insertFirm(Insertable<Firm> firm) => into(firms).insert(firm);
+
+  // SITES
+  Future<List<Site>> getAllSites() => select(sites).get();
+  Stream<List<Site>> watchAllSites() => select(sites).watch();
+
+  Future<int> insertSite(Insertable<Site> site) => into(sites).insert(site);
+
+  // FLATS
   Future<List<Flat>> getAllFlats() => select(flats).get();
   Future<int> insertFlat(Insertable<Flats> flat) =>
       into(flats).insert(flat as Insertable<Flat>);
