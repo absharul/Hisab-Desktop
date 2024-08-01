@@ -1,7 +1,7 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:hisab/models/model_firm.dart';
+// import 'package:hisab/models/model_firm.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class ScreenFirmListing extends StatelessWidget {
@@ -66,8 +66,8 @@ class ScreenFirmListing extends StatelessWidget {
                   const SizedBox(height: 10),
                   ElevatedButton(
                     onPressed: () {
-                      final firm = ModelFirm();
-                      firm.name = nameController.text;
+                      // final firm = ModelFirm();
+                      // firm.name = nameController.text;
                     },
                     child: const Text("Add"),
                   )
