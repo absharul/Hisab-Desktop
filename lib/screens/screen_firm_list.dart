@@ -1,7 +1,6 @@
 import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:hisab/main.dart';
 import 'package:hisab/models/model_firm.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
@@ -69,8 +68,6 @@ class ScreenFirmListing extends StatelessWidget {
                     onPressed: () {
                       final firm = ModelFirm();
                       firm.name = nameController.text;
-                      int firmId = objectbox.store.box<ModelFirm>().put(firm);
-                      log("Firm added with id: $firmId");
                     },
                     child: const Text("Add"),
                   )

@@ -1,6 +1,8 @@
 import 'package:circular_menu/circular_menu.dart';
 import 'package:flutter/material.dart';
 
+import '../routes/route.dart';
+
 class ScreenSiteDetails extends StatelessWidget {
   const ScreenSiteDetails({super.key});
 
@@ -8,7 +10,7 @@ class ScreenSiteDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("Site Detail"),
+          title: Text("Site Detail",style: TextStyle(color: Colors.black)),
         ),
         body: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -17,6 +19,9 @@ class ScreenSiteDetails extends StatelessWidget {
                 itemCount: 20,
                 itemBuilder: (ctx, index) {
                   return ListTile(
+                    onTap: () {
+                      router.push("/menu");
+                    },
                     title: Text("Site $index"),
                     subtitle: Text("Address $index"),
                   );

@@ -15,7 +15,7 @@ ThemeData appTheme = ThemeData(
       fontSize: 24,
       fontWeight: FontWeight.bold,
     ),
-    color: Colors.teal,
+    color: Color(0xFFE9E9E9),
     centerTitle: true,
   ),
   inputDecorationTheme: const InputDecorationTheme(
@@ -26,16 +26,16 @@ ThemeData appTheme = ThemeData(
   tabBarTheme: const TabBarTheme(
       dividerColor: Colors.grey,
       dividerHeight: 3,
-      indicatorColor: Colors.teal,
+      indicatorColor: Color(0xFF4EA6B2),
       unselectedLabelColor: Colors.grey,
-      labelColor: Colors.teal,
+      labelColor: Color(0xFF4EA6B2),
       indicatorSize: TabBarIndicatorSize.tab,
       labelStyle: TextStyle(
         fontSize: 18,
         fontWeight: FontWeight.bold,
       )),
   floatingActionButtonTheme: const FloatingActionButtonThemeData(
-    backgroundColor: Colors.teal,
+    backgroundColor: Color(0xFF4EA6B2),
     iconSize: 18,
   ),
 );

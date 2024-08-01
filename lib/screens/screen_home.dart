@@ -25,7 +25,7 @@ class _ScreenHomeState extends State<ScreenHome>
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: const Text('Hisab'),
+          title: const Text('Hisab',style: TextStyle(color: Colors.black),),
         ),
         body: Column(
           children: [

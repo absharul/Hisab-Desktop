@@ -1,14 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:hisab/objectbox.dart';
 import 'package:hisab/routes/route.dart';
 import 'package:hisab/theme.dart';
 
-late ObjectBox objectbox;
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  objectbox = await ObjectBox.create();
 
   runApp(const MyApp());
 }
