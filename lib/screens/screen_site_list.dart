@@ -29,16 +29,22 @@ class ScreenSiteListing extends StatelessWidget {
               final site = sites[index];
 
               return Container(
-                margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                margin:
+                    const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                 padding: const EdgeInsets.all(16.0),
                 decoration: BoxDecoration(
-                  color: Colors.grey[200], // Light grey background for differentiation
-                  border: Border.all(color: Colors.blue, width: 0.5), // Blue border for differentiation
-                  borderRadius: BorderRadius.circular(4.0), // Slightly rounded corners
+                  color: Colors
+                      .grey[200], // Light grey background for differentiation
+                  border: Border.all(
+                      color: Colors.blue,
+                      width: 0.5), // Blue border for differentiation
+                  borderRadius:
+                      BorderRadius.circular(4.0), // Slightly rounded corners
                 ),
                 child: Row(
                   children: [
-                    const Icon(Icons.location_on, color: Colors.blue), // Icon to make it look different
+                    const Icon(Icons.location_on,
+                        color: Colors.blue), // Icon to make it look different
                     const SizedBox(width: 10),
                     Text(
                       site.name,
@@ -92,6 +98,11 @@ class ScreenSiteListing extends StatelessWidget {
                     decoration: const InputDecoration(hintText: "Name"),
                   ),
                   const SizedBox(height: 10),
+                  TextField(
+                    controller: addressController,
+                    decoration: const InputDecoration(hintText: "Address"),
+                  ),
+                  const SizedBox(height: 10),
                   WidgetDropdown(onChanged: (value) {
                     firmNameController.text = value.name;
                     firm = value;
@@ -102,15 +113,15 @@ class ScreenSiteListing extends StatelessWidget {
                         if (firm != null) {
                           final site = SitesCompanion(
                             name: drift.Value(nameController.text),
+                            address: drift.Value(addressController.text),
                             firmId: drift.Value(firm!.id),
                           );
                           database!.insertSite(site);
+                          router.pop();
                           HFunction.showFlushBarSuccess(
-                              context: context,
-                              message: "Successfully Added the site",
-                              afterPop: () {
-                                router.pop();
-                              });
+                            context: context,
+                            message: "Successfully Added the site",
+                          );
                         }
                       } catch (error) {
                         HFunction.showFlushBarError(
