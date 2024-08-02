@@ -25,7 +25,7 @@ class _WidgetDropdownState extends State<WidgetDropdown> {
     database!.getAllFirms().then((value) {
       setState(() {
         items =
-            (value).map((e) => ModelDropdown(id: e.id, name: e.name)).toList();
+            (value).map((e) => ModelDropdown(id: e.id, name: e.name,)).toList();
       });
     });
   }

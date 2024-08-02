@@ -2,6 +2,7 @@ import 'dart:developer';
 import 'dart:io';
 
 import 'package:drift/drift.dart' as drift;
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hisab/database/app_database.dart';
 import 'package:hisab/main.dart';
@@ -31,8 +32,68 @@ class ScreenFirmListing extends StatelessWidget {
             itemBuilder: (context, index) {
               final task = firms[index];
 
-              return ListTile(
-                title: Text(task.name),
+              return Container(
+                margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                padding: const EdgeInsets.all(16.0),
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  border: Border.all(color: Colors.black, width: 0.5),
+                  borderRadius: BorderRadius.circular(0), // No rounded corners for old-school look
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          task.name,
+                          style: const TextStyle(
+                            fontFamily: 'Courier', // Old-school font
+                            fontSize: 20.0,
+                            color: Colors.black,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Text(
+                          task.address,
+                          style: const TextStyle(
+                            fontFamily: 'Courier', // Old-school font
+                            fontSize: 16.0,
+                            color: Colors.black,
+                            fontWeight: FontWeight.normal,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const Expanded(child: SizedBox()),
+                    Column(
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.edit),
+                          onPressed: () {
+                            // Add your edit functionality here
+                          },
+                        ),
+                        const Text("Edit"),
+                      ],
+                    ),
+                    const SizedBox(width: 100,),
+                    Column(
+                      children: [
+                        IconButton(
+                          icon: Icon(Icons.delete),
+                          onPressed: () {
+                            // Add your delete functionality here
+                            deleteDatabase();
+                          },
+                        ),
+                        const Text("Delete"),
+                      ],
+                    ),
+                  ],
+                ),
               );
             },
           );
@@ -86,8 +147,10 @@ class ScreenFirmListing extends StatelessWidget {
                         HFunction.showFlushBarSuccess(
                             context: context,
                             message: "Successfully Added the firm",
-                            afterPop: () {});
-                        router.pop();
+                            afterPop: () {
+                              router.pop();
+                            });
+
                       } catch (e) {
                         HFunction.showFlushBarError(
                             context: context,

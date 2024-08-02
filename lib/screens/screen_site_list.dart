@@ -21,15 +21,35 @@ class ScreenSiteListing extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           }
 
-          final firms = snapshot.data ?? [];
+          final sites = snapshot.data ?? [];
 
           return ListView.builder(
-            itemCount: firms.length,
+            itemCount: sites.length,
             itemBuilder: (context, index) {
-              final task = firms[index];
+              final site = sites[index];
 
-              return ListTile(
-                title: Text(task.name),
+              return Container(
+                margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                padding: const EdgeInsets.all(16.0),
+                decoration: BoxDecoration(
+                  color: Colors.grey[200], // Light grey background for differentiation
+                  border: Border.all(color: Colors.blue, width: 0.5), // Blue border for differentiation
+                  borderRadius: BorderRadius.circular(4.0), // Slightly rounded corners
+                ),
+                child: Row(
+                  children: [
+                    const Icon(Icons.location_on, color: Colors.blue), // Icon to make it look different
+                    const SizedBox(width: 10),
+                    Text(
+                      site.name,
+                      style: const TextStyle(
+                        fontFamily: 'Courier', // Old-school font
+                        fontSize: 16.0,
+                        color: Colors.black,
+                      ),
+                    ),
+                  ],
+                ),
               );
             },
           );
@@ -49,15 +69,18 @@ class ScreenSiteListing extends StatelessWidget {
 
   void addSitePressed(BuildContext context) async {
     final nameController = TextEditingController();
+    final addressController = TextEditingController();
     final firmNameController = TextEditingController();
+
     ModelDropdown? firm;
+
     return showDialog(
         context: context,
         builder: (ctx) {
           return Dialog(
             child: Container(
               width: 200,
-              height: 200,
+              height: 250,
               padding: const EdgeInsets.all(10),
               color: Colors.white,
               child: Column(
