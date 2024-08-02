@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:hisab/database/app_database.dart';
 import 'package:hisab/routes/route.dart';
 import 'package:hisab/theme.dart';
 
-
+AppDatabase? database;
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-
+  database = AppDatabase();
   runApp(const MyApp());
 }
 
