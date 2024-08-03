@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:hisab/screens/screen_category_list.dart';
 import 'package:hisab/screens/screen_firm_list.dart';
 import 'package:hisab/screens/screen_site_list.dart';
+import 'package:hisab/screens/screen_sub_category_list.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class ScreenHome extends StatefulWidget {
@@ -16,7 +18,7 @@ class _ScreenHomeState extends State<ScreenHome>
 
   @override
   void initState() {
-    tabController = TabController(length: 2, vsync: this);
+    tabController = TabController(length: 4, vsync: this);
     super.initState();
   }
 
@@ -25,7 +27,10 @@ class _ScreenHomeState extends State<ScreenHome>
     return Scaffold(
         appBar: AppBar(
           centerTitle: true,
-          title: const Text('Hisab',style: TextStyle(color: Colors.black),),
+          title: const Text(
+            'Hisab',
+            style: TextStyle(color: Colors.black),
+          ),
         ),
         body: Column(
           children: [
@@ -44,6 +49,20 @@ class _ScreenHomeState extends State<ScreenHome>
                 ),
                 text: "Sites",
               ),
+              Tab(
+                icon: Icon(
+                  PhosphorIcons.building(),
+                  size: 24,
+                ),
+                text: "Categories",
+              ),
+              Tab(
+                icon: Icon(
+                  PhosphorIcons.building(),
+                  size: 24,
+                ),
+                text: "SubCategories",
+              ),
             ]),
             Expanded(
                 child: TabBarView(
@@ -51,6 +70,8 @@ class _ScreenHomeState extends State<ScreenHome>
               children: const [
                 ScreenFirmListing(),
                 ScreenSiteListing(),
+                ScreenCategoryList(),
+                ScreenSubCategoryList()
               ],
             ))
           ],

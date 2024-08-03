@@ -10,8 +10,8 @@ import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../controllers/site_controller.dart';
 
-class ScreenSiteListing extends StatelessWidget {
-  const ScreenSiteListing({super.key});
+class ScreenUserListing extends StatelessWidget {
+  const ScreenUserListing({super.key});
 
   @override
   Widget build(BuildContext context) {

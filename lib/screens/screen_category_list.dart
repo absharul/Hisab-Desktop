@@ -1,23 +1,22 @@
+import 'dart:developer';
+
 import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
 import 'package:hisab/database/app_database.dart';
+import 'package:hisab/main.dart';
 import 'package:hisab/models/model_dropdown.dart';
 import 'package:hisab/routes/route.dart';
-import 'package:hisab/screens/screen_site_detail.dart';
-import 'package:hisab/screens/widgets/widget_dropdown.dart';
 import 'package:hisab/utils/helper_functions.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-import '../controllers/site_controller.dart';
-
-class ScreenSiteListing extends StatelessWidget {
-  const ScreenSiteListing({super.key});
+class ScreenCategoryList extends StatelessWidget {
+  const ScreenCategoryList({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: StreamBuilder<List<Site>>(
-        stream: siteController.watchAll(),
+      body: StreamBuilder<List<Category>>(
+        stream: database.watchCategory(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -31,12 +30,12 @@ class ScreenSiteListing extends StatelessWidget {
               final site = sites[index];
 
               return InkWell(
-                onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (ctx) => ScreenSiteDetails(
-                            site: site,
-                          )));
-                },
+                // onTap: () {
+                //   Navigator.of(context).push(MaterialPageRoute(
+                //       builder: (ctx) => ScreenSiteDetails(
+                //             site: site,
+                //           )));
+                // },
                 child: Container(
                   margin: const EdgeInsets.symmetric(
                       vertical: 8.0, horizontal: 16.0),
@@ -85,10 +84,6 @@ class ScreenSiteListing extends StatelessWidget {
 
   void addSitePressed(BuildContext context) async {
     final nameController = TextEditingController();
-    final addressController = TextEditingController();
-    final firmNameController = TextEditingController();
-
-    ModelDropdown? firm;
 
     return showDialog(
         context: context,
@@ -101,42 +96,26 @@ class ScreenSiteListing extends StatelessWidget {
               color: Colors.white,
               child: Column(
                 children: [
-                  const Text("Add Sites"),
+                  const Text("Add Category"),
                   const SizedBox(height: 10),
                   TextField(
                     controller: nameController,
                     decoration: const InputDecoration(hintText: "Name"),
                   ),
-                  const SizedBox(height: 10),
-                  TextField(
-                    controller: addressController,
-                    decoration: const InputDecoration(hintText: "Address"),
-                  ),
-                  const SizedBox(height: 10),
-                  WidgetDropdown(
-                      placeHolder: "Select",
-                      selectedValue: ModelDropdown(id: 0, name: "Firm"),
-                      onChanged: (value) {
-                        firmNameController.text = value.name;
-                        firm = value;
-                      }),
                   ElevatedButton(
                     onPressed: () async {
                       try {
-                        if (firm != null) {
-                          final site = SitesCompanion(
-                            name: drift.Value(nameController.text),
-                            address: drift.Value(addressController.text),
-                            firmId: drift.Value(firm!.id),
-                          );
-                          await siteController.create(site);
-                          router.pop();
-                          HFunction.showFlushBarSuccess(
-                            context: context,
-                            message: "Successfully Added the site",
-                          );
-                        }
+                        final site = CategoriesCompanion(
+                          name: drift.Value(nameController.text),
+                        );
+                        await database.insertCategory(site);
+                        router.pop();
+                        HFunction.showFlushBarSuccess(
+                          context: context,
+                          message: "Successfully Added the site",
+                        );
                       } catch (error) {
+                        log(error.toString());
                         HFunction.showFlushBarError(
                             context: context, message: error.toString());
                       }

@@ -2,25 +2,29 @@ import 'package:flutter/material.dart';
 import 'package:hisab/screens/menu_tabs/flats_tab.dart';
 import 'package:hisab/screens/menu_tabs/transaction_tab.dart';
 
+import '../database/app_database.dart';
 import 'menu_tabs/partner_tab.dart';
 
-class Menu extends StatelessWidget {
-  const Menu({super.key});
+class ScreenSiteDetails extends StatelessWidget {
+  final Site site;
+  const ScreenSiteDetails({super.key, required this.site});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("SITE 1",style: TextStyle(color: Colors.black),),
+        title: Text(
+          site.name,
+          style: const TextStyle(color: Colors.black),
+        ),
         centerTitle: true,
-        backgroundColor: Color(0xFFE9E9E9),
       ),
       body: const DefaultTabController(
         length: 3,
         child: Column(
           children: [
             TabBar(
-              tabs:  [
+              tabs: [
                 Tab(text: 'Flats'),
                 Tab(text: 'Transaction'),
                 Tab(text: 'Partner'),
@@ -28,21 +32,15 @@ class Menu extends StatelessWidget {
               indicatorColor: Color(0xFF4EA6B2),
               indicatorSize: TabBarIndicatorSize.tab,
               labelStyle: TextStyle(fontSize: 16.0),
-
             ),
             Expanded(
               child: TabBarView(
-                children: [
-                  FlatsTab(),
-                  TransactionTab(),
-                  PartnerTab()
-                ],
+                children: [FlatsTab(), TransactionTab(), PartnerTab()],
               ),
             ),
           ],
         ),
       ),
-
     );
   }
 }

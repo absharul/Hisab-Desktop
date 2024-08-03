@@ -1,7 +1,5 @@
 import 'package:go_router/go_router.dart';
-import 'package:hisab/screens/menu.dart';
 import 'package:hisab/screens/screen_home.dart';
-import 'package:hisab/screens/screen_site_details.dart';
 import 'package:hisab/screens/screen_site_list.dart';
 
 import '../screens/screen_firm_list.dart';
@@ -21,13 +19,14 @@ final router = GoRouter(
       path: "/sites",
       builder: (context, state) => const ScreenSiteListing(),
     ),
-    GoRoute(
-      path: "/sites/id",
-      builder: (context, state) => const ScreenSiteDetails(),
-    ),
-    GoRoute(
-      path: "/menu",
-      builder: (context, state) => const Menu(),
-    )
+    //TODO: use ID based here
+    // GoRoute(
+    //   path: "/sites/id",
+    //   builder: (context, state) => const (),
+    // ),
+    // GoRoute(
+    //   path: "/menu",
+    //   builder: (context, state) => const Menu(),
+    // )
   ],
 );
