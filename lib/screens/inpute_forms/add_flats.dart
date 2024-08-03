@@ -33,7 +33,7 @@ void showFlatsInputDialog(BuildContext context) {
                             ? 'Do not use the @ char.'
                             : null;
                       },
-                    ),  //flat name
+                    ), //flat name
                     TextFormField(
                       controller: areaController,
                       keyboardType: TextInputType.number,
@@ -46,13 +46,14 @@ void showFlatsInputDialog(BuildContext context) {
                             ? 'Do not use the @ char.'
                             : null;
                       },
-                    ),  // area
+                    ), // area
                     DropdownButtonFormField<String>(
                       value: selectedFlatType,
                       decoration: const InputDecoration(
                         labelText: 'Flat Type',
                       ),
-                      items: flatTypes.map<DropdownMenuItem<String>>((String value) {
+                      items: flatTypes
+                          .map<DropdownMenuItem<String>>((String value) {
                         return DropdownMenuItem<String>(
                           value: value,
                           child: Text(value),
@@ -112,7 +113,6 @@ void showFlatsInputDialog(BuildContext context) {
               String flatArea = areaController.text;
               String Rate = priceController.text;
               String flatDescription = descriptionController.text;
-
 
               Navigator.of(context).pop();
             },

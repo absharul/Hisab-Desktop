@@ -22,12 +22,13 @@ class WidgetDropdown extends StatefulWidget {
 
 class _WidgetDropdownState extends State<WidgetDropdown> {
   List<ModelDropdown> items = [];
+  ModelDropdown? selectedValue;
 
   @override
   void initState() {
     super.initState();
-    // Initialize the selected item with the first item in the list, if available
     initializeList();
+    selectedValue = widget.selectedValue;
   }
 
   void initializeList() {
@@ -40,6 +41,13 @@ class _WidgetDropdownState extends State<WidgetDropdown> {
                   name: e.name,
                 ))
             .toList();
+
+        if (selectedValue != null && !items.contains(selectedValue)) {
+          selectedValue = null;
+        }
+        if (selectedValue == null && items.isNotEmpty) {
+          selectedValue = items.first;
+        }
       });
     });
   }
@@ -48,14 +56,18 @@ class _WidgetDropdownState extends State<WidgetDropdown> {
   Widget build(BuildContext context) {
     return DropdownButton<ModelDropdown>(
       hint: Text(widget.placeHolder),
+      value: selectedValue,
       items: items.map((ModelDropdown item) {
         return DropdownMenuItem<ModelDropdown>(
           value: item,
-          child: Text(item.name), // Assuming ModelDropdown has a 'name' field
+          child: Text(item.name),
         );
       }).toList(),
       onChanged: (ModelDropdown? newValue) {
         if (newValue != null) {
+          setState(() {
+            selectedValue = newValue;
+          });
           widget.onChanged(newValue);
         }
       },

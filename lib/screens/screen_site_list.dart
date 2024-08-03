@@ -1,11 +1,9 @@
 import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
 import 'package:hisab/database/app_database.dart';
-import 'package:hisab/main.dart';
 import 'package:hisab/models/model_dropdown.dart';
 import 'package:hisab/routes/route.dart';
 import 'package:hisab/screens/menu.dart';
-import 'package:hisab/screens/screen_site_details.dart';
 import 'package:hisab/screens/widgets/widget_dropdown.dart';
 import 'package:hisab/utils/helper_functions.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';

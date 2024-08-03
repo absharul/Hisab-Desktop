@@ -67,24 +67,20 @@ class ScreenFirmListing extends StatelessWidget {
                       ],
                     ),
                     const Expanded(child: SizedBox()),
-                    Column(
-                      children: [
-                        IconButton(
-                          icon: Icon(Icons.edit),
-                          onPressed: () {
-                            // Add your edit functionality here
-                          },
-                        ),
-                        const Text("Edit"),
-                      ],
+                    IconButton(
+                      icon: const Icon(Icons.edit),
+                      onPressed: () {
+                        // Add your edit functionality here
+                      },
                     ),
+                    const Text("Edit"),
                     const SizedBox(
                       width: 100,
                     ),
                     Column(
                       children: [
                         IconButton(
-                          icon: Icon(Icons.delete),
+                          icon: const Icon(Icons.delete),
                           onPressed: () {
                             // Add your delete functionality here
                             deleteDatabase();
