@@ -1,11 +1,20 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
-import 'package:hisab/main.dart';
+import 'package:hisab/controllers/firm_controller.dart';
 import 'package:hisab/models/model_dropdown.dart';
 
 class WidgetDropdown extends StatefulWidget {
+  final ModelDropdown? selectedValue;
+  final String placeHolder;
   final Function(ModelDropdown) onChanged;
 
-  const WidgetDropdown({Key? key, required this.onChanged}) : super(key: key);
+  const WidgetDropdown({
+    Key? key,
+    required this.onChanged,
+    this.selectedValue,
+    required this.placeHolder,
+  }) : super(key: key);
 
   @override
   _WidgetDropdownState createState() => _WidgetDropdownState();
@@ -22,10 +31,15 @@ class _WidgetDropdownState extends State<WidgetDropdown> {
   }
 
   void initializeList() {
-    database!.getAllFirms().then((value) {
+    firmController.readAll().then((value) {
+      log(value.toString());
       setState(() {
-        items =
-            (value).map((e) => ModelDropdown(id: e.id, name: e.name,)).toList();
+        items = (value)
+            .map((e) => ModelDropdown(
+                  id: e.id,
+                  name: e.name,
+                ))
+            .toList();
       });
     });
   }
@@ -33,6 +47,7 @@ class _WidgetDropdownState extends State<WidgetDropdown> {
   @override
   Widget build(BuildContext context) {
     return DropdownButton<ModelDropdown>(
+      hint: Text(widget.placeHolder),
       items: items.map((ModelDropdown item) {
         return DropdownMenuItem<ModelDropdown>(
           value: item,

@@ -34,8 +34,25 @@ class $FirmsTable extends Firms with TableInfo<$FirmsTable, Firm> {
           GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 50),
       type: DriftSqlType.string,
       requiredDuringInsert: true);
+  static const VerificationMeta _createdAtMeta =
+      const VerificationMeta('createdAt');
   @override
-  List<GeneratedColumn> get $columns => [id, name, address];
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  static const VerificationMeta _updatedAtMeta =
+      const VerificationMeta('updatedAt');
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+      'updated_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, name, address, createdAt, updatedAt];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -61,6 +78,14 @@ class $FirmsTable extends Firms with TableInfo<$FirmsTable, Firm> {
     } else if (isInserting) {
       context.missing(_addressMeta);
     }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta,
+          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta,
+          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    }
     return context;
   }
 
@@ -76,6 +101,10 @@ class $FirmsTable extends Firms with TableInfo<$FirmsTable, Firm> {
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
       address: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}address'])!,
+      createdAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+      updatedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at'])!,
     );
   }
 
@@ -89,13 +118,22 @@ class Firm extends DataClass implements Insertable<Firm> {
   final int id;
   final String name;
   final String address;
-  const Firm({required this.id, required this.name, required this.address});
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  const Firm(
+      {required this.id,
+      required this.name,
+      required this.address,
+      required this.createdAt,
+      required this.updatedAt});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['name'] = Variable<String>(name);
     map['address'] = Variable<String>(address);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
   }
 
@@ -104,6 +142,8 @@ class Firm extends DataClass implements Insertable<Firm> {
       id: Value(id),
       name: Value(name),
       address: Value(address),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
     );
   }
 
@@ -114,6 +154,8 @@ class Firm extends DataClass implements Insertable<Firm> {
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
       address: serializer.fromJson<String>(json['address']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
   }
   @override
@@ -123,19 +165,31 @@ class Firm extends DataClass implements Insertable<Firm> {
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
       'address': serializer.toJson<String>(address),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
   }
 
-  Firm copyWith({int? id, String? name, String? address}) => Firm(
+  Firm copyWith(
+          {int? id,
+          String? name,
+          String? address,
+          DateTime? createdAt,
+          DateTime? updatedAt}) =>
+      Firm(
         id: id ?? this.id,
         name: name ?? this.name,
         address: address ?? this.address,
+        createdAt: createdAt ?? this.createdAt,
+        updatedAt: updatedAt ?? this.updatedAt,
       );
   Firm copyWithCompanion(FirmsCompanion data) {
     return Firm(
       id: data.id.present ? data.id.value : this.id,
       name: data.name.present ? data.name.value : this.name,
       address: data.address.present ? data.address.value : this.address,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
   }
 
@@ -144,55 +198,75 @@ class Firm extends DataClass implements Insertable<Firm> {
     return (StringBuffer('Firm(')
           ..write('id: $id, ')
           ..write('name: $name, ')
-          ..write('address: $address')
+          ..write('address: $address, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name, address);
+  int get hashCode => Object.hash(id, name, address, createdAt, updatedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is Firm &&
           other.id == this.id &&
           other.name == this.name &&
-          other.address == this.address);
+          other.address == this.address &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
 }
 
 class FirmsCompanion extends UpdateCompanion<Firm> {
   final Value<int> id;
   final Value<String> name;
   final Value<String> address;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
   const FirmsCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.address = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
   });
   FirmsCompanion.insert({
     this.id = const Value.absent(),
     required String name,
     required String address,
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
   })  : name = Value(name),
         address = Value(address);
   static Insertable<Firm> custom({
     Expression<int>? id,
     Expression<String>? name,
     Expression<String>? address,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (name != null) 'name': name,
       if (address != null) 'address': address,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
     });
   }
 
   FirmsCompanion copyWith(
-      {Value<int>? id, Value<String>? name, Value<String>? address}) {
+      {Value<int>? id,
+      Value<String>? name,
+      Value<String>? address,
+      Value<DateTime>? createdAt,
+      Value<DateTime>? updatedAt}) {
     return FirmsCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
       address: address ?? this.address,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
     );
   }
 
@@ -208,6 +282,12 @@ class FirmsCompanion extends UpdateCompanion<Firm> {
     if (address.present) {
       map['address'] = Variable<String>(address.value);
     }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
     return map;
   }
 
@@ -216,7 +296,9 @@ class FirmsCompanion extends UpdateCompanion<Firm> {
     return (StringBuffer('FirmsCompanion(')
           ..write('id: $id, ')
           ..write('name: $name, ')
-          ..write('address: $address')
+          ..write('address: $address, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
           ..write(')'))
         .toString();
   }
@@ -260,8 +342,25 @@ class $SitesTable extends Sites with TableInfo<$SitesTable, Site> {
       type: DriftSqlType.int,
       requiredDuringInsert: true,
       $customConstraints: 'REFERENCES firms(id)');
+  static const VerificationMeta _createdAtMeta =
+      const VerificationMeta('createdAt');
   @override
-  List<GeneratedColumn> get $columns => [id, name, address, firmId];
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  static const VerificationMeta _updatedAtMeta =
+      const VerificationMeta('updatedAt');
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+      'updated_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, name, address, firmId, createdAt, updatedAt];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -293,6 +392,14 @@ class $SitesTable extends Sites with TableInfo<$SitesTable, Site> {
     } else if (isInserting) {
       context.missing(_firmIdMeta);
     }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta,
+          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta,
+          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    }
     return context;
   }
 
@@ -310,6 +417,10 @@ class $SitesTable extends Sites with TableInfo<$SitesTable, Site> {
           .read(DriftSqlType.string, data['${effectivePrefix}address'])!,
       firmId: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}firm_id'])!,
+      createdAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+      updatedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at'])!,
     );
   }
 
@@ -324,11 +435,15 @@ class Site extends DataClass implements Insertable<Site> {
   final String name;
   final String address;
   final int firmId;
+  final DateTime createdAt;
+  final DateTime updatedAt;
   const Site(
       {required this.id,
       required this.name,
       required this.address,
-      required this.firmId});
+      required this.firmId,
+      required this.createdAt,
+      required this.updatedAt});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -336,6 +451,8 @@ class Site extends DataClass implements Insertable<Site> {
     map['name'] = Variable<String>(name);
     map['address'] = Variable<String>(address);
     map['firm_id'] = Variable<int>(firmId);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
   }
 
@@ -345,6 +462,8 @@ class Site extends DataClass implements Insertable<Site> {
       name: Value(name),
       address: Value(address),
       firmId: Value(firmId),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
     );
   }
 
@@ -356,6 +475,8 @@ class Site extends DataClass implements Insertable<Site> {
       name: serializer.fromJson<String>(json['name']),
       address: serializer.fromJson<String>(json['address']),
       firmId: serializer.fromJson<int>(json['firmId']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
   }
   @override
@@ -366,14 +487,25 @@ class Site extends DataClass implements Insertable<Site> {
       'name': serializer.toJson<String>(name),
       'address': serializer.toJson<String>(address),
       'firmId': serializer.toJson<int>(firmId),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
   }
 
-  Site copyWith({int? id, String? name, String? address, int? firmId}) => Site(
+  Site copyWith(
+          {int? id,
+          String? name,
+          String? address,
+          int? firmId,
+          DateTime? createdAt,
+          DateTime? updatedAt}) =>
+      Site(
         id: id ?? this.id,
         name: name ?? this.name,
         address: address ?? this.address,
         firmId: firmId ?? this.firmId,
+        createdAt: createdAt ?? this.createdAt,
+        updatedAt: updatedAt ?? this.updatedAt,
       );
   Site copyWithCompanion(SitesCompanion data) {
     return Site(
@@ -381,6 +513,8 @@ class Site extends DataClass implements Insertable<Site> {
       name: data.name.present ? data.name.value : this.name,
       address: data.address.present ? data.address.value : this.address,
       firmId: data.firmId.present ? data.firmId.value : this.firmId,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
   }
 
@@ -390,13 +524,16 @@ class Site extends DataClass implements Insertable<Site> {
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('address: $address, ')
-          ..write('firmId: $firmId')
+          ..write('firmId: $firmId, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode => Object.hash(id, name, address, firmId);
+  int get hashCode =>
+      Object.hash(id, name, address, firmId, createdAt, updatedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -404,7 +541,9 @@ class Site extends DataClass implements Insertable<Site> {
           other.id == this.id &&
           other.name == this.name &&
           other.address == this.address &&
-          other.firmId == this.firmId);
+          other.firmId == this.firmId &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
 }
 
 class SitesCompanion extends UpdateCompanion<Site> {
@@ -412,17 +551,23 @@ class SitesCompanion extends UpdateCompanion<Site> {
   final Value<String> name;
   final Value<String> address;
   final Value<int> firmId;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
   const SitesCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
     this.address = const Value.absent(),
     this.firmId = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
   });
   SitesCompanion.insert({
     this.id = const Value.absent(),
     required String name,
     required String address,
     required int firmId,
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
   })  : name = Value(name),
         address = Value(address),
         firmId = Value(firmId);
@@ -431,12 +576,16 @@ class SitesCompanion extends UpdateCompanion<Site> {
     Expression<String>? name,
     Expression<String>? address,
     Expression<int>? firmId,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (name != null) 'name': name,
       if (address != null) 'address': address,
       if (firmId != null) 'firm_id': firmId,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
     });
   }
 
@@ -444,12 +593,16 @@ class SitesCompanion extends UpdateCompanion<Site> {
       {Value<int>? id,
       Value<String>? name,
       Value<String>? address,
-      Value<int>? firmId}) {
+      Value<int>? firmId,
+      Value<DateTime>? createdAt,
+      Value<DateTime>? updatedAt}) {
     return SitesCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
       address: address ?? this.address,
       firmId: firmId ?? this.firmId,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
     );
   }
 
@@ -468,6 +621,12 @@ class SitesCompanion extends UpdateCompanion<Site> {
     if (firmId.present) {
       map['firm_id'] = Variable<int>(firmId.value);
     }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
     return map;
   }
 
@@ -477,7 +636,9 @@ class SitesCompanion extends UpdateCompanion<Site> {
           ..write('id: $id, ')
           ..write('name: $name, ')
           ..write('address: $address, ')
-          ..write('firmId: $firmId')
+          ..write('firmId: $firmId, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
           ..write(')'))
         .toString();
   }
@@ -1482,11 +1643,15 @@ typedef $$FirmsTableCreateCompanionBuilder = FirmsCompanion Function({
   Value<int> id,
   required String name,
   required String address,
+  Value<DateTime> createdAt,
+  Value<DateTime> updatedAt,
 });
 typedef $$FirmsTableUpdateCompanionBuilder = FirmsCompanion Function({
   Value<int> id,
   Value<String> name,
   Value<String> address,
+  Value<DateTime> createdAt,
+  Value<DateTime> updatedAt,
 });
 
 class $$FirmsTableTableManager extends RootTableManager<
@@ -1509,21 +1674,29 @@ class $$FirmsTableTableManager extends RootTableManager<
             Value<int> id = const Value.absent(),
             Value<String> name = const Value.absent(),
             Value<String> address = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<DateTime> updatedAt = const Value.absent(),
           }) =>
               FirmsCompanion(
             id: id,
             name: name,
             address: address,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
           ),
           createCompanionCallback: ({
             Value<int> id = const Value.absent(),
             required String name,
             required String address,
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<DateTime> updatedAt = const Value.absent(),
           }) =>
               FirmsCompanion.insert(
             id: id,
             name: name,
             address: address,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
           ),
         ));
 }
@@ -1543,6 +1716,16 @@ class $$FirmsTableFilterComposer
 
   ColumnFilters<String> get address => $state.composableBuilder(
       column: $state.table.address,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get createdAt => $state.composableBuilder(
+      column: $state.table.createdAt,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get updatedAt => $state.composableBuilder(
+      column: $state.table.updatedAt,
       builder: (column, joinBuilders) =>
           ColumnFilters(column, joinBuilders: joinBuilders));
 
@@ -1577,6 +1760,16 @@ class $$FirmsTableOrderingComposer
       column: $state.table.address,
       builder: (column, joinBuilders) =>
           ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get createdAt => $state.composableBuilder(
+      column: $state.table.createdAt,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get updatedAt => $state.composableBuilder(
+      column: $state.table.updatedAt,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
 }
 
 typedef $$SitesTableCreateCompanionBuilder = SitesCompanion Function({
@@ -1584,12 +1777,16 @@ typedef $$SitesTableCreateCompanionBuilder = SitesCompanion Function({
   required String name,
   required String address,
   required int firmId,
+  Value<DateTime> createdAt,
+  Value<DateTime> updatedAt,
 });
 typedef $$SitesTableUpdateCompanionBuilder = SitesCompanion Function({
   Value<int> id,
   Value<String> name,
   Value<String> address,
   Value<int> firmId,
+  Value<DateTime> createdAt,
+  Value<DateTime> updatedAt,
 });
 
 class $$SitesTableTableManager extends RootTableManager<
@@ -1613,24 +1810,32 @@ class $$SitesTableTableManager extends RootTableManager<
             Value<String> name = const Value.absent(),
             Value<String> address = const Value.absent(),
             Value<int> firmId = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<DateTime> updatedAt = const Value.absent(),
           }) =>
               SitesCompanion(
             id: id,
             name: name,
             address: address,
             firmId: firmId,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
           ),
           createCompanionCallback: ({
             Value<int> id = const Value.absent(),
             required String name,
             required String address,
             required int firmId,
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<DateTime> updatedAt = const Value.absent(),
           }) =>
               SitesCompanion.insert(
             id: id,
             name: name,
             address: address,
             firmId: firmId,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
           ),
         ));
 }
@@ -1650,6 +1855,16 @@ class $$SitesTableFilterComposer
 
   ColumnFilters<String> get address => $state.composableBuilder(
       column: $state.table.address,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get createdAt => $state.composableBuilder(
+      column: $state.table.createdAt,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get updatedAt => $state.composableBuilder(
+      column: $state.table.updatedAt,
       builder: (column, joinBuilders) =>
           ColumnFilters(column, joinBuilders: joinBuilders));
 
@@ -1694,6 +1909,16 @@ class $$SitesTableOrderingComposer
 
   ColumnOrderings<String> get address => $state.composableBuilder(
       column: $state.table.address,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get createdAt => $state.composableBuilder(
+      column: $state.table.createdAt,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get updatedAt => $state.composableBuilder(
+      column: $state.table.updatedAt,
       builder: (column, joinBuilders) =>
           ColumnOrderings(column, joinBuilders: joinBuilders));
 

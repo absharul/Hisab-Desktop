@@ -4,9 +4,13 @@ import 'package:hisab/database/app_database.dart';
 import 'package:hisab/main.dart';
 import 'package:hisab/models/model_dropdown.dart';
 import 'package:hisab/routes/route.dart';
+import 'package:hisab/screens/menu.dart';
+import 'package:hisab/screens/screen_site_details.dart';
 import 'package:hisab/screens/widgets/widget_dropdown.dart';
 import 'package:hisab/utils/helper_functions.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+
+import '../controllers/site_controller.dart';
 
 class ScreenSiteListing extends StatelessWidget {
   const ScreenSiteListing({super.key});
@@ -15,7 +19,7 @@ class ScreenSiteListing extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: StreamBuilder<List<Site>>(
-        stream: database!.watchAllSites(),
+        stream: siteController.watchAll(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -28,33 +32,39 @@ class ScreenSiteListing extends StatelessWidget {
             itemBuilder: (context, index) {
               final site = sites[index];
 
-              return Container(
-                margin:
-                    const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
-                padding: const EdgeInsets.all(16.0),
-                decoration: BoxDecoration(
-                  color: Colors
-                      .grey[200], // Light grey background for differentiation
-                  border: Border.all(
-                      color: Colors.blue,
-                      width: 0.5), // Blue border for differentiation
-                  borderRadius:
-                      BorderRadius.circular(4.0), // Slightly rounded corners
-                ),
-                child: Row(
-                  children: [
-                    const Icon(Icons.location_on,
-                        color: Colors.blue), // Icon to make it look different
-                    const SizedBox(width: 10),
-                    Text(
-                      site.name,
-                      style: const TextStyle(
-                        fontFamily: 'Courier', // Old-school font
-                        fontSize: 16.0,
-                        color: Colors.black,
+              return InkWell(
+                onTap: () {
+                  Navigator.of(context)
+                      .push(MaterialPageRoute(builder: (ctx) => const Menu()));
+                },
+                child: Container(
+                  margin: const EdgeInsets.symmetric(
+                      vertical: 8.0, horizontal: 16.0),
+                  padding: const EdgeInsets.all(16.0),
+                  decoration: BoxDecoration(
+                    color: Colors
+                        .grey[200], // Light grey background for differentiation
+                    border: Border.all(
+                        color: Colors.blue,
+                        width: 0.5), // Blue border for differentiation
+                    borderRadius:
+                        BorderRadius.circular(4.0), // Slightly rounded corners
+                  ),
+                  child: Row(
+                    children: [
+                      const Icon(Icons.location_on,
+                          color: Colors.blue), // Icon to make it look different
+                      const SizedBox(width: 10),
+                      Text(
+                        site.name,
+                        style: const TextStyle(
+                          fontFamily: 'Courier', // Old-school font
+                          fontSize: 16.0,
+                          color: Colors.black,
+                        ),
                       ),
-                    ),
-                  ],
+                    ],
+                  ),
                 ),
               );
             },
@@ -103,12 +113,15 @@ class ScreenSiteListing extends StatelessWidget {
                     decoration: const InputDecoration(hintText: "Address"),
                   ),
                   const SizedBox(height: 10),
-                  WidgetDropdown(onChanged: (value) {
-                    firmNameController.text = value.name;
-                    firm = value;
-                  }),
+                  WidgetDropdown(
+                      placeHolder: "Select",
+                      selectedValue: ModelDropdown(id: 0, name: "Firm"),
+                      onChanged: (value) {
+                        firmNameController.text = value.name;
+                        firm = value;
+                      }),
                   ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       try {
                         if (firm != null) {
                           final site = SitesCompanion(
@@ -116,7 +129,7 @@ class ScreenSiteListing extends StatelessWidget {
                             address: drift.Value(addressController.text),
                             firmId: drift.Value(firm!.id),
                           );
-                          database!.insertSite(site);
+                          await siteController.create(site);
                           router.pop();
                           HFunction.showFlushBarSuccess(
                             context: context,

@@ -10,6 +10,8 @@ class Firms extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text().withLength(min: 1, max: 50)();
   TextColumn get address => text().withLength(min: 1, max: 50)();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
 }
 
 class Sites extends Table {
@@ -17,6 +19,8 @@ class Sites extends Table {
   TextColumn get name => text().withLength(min: 1, max: 50)();
   TextColumn get address => text().withLength(min: 1, max: 50)();
   IntColumn get firmId => integer().customConstraint('REFERENCES firms(id)')();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
 }
 
 class Flats extends Table {
@@ -58,13 +62,29 @@ class AppDatabase extends _$AppDatabase {
 
   // FIRMS
   Future<List<Firm>> getAllFirms() => select(firms).get();
-  Stream<List<Firm>> watchAllFirms() => select(firms).watch();
+  Future<Firm> getFirm(int id) =>
+      (select(firms)..where((t) => t.id.equals(id))).getSingle();
+  Stream<List<Firm>> watchAllFirms() => (select(firms)
+        ..orderBy([
+          (t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc),
+        ]))
+      .watch();
+
+  Future<int> updateFirm(Firm firm) => into(firms).insertOnConflictUpdate(firm);
   Future<int> insertFirm(Insertable<Firm> firm) => into(firms).insert(firm);
+  Future<int> deleteFirm(Insertable<Firm> firm) => delete(firms).delete(firm);
 
   // SITES
   Future<List<Site>> getAllSites() => select(sites).get();
-  Stream<List<Site>> watchAllSites() => select(sites).watch();
-
+  Stream<List<Site>> watchAllSites() => (select(sites)
+        ..orderBy([
+          (t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc),
+        ]))
+      .watch();
+  Future<Site> getSite(int id) =>
+      (select(sites)..where((t) => t.id.equals(id))).getSingle();
+  Future<int> updateSite(Site site) => into(sites).insertOnConflictUpdate(site);
+  Future<int> deleteSite(Insertable<Site> site) => delete(sites).delete(site);
   Future<int> insertSite(Insertable<Site> site) => into(sites).insert(site);
 
   // FLATS

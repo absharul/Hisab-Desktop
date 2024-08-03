@@ -1,16 +1,13 @@
-import 'dart:developer';
 import 'dart:io';
-
 import 'package:drift/drift.dart' as drift;
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:hisab/database/app_database.dart';
-import 'package:hisab/main.dart';
 import 'package:hisab/routes/route.dart';
 import 'package:hisab/utils/helper_functions.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 import 'package:path/path.dart' as p;
+import '../controllers/firm_controller.dart';
 
 class ScreenFirmListing extends StatelessWidget {
   const ScreenFirmListing({super.key});
@@ -19,7 +16,7 @@ class ScreenFirmListing extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: StreamBuilder<List<Firm>>(
-        stream: database!.watchAllFirms(),
+        stream: firmController.watchAll(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -33,12 +30,14 @@ class ScreenFirmListing extends StatelessWidget {
               final task = firms[index];
 
               return Container(
-                margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                margin:
+                    const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
                 padding: const EdgeInsets.all(16.0),
                 decoration: BoxDecoration(
                   color: Colors.white,
                   border: Border.all(color: Colors.black, width: 0.5),
-                  borderRadius: BorderRadius.circular(0), // No rounded corners for old-school look
+                  borderRadius: BorderRadius.circular(
+                      0), // No rounded corners for old-school look
                 ),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.start,
@@ -79,7 +78,9 @@ class ScreenFirmListing extends StatelessWidget {
                         const Text("Edit"),
                       ],
                     ),
-                    const SizedBox(width: 100,),
+                    const SizedBox(
+                      width: 100,
+                    ),
                     Column(
                       children: [
                         IconButton(
@@ -137,25 +138,21 @@ class ScreenFirmListing extends StatelessWidget {
                     decoration: const InputDecoration(hintText: "Address"),
                   ),
                   ElevatedButton(
-                    onPressed: () {
+                    onPressed: () async {
                       try {
                         final newFirm = FirmsCompanion(
                           name: drift.Value(nameController.text),
                           address: drift.Value(addressController.text),
                         );
-                        database!.insertFirm(newFirm);
+                        await firmController.create(newFirm);
+                        router.pop();
                         HFunction.showFlushBarSuccess(
-                            context: context,
-                            message: "Successfully Added the firm",
-                            afterPop: () {
-                              router.pop();
-                            });
-
+                          context: context,
+                          message: "Successfully Added the firm",
+                        );
                       } catch (e) {
                         HFunction.showFlushBarError(
-                            context: context,
-                            message: "Successfully Added the firm");
-                        log("Error" + e.toString());
+                            context: context, message: e.toString());
                       }
                     },
                     child: const Text("Add"),
