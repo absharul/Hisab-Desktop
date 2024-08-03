@@ -135,6 +135,10 @@ class ScreenFirmListing extends StatelessWidget {
                   ),
                   ElevatedButton(
                     onPressed: () async {
+                      // deleteDatabase();
+
+                      // return;
+
                       try {
                         final newFirm = FirmsCompanion(
                           name: drift.Value(nameController.text),

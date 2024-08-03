@@ -66,7 +66,7 @@ class AppDatabase extends _$AppDatabase {
   Stream<List<SubCategory>> watchSubCategory() => select(subCategories).watch();
   // USERS
   Future<List<User>> getUsers() => select(users).get();
-  Future<int> insertUser(User user) => into(users).insert(user);
+  Future<int> insertUser(Insertable<User> user) => into(users).insert(user);
   Stream<List<User>> watchUser() => select(users).watch();
   // FLATS
   Future<List<Flat>> getAllFlats() => select(flats).get();

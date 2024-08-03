@@ -3,6 +3,7 @@ import 'package:hisab/screens/screen_category_list.dart';
 import 'package:hisab/screens/screen_firm_list.dart';
 import 'package:hisab/screens/screen_site_list.dart';
 import 'package:hisab/screens/screen_sub_category_list.dart';
+import 'package:hisab/screens/screen_user_list.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 class ScreenHome extends StatefulWidget {
@@ -18,7 +19,7 @@ class _ScreenHomeState extends State<ScreenHome>
 
   @override
   void initState() {
-    tabController = TabController(length: 4, vsync: this);
+    tabController = TabController(length: 5, vsync: this);
     super.initState();
   }
 
@@ -63,6 +64,13 @@ class _ScreenHomeState extends State<ScreenHome>
                 ),
                 text: "SubCategories",
               ),
+              Tab(
+                icon: Icon(
+                  PhosphorIcons.building(),
+                  size: 24,
+                ),
+                text: "Users",
+              ),
             ]),
             Expanded(
                 child: TabBarView(
@@ -71,7 +79,8 @@ class _ScreenHomeState extends State<ScreenHome>
                 ScreenFirmListing(),
                 ScreenSiteListing(),
                 ScreenCategoryList(),
-                ScreenSubCategoryList()
+                ScreenSubCategoryList(),
+                ScreenUserListing()
               ],
             ))
           ],

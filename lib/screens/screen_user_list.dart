@@ -1,23 +1,36 @@
 import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
 import 'package:hisab/database/app_database.dart';
-import 'package:hisab/models/model_dropdown.dart';
+import 'package:hisab/main.dart';
 import 'package:hisab/routes/route.dart';
-import 'package:hisab/screens/screen_site_detail.dart';
-import 'package:hisab/screens/widgets/widget_dropdown.dart';
 import 'package:hisab/utils/helper_functions.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
-import '../controllers/site_controller.dart';
-
-class ScreenUserListing extends StatelessWidget {
+class ScreenUserListing extends StatefulWidget {
   const ScreenUserListing({super.key});
+
+  @override
+  State<ScreenUserListing> createState() => _ScreenUserListingState();
+}
+
+class _ScreenUserListingState extends State<ScreenUserListing> {
+  List<SubCategory> subCategories = [];
+  @override
+  void initState() {
+    super.initState();
+    getAllSubCategories();
+  }
+
+  void getAllSubCategories() async {
+    subCategories = await database.getSubCategory();
+    setState(() {});
+  }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: StreamBuilder<List<Site>>(
-        stream: siteController.watchAll(),
+      body: StreamBuilder<List<User>>(
+        stream: database.watchUser(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -31,12 +44,12 @@ class ScreenUserListing extends StatelessWidget {
               final site = sites[index];
 
               return InkWell(
-                onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (ctx) => ScreenSiteDetails(
-                            site: site,
-                          )));
-                },
+                // onTap: () {
+                //   Navigator.of(context).push(MaterialPageRoute(
+                //       builder: (ctx) => ScreenSiteDetails(
+                //             site: site,
+                //           )));
+                // },
                 child: Container(
                   margin: const EdgeInsets.symmetric(
                       vertical: 8.0, horizontal: 16.0),
@@ -86,9 +99,8 @@ class ScreenUserListing extends StatelessWidget {
   void addSitePressed(BuildContext context) async {
     final nameController = TextEditingController();
     final addressController = TextEditingController();
-    final firmNameController = TextEditingController();
 
-    ModelDropdown? firm;
+    SubCategory? selectedSubCategory;
 
     return showDialog(
         context: context,
@@ -110,26 +122,36 @@ class ScreenUserListing extends StatelessWidget {
                   const SizedBox(height: 10),
                   TextField(
                     controller: addressController,
-                    decoration: const InputDecoration(hintText: "Address"),
+                    decoration: const InputDecoration(hintText: "Type"),
                   ),
                   const SizedBox(height: 10),
-                  WidgetDropdown(
-                      placeHolder: "Select",
-                      selectedValue: ModelDropdown(id: 0, name: "Firm"),
-                      onChanged: (value) {
-                        firmNameController.text = value.name;
-                        firm = value;
-                      }),
+                  DropdownButtonFormField<SubCategory>(
+                    value: selectedSubCategory,
+                    decoration: const InputDecoration(
+                      labelText: 'Flat Type',
+                    ),
+                    items: subCategories.map<DropdownMenuItem<SubCategory>>(
+                        (SubCategory value) {
+                      return DropdownMenuItem<SubCategory>(
+                        value: value,
+                        child: Text(value.name),
+                      );
+                    }).toList(),
+                    onChanged: (SubCategory? newValue) {
+                      selectedSubCategory = newValue;
+                    },
+                  ),
                   ElevatedButton(
                     onPressed: () async {
                       try {
-                        if (firm != null) {
-                          final site = SitesCompanion(
+                        if (selectedSubCategory != null) {
+                          final site = UsersCompanion(
                             name: drift.Value(nameController.text),
-                            address: drift.Value(addressController.text),
-                            firmId: drift.Value(firm!.id),
+                            type: drift.Value(addressController.text),
+                            subCategory: drift.Value(selectedSubCategory!.id),
                           );
-                          await siteController.create(site);
+
+                          database.insertUser(site);
                           router.pop();
                           HFunction.showFlushBarSuccess(
                             context: context,

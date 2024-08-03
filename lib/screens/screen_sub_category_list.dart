@@ -2,12 +2,9 @@ import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
 import 'package:hisab/database/app_database.dart';
 import 'package:hisab/main.dart';
-import 'package:hisab/models/model_dropdown.dart';
 import 'package:hisab/routes/route.dart';
 import 'package:hisab/utils/helper_functions.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
-
-import '../controllers/site_controller.dart';
 
 class ScreenSubCategoryList extends StatefulWidget {
   const ScreenSubCategoryList({super.key});
@@ -21,6 +18,7 @@ class _ScreenSubCategoryListState extends State<ScreenSubCategoryList> {
   @override
   void initState() {
     super.initState();
+    getCategoryList();
   }
 
   void getCategoryList() async {
