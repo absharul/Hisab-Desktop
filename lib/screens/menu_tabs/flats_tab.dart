@@ -31,18 +31,7 @@ class FlatsTab extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.start,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Column(
-                      children: [
-                        SizedBox(
-                          width: 250,
-                          height: 125,
-                          child:   Image.network(
-                            'https://img.youtube.com/vi/E1ltJuvW7Jo/maxresdefault.jpg',
-                            fit: BoxFit.cover, // Use BoxFit.cover for better image fit
-                          ),
-                        ),
-                      ],
-                    ),
+
                    Padding(padding: EdgeInsets.only(left: 50.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,

@@ -1,12 +1,19 @@
+import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
+import 'package:hisab/utils/helper_functions.dart';
 
-void showPartnerInputDialog(BuildContext context) {
-  final TextEditingController nameController = TextEditingController();
-  final TextEditingController areaController = TextEditingController();
-  final TextEditingController priceController = TextEditingController();
+import '../../database/app_database.dart';
+import '../../main.dart';
+import '../../routes/route.dart';
 
+void showPartnerInputDialog({
+  required BuildContext context,
+  required Site site,
+  required List<User> users,
+}) {
+  final TextEditingController shareController = TextEditingController();
 
-
+  User? selectedUser;
   showDialog(
     context: context,
     builder: (BuildContext context) {
@@ -19,43 +26,31 @@ void showPartnerInputDialog(BuildContext context) {
               Form(
                 child: Column(
                   children: [
-                    TextFormField(
-                      controller: nameController,
+                    DropdownButtonFormField<User>(
+                      value: selectedUser,
                       decoration: const InputDecoration(
-                        hintText: 'Partner Name',
-                        labelText: 'Partner *',
+                        labelText: 'Flat Type',
                       ),
-                      validator: (String? value) {
-                        return (value != null && value.contains('@'))
-                            ? 'Do not use the @ char.'
-                            : null;
+                      items: users.map<DropdownMenuItem<User>>(
+                              (User value) {
+                            return DropdownMenuItem<User>(
+                              value: value,
+                              child: Text(value.name),
+                            );
+                          }).toList(),
+                      onChanged: (User? newValue) {
+                        selectedUser = newValue;
                       },
+                    ),
+                    TextFormField(
+                      controller: shareController,
+                      decoration: const InputDecoration(
+                        hintText: 'Share Price',
+
+                      ),
+
                     ),  //partner name
-                    TextFormField(
-                      controller: areaController,
-                      decoration: const InputDecoration(
-                        hintText: 'Site Name',
-                        labelText: 'Site *',
-                      ),
-                      validator: (String? value) {
-                        return (value != null && value.contains('@'))
-                            ? 'Do not use the @ char.'
-                            : null;
-                      },
-                    ),  // site name
-                    TextFormField(
-                      controller: priceController,
-                      keyboardType: TextInputType.datetime,
-                      decoration: const InputDecoration(
-                        hintText: 'Date',
-                        labelText: 'Date *',
-                      ),
-                      validator: (String? value) {
-                        return (value != null && value.contains('@'))
-                            ? 'Do not use the @ char.'
-                            : null;
-                      },
-                    ), //date
+
                   ],
                 ),
               )
@@ -71,13 +66,21 @@ void showPartnerInputDialog(BuildContext context) {
           ),
           TextButton(
             child: const Text('Save'),
-            onPressed: () {
-              String flatName = nameController.text;
-              String flatArea = areaController.text;
-              String Rate = priceController.text;
-
-
-              Navigator.of(context).pop();
+            onPressed: () async{
+              if (selectedUser != null) {
+                try {
+                  final partner = PartnersCompanion(
+                    siteId: drift.Value(site.id),
+                    builderId: drift.Value(selectedUser!.id),
+                    share: drift.Value(int.parse(shareController.text)),
+                  );
+                  await database.insertPartner(partner);
+                  router.pop();
+                  HFunction.showFlushBarSuccess(context: context, message: "Successfully Added the partner");
+                }catch(error){
+                  HFunction.showFlushBarError(context: context, message: "Error Adding Partner");
+                }
+              }
             },
           ),
         ],

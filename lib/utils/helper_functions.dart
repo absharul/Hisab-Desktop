@@ -7,7 +7,6 @@ class HFunction {
       required String message,
       required bool isError}) async {
     await Flushbar(
-      title: 'Added',
       backgroundColor: isError ? Colors.red : Colors.green,
       messageColor: Colors.white,
       message: message,

@@ -42,7 +42,7 @@ dependencies:
   go_router: ^14.2.0
   phosphor_flutter: ^2.1.0
   circular_menu: ^4.0.0
-  drift_flutter:
+  drift_flutter: ^0.1.0
   drift: ^2.15.0
   another_flushbar: ^1.12.30
 
@@ -50,7 +50,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
   build_runner: ^2.0.0
-  drift_dev:
+  drift_dev: ^2.15.0
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

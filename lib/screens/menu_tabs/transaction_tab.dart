@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:hisab/screens/inpute_forms/add_transaction.dart';
 
+import '../../database/app_database.dart';
+
 class TransactionTab extends StatelessWidget {
-  const TransactionTab({super.key});
+  final Site site;
+  const TransactionTab({super.key,required this.site});
 
   @override
   Widget build(BuildContext context) {

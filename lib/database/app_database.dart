@@ -74,6 +74,7 @@ class AppDatabase extends _$AppDatabase {
 
   // PARTNERS
   Future<List<Partner>> getAllPartners() => select(partners).get();
+  Stream<List<Partner>> watchPartners() => select(partners).watch();
   Future<int> insertPartner(Insertable<Partner> partner) =>
       into(partners).insert(partner);
 
