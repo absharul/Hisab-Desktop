@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hisab/screens/inpute_forms/add_transaction.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../database/app_database.dart';
 
@@ -18,51 +19,83 @@ class TransactionTab extends StatelessWidget {
           itemCount: 200,
           itemBuilder: (BuildContext context, int index) {
             return Container(
-              padding: const EdgeInsets.only(top: 5,bottom: 5),
-              height: 100,
-              width: 285, // Ensure each item has a width
-              margin: const EdgeInsets.only(right: 10), // Add margin between items
-              child: Card(
-                semanticContainer: true,
-                clipBehavior: Clip.antiAliasWithSaveLayer,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10.0),
-                ),
-                elevation: 5,
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 10.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    crossAxisAlignment: CrossAxisAlignment.center,
+              margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+              padding: const EdgeInsets.all(16.0),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                border: Border.all(color: Colors.black, width: 0.5),
+                borderRadius: BorderRadius.circular(0), // No rounded corners for old-school look
+              ),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  const Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
-                        height: 20,
-                        width: 80,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF4EA6B2),
-                          borderRadius: BorderRadius.circular(15.0),
+                      Text(
+                        "Transaction id",
+                        style: TextStyle(
+                          fontFamily: 'Courier', // Old-school font
+                          fontSize: 20.0,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
                         ),
-                        child: const Text("View",style:
-                        TextStyle(color: Colors.white,
-                        ),
-                          textAlign: TextAlign.center,),
                       ),
-                      SizedBox(width: 100,),
-                      Container(
-                        height: 20,
-                        width: 80,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFFF2E00),
-                          borderRadius: BorderRadius.circular(15.0),
+                      Text(
+                        "From: ",
+                        style: TextStyle(
+                          fontFamily: 'Courier', // Old-school font
+                          fontSize: 16.0,
+                          color: Colors.black,
+                          fontWeight: FontWeight.normal,
                         ),
-                        child: const Text("Delete",style: TextStyle(color: Colors.white),textAlign: TextAlign.center),
                       ),
                     ],
                   ),
-                )
-
+                  const Expanded(child: SizedBox()),
+                  Column(
+                    children: [
+                      IconButton(
+                        icon: Icon(
+                          PhosphorIcons.pencilSimple(),
+                          size: 30.0,
+                        ),
+                        onPressed: () {
+                          // Add your desired action here
+                          print("Edit button pressed");
+                        },
+                        tooltip: "Edit Transaction", // For accessibility
+                      ),
+                      const Text(
+                        "Edit",
+                        style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(width: 100),
+                  Column(
+                    children: [
+                      IconButton(
+                        icon: const Icon(
+                          Icons.delete
+                        ),
+                        onPressed: () {
+                          // Add your desired action here
+                          print("Delete button pressed");
+                        },
+                        tooltip: "Delete", // For accessibility
+                      ),
+                      const Text(
+                        "Delete",
+                        style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             );
+
           },
         )
       ),
@@ -71,6 +104,7 @@ class TransactionTab extends StatelessWidget {
         foregroundColor: Colors.black,
         onPressed: () {
           showTransactionInputDialog(context);
+          // showMultiPageAlertDialog(context);
         },
         child: const Icon(Icons.add),
       ),

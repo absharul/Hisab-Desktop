@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hisab/database/app_database.dart';
 import 'package:hisab/routes/route.dart';
+import 'package:hisab/screens/screen_site_detail.dart';
 import 'package:hisab/theme.dart';
 
 final AppDatabase database = AppDatabase();
@@ -21,5 +22,8 @@ class MyApp extends StatelessWidget {
       theme: appTheme,
       routerConfig: router,
     );
+    // return MaterialApp(
+    //   home: ScreenSiteDetails()
+    // );
   }
 }

@@ -45,6 +45,7 @@ dependencies:
   drift_flutter: ^0.1.0
   drift: ^2.15.0
   another_flushbar: ^1.12.30
+  smooth_page_indicator: ^1.2.0+3
 
 dev_dependencies:
   flutter_test:
