@@ -14,7 +14,8 @@ class ScreenSiteDetails extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          site.name,
+          // site.name,
+          "Nashik",
           style: const TextStyle(color: Colors.black),
         ),
         centerTitle: true,
@@ -35,7 +36,8 @@ class ScreenSiteDetails extends StatelessWidget {
             ),
             Expanded(
               child: TabBarView(
-                children: [FlatsTab(), TransactionTab(site: site), PartnerTab(site:site)],
+                // children: [FlatsTab(), TransactionTab(site: site), PartnerTab(site:site)],
+                children: [FlatsTab(),TransactionTab(site: site,), PartnerTab(site: site)],
               ),
             ),
           ],
