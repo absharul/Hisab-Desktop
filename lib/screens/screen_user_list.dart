@@ -58,10 +58,10 @@ class _ScreenUserListingState extends State<ScreenUserListing> {
                     color: Colors
                         .grey[200], // Light grey background for differentiation
                     border: Border.all(
-                        color: Colors.blue,
+                        color: Colors.black,
                         width: 0.5), // Blue border for differentiation
                     borderRadius:
-                        BorderRadius.circular(4.0), // Slightly rounded corners
+                        BorderRadius.circular(0), // Slightly rounded corners
                   ),
                   child: Row(
                     children: [

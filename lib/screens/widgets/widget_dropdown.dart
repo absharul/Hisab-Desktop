@@ -31,15 +31,41 @@ class _WidgetDropdownState extends State<WidgetDropdown> {
     selectedValue = widget.selectedValue;
   }
 
+  // void initializeList() {
+  //   firmController.readAll().then((value) {
+  //     log(value.toString());
+  //     setState(() {
+  //       items = (value)
+  //           .map((e) => ModelDropdown(
+  //                 id: e.id,
+  //                 name: e.name,
+  //               ))
+  //           .toList();
+  //
+  //       if (selectedValue != null && !items.contains(selectedValue)) {
+  //         selectedValue = null;
+  //       }
+  //       if (selectedValue == null && items.isNotEmpty) {
+  //         selectedValue = items.first;
+  //       }
+  //     });
+  //   });
+  // }
   void initializeList() {
     firmController.readAll().then((value) {
+      if (value == null) {
+        log('readAll() returned null');
+        return;
+      }
+
       log(value.toString());
+
       setState(() {
         items = (value)
             .map((e) => ModelDropdown(
-                  id: e.id,
-                  name: e.name,
-                ))
+          id: e.id,
+          name: e.name,
+        ))
             .toList();
 
         if (selectedValue != null && !items.contains(selectedValue)) {
@@ -49,8 +75,11 @@ class _WidgetDropdownState extends State<WidgetDropdown> {
           selectedValue = items.first;
         }
       });
+    }).catchError((error) {
+      log('Error in readAll(): $error');
     });
   }
+
 
   @override
   Widget build(BuildContext context) {
