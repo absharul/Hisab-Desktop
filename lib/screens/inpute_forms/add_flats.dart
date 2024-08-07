@@ -4,7 +4,6 @@ void showFlatsInputDialog(BuildContext context) {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController areaController = TextEditingController();
   final TextEditingController priceController = TextEditingController();
-  final TextEditingController descriptionController = TextEditingController();
 
   const List<String> flatTypes = <String>['1BHK', '2BHK', '3BHK', '4BHK'];
   String? selectedFlatType;
@@ -109,11 +108,6 @@ void showFlatsInputDialog(BuildContext context) {
           TextButton(
             child: const Text('Save'),
             onPressed: () {
-              String flatName = nameController.text;
-              String flatArea = areaController.text;
-              String Rate = priceController.text;
-              String flatDescription = descriptionController.text;
-
               Navigator.of(context).pop();
             },
           ),
