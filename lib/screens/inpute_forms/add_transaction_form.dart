@@ -16,24 +16,40 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
   final TextEditingController areaController = TextEditingController();
   final TextEditingController priceController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
+
   final TextEditingController chequeController = TextEditingController();
-  final TextEditingController accountNumberController = TextEditingController();
-  final TextEditingController bankNameController = TextEditingController();
-  final TextEditingController ifscController = TextEditingController();
-  final TextEditingController holderNameController = TextEditingController();
+  final TextEditingController remarkController = TextEditingController();
+
+  final TextEditingController fromAccountNumberController =
+      TextEditingController();
+  final TextEditingController toAccountNumberController =
+      TextEditingController();
+
+  final TextEditingController fromBankNameController = TextEditingController();
+  final TextEditingController toBankNameController = TextEditingController();
+
+  final TextEditingController fromIfscController = TextEditingController();
+  final TextEditingController toIfscController = TextEditingController();
+
+  final TextEditingController fromHolderNameController =
+      TextEditingController();
+  final TextEditingController toHolderNameController = TextEditingController();
+
   final PageController pageController = PageController();
   final formKeys = List.generate(3, (_) => GlobalKey<FormState>());
 
   // USER DROPDOWN
   List<User> users = [];
-  User? selectedFromUser;
-  User? selectedToUser;
+  User? selectedFromUser, selectedToUser;
+
+  // ENTITY TYPE DROPDOWN
+  List<String> entityTypes = ["Customer", "Vendor", "ETC"];
+  String? selectedFromEntityType, selectedToEntityType;
 
   // Bank Acc
   EnumBankAccount bankAccountRadioOption = EnumBankAccount.addnew;
   List<BankAccount> listOfBanks = <BankAccount>[];
-  BankAccount? selectedFromBankAccount;
-  BankAccount? selectedToBankAccount;
+  BankAccount? selectedFromBankAccount, selectedToBankAccount;
 
   // Transaction Type
   List<String> transactionTypes = <String>['Credit/Debit', 'Cash', 'Cheque'];
@@ -108,6 +124,23 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
                         ),
                         const SizedBox(height: 10),
                         DropdownButtonFormField<String>(
+                          value: selectedFromEntityType,
+                          decoration: const InputDecoration(
+                            labelText: 'Entity Type',
+                            border: OutlineInputBorder(),
+                          ),
+                          items: entityTypes.map((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                          onChanged: (String? newValue) {
+                            selectedFromEntityType = newValue;
+                          },
+                        ),
+                        const SizedBox(height: 10),
+                        DropdownButtonFormField<String>(
                           value: selectedTransactionType,
                           decoration: const InputDecoration(
                             labelText: 'Transaction Method',
@@ -168,7 +201,7 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
                             children: [
                               const SizedBox(height: 10),
                               TextFormField(
-                                controller: accountNumberController,
+                                controller: fromAccountNumberController,
                                 decoration: const InputDecoration(
                                   border: OutlineInputBorder(),
                                   labelText: 'Account Number',
@@ -182,7 +215,7 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
                               ),
                               const SizedBox(height: 10),
                               TextFormField(
-                                controller: bankNameController,
+                                controller: fromBankNameController,
                                 decoration: const InputDecoration(
                                   border: OutlineInputBorder(),
                                   labelText: 'Bank Name',
@@ -196,7 +229,7 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
                               ),
                               const SizedBox(height: 10),
                               TextFormField(
-                                controller: ifscController,
+                                controller: fromIfscController,
                                 decoration: const InputDecoration(
                                   border: OutlineInputBorder(),
                                   labelText: 'IFSC',
@@ -210,7 +243,7 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
                               ),
                               const SizedBox(height: 10),
                               TextFormField(
-                                controller: holderNameController,
+                                controller: fromHolderNameController,
                                 decoration: const InputDecoration(
                                   border: OutlineInputBorder(),
                                   labelText: 'Holder Name',
@@ -282,6 +315,23 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
                           },
                         ),
                         const SizedBox(height: 10),
+                        DropdownButtonFormField<String>(
+                          value: selectedToEntityType,
+                          decoration: const InputDecoration(
+                            labelText: 'Entity Type',
+                            border: OutlineInputBorder(),
+                          ),
+                          items: entityTypes.map((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                          onChanged: (String? newValue) {
+                            selectedToEntityType = newValue;
+                          },
+                        ),
+                        const SizedBox(height: 10),
                         Row(
                             crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
@@ -320,7 +370,7 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
                             children: [
                               const SizedBox(height: 10),
                               TextFormField(
-                                controller: accountNumberController,
+                                controller: toAccountNumberController,
                                 decoration: const InputDecoration(
                                   border: OutlineInputBorder(),
                                   labelText: 'Account Number',
@@ -334,7 +384,7 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
                               ),
                               const SizedBox(height: 10),
                               TextFormField(
-                                controller: bankNameController,
+                                controller: toBankNameController,
                                 decoration: const InputDecoration(
                                   border: OutlineInputBorder(),
                                   labelText: 'Bank Name',
@@ -348,7 +398,7 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
                               ),
                               const SizedBox(height: 10),
                               TextFormField(
-                                controller: ifscController,
+                                controller: toIfscController,
                                 decoration: const InputDecoration(
                                   border: OutlineInputBorder(),
                                   labelText: 'IFSC',
@@ -362,7 +412,7 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
                               ),
                               const SizedBox(height: 10),
                               TextFormField(
-                                controller: holderNameController,
+                                controller: toHolderNameController,
                                 decoration: const InputDecoration(
                                   border: OutlineInputBorder(),
                                   labelText: 'Holder Name',
@@ -412,7 +462,7 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text(
-                          'To',
+                          'Details',
                           style: TextStyle(
                               fontSize: 18, fontWeight: FontWeight.bold),
                         ),
@@ -422,6 +472,36 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
                           decoration: const InputDecoration(
                             hintText: 'Description',
                             labelText: 'Description',
+                            border: OutlineInputBorder(),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter a description';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 10),
+                        TextFormField(
+                          controller: chequeController,
+                          decoration: const InputDecoration(
+                            hintText: '876342524',
+                            labelText: 'Cheque Number',
+                            border: OutlineInputBorder(),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter a description';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 10),
+                        TextFormField(
+                          controller: remarkController,
+                          decoration: const InputDecoration(
+                            hintText: 'eg. Good work!',
+                            labelText: 'Remarks',
                             border: OutlineInputBorder(),
                           ),
                           validator: (value) {
@@ -450,7 +530,7 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
                 ),
                 const SizedBox(
                     width: 10), // Add some spacing between the buttons
-                TextButton(
+                ElevatedButton(
                   onPressed: () {
                     int currentPage = pageController.page?.toInt() ?? 0;
                     handleNextPage(currentPage);
