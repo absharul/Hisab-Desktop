@@ -14,8 +14,7 @@ class ScreenSiteDetails extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          // site.name,
-          "Nashik",
+          site.name,
           style: const TextStyle(color: Colors.black),
         ),
         centerTitle: true,
