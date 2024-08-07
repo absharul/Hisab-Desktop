@@ -1,0 +1,1 @@
+enum EnumBankAccount { addnew, chooseexisting }
