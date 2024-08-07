@@ -42,13 +42,9 @@ class ScreenSiteListing extends StatelessWidget {
                       vertical: 8.0, horizontal: 16.0),
                   padding: const EdgeInsets.all(16.0),
                   decoration: BoxDecoration(
-                    color: Colors
-                        .grey[200], // Light grey background for differentiation
-                    border: Border.all(
-                        color: Colors.blue,
-                        width: 0.5), // Blue border for differentiation
-                    borderRadius:
-                        BorderRadius.circular(4.0), // Slightly rounded corners
+                    color: Colors.white,
+                    border: Border.all(color: Colors.black, width: 0.5),
+                    borderRadius: BorderRadius.circular(0), // Slightly rounded corners
                   ),
                   child: Row(
                     children: [
