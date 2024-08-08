@@ -93,6 +93,9 @@ class Transactions extends Table {
       .customConstraint('REFERENCES entityPaymentMethods(id) NOT NULL')();
   IntColumn get toId => integer()
       .customConstraint('REFERENCES entityPaymentMethods(id) NOT NULL')();
+  IntColumn get siteId =>
+      integer().customConstraint('REFERENCES sites(id) NOT NULL')();
+
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
 }

@@ -82,6 +82,16 @@ class AppDatabase extends _$AppDatabase {
   Future<List<Transaction>> getAllTransactions() => select(transactions).get();
   Future<int> insertTransaction(Insertable<Transaction> transaction) =>
       into(transactions).insert(transaction);
+
+  // Bank Accounts
+  Future<int> insertBankAccountOne(Insertable<BankAccount> bankAccount) =>
+      into(bankAccounts).insert(bankAccount);
+  Future<List<BankAccount>> getBankAccounts() => select(bankAccounts).get();
+
+  // Entity Payment Methods
+  Future<int> insertEntityPaymentMethod(
+          Insertable<EntityPaymentMethod> entityPaymentMethod) =>
+      into(entityPaymentMethods).insert(entityPaymentMethod);
 }
 
 LazyDatabase _openConnection() {

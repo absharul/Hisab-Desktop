@@ -107,7 +107,7 @@ class TransactionTab extends StatelessWidget {
         onPressed: () {
           Navigator.of(context).push(
             MaterialPageRoute(
-              builder: (context) => const AddTransactionForm(),
+              builder: (context) => AddTransactionForm(site: site),
             ),
           );
         },

@@ -1747,6 +1747,13 @@ class $TransactionsTable extends Transactions
       type: DriftSqlType.int,
       requiredDuringInsert: true,
       $customConstraints: 'REFERENCES entityPaymentMethods(id) NOT NULL');
+  static const VerificationMeta _siteIdMeta = const VerificationMeta('siteId');
+  @override
+  late final GeneratedColumn<int> siteId = GeneratedColumn<int>(
+      'site_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      $customConstraints: 'REFERENCES sites(id) NOT NULL');
   static const VerificationMeta _createdAtMeta =
       const VerificationMeta('createdAt');
   @override
@@ -1764,8 +1771,17 @@ class $TransactionsTable extends Transactions
       requiredDuringInsert: false,
       defaultValue: currentDateAndTime);
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, remarks, amount, chequeNo, fromId, toId, createdAt, updatedAt];
+  List<GeneratedColumn> get $columns => [
+        id,
+        remarks,
+        amount,
+        chequeNo,
+        fromId,
+        toId,
+        siteId,
+        createdAt,
+        updatedAt
+      ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -1807,6 +1823,12 @@ class $TransactionsTable extends Transactions
     } else if (isInserting) {
       context.missing(_toIdMeta);
     }
+    if (data.containsKey('site_id')) {
+      context.handle(_siteIdMeta,
+          siteId.isAcceptableOrUnknown(data['site_id']!, _siteIdMeta));
+    } else if (isInserting) {
+      context.missing(_siteIdMeta);
+    }
     if (data.containsKey('created_at')) {
       context.handle(_createdAtMeta,
           createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
@@ -1836,6 +1858,8 @@ class $TransactionsTable extends Transactions
           .read(DriftSqlType.int, data['${effectivePrefix}from_id'])!,
       toId: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}to_id'])!,
+      siteId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}site_id'])!,
       createdAt: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
       updatedAt: attachedDatabase.typeMapping
@@ -1856,6 +1880,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
   final String? chequeNo;
   final int fromId;
   final int toId;
+  final int siteId;
   final DateTime createdAt;
   final DateTime updatedAt;
   const Transaction(
@@ -1865,6 +1890,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
       this.chequeNo,
       required this.fromId,
       required this.toId,
+      required this.siteId,
       required this.createdAt,
       required this.updatedAt});
   @override
@@ -1878,6 +1904,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     }
     map['from_id'] = Variable<int>(fromId);
     map['to_id'] = Variable<int>(toId);
+    map['site_id'] = Variable<int>(siteId);
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
@@ -1893,6 +1920,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
           : Value(chequeNo),
       fromId: Value(fromId),
       toId: Value(toId),
+      siteId: Value(siteId),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
     );
@@ -1908,6 +1936,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
       chequeNo: serializer.fromJson<String?>(json['chequeNo']),
       fromId: serializer.fromJson<int>(json['fromId']),
       toId: serializer.fromJson<int>(json['toId']),
+      siteId: serializer.fromJson<int>(json['siteId']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
@@ -1922,6 +1951,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
       'chequeNo': serializer.toJson<String?>(chequeNo),
       'fromId': serializer.toJson<int>(fromId),
       'toId': serializer.toJson<int>(toId),
+      'siteId': serializer.toJson<int>(siteId),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
@@ -1934,6 +1964,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
           Value<String?> chequeNo = const Value.absent(),
           int? fromId,
           int? toId,
+          int? siteId,
           DateTime? createdAt,
           DateTime? updatedAt}) =>
       Transaction(
@@ -1943,6 +1974,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
         chequeNo: chequeNo.present ? chequeNo.value : this.chequeNo,
         fromId: fromId ?? this.fromId,
         toId: toId ?? this.toId,
+        siteId: siteId ?? this.siteId,
         createdAt: createdAt ?? this.createdAt,
         updatedAt: updatedAt ?? this.updatedAt,
       );
@@ -1954,6 +1986,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
       chequeNo: data.chequeNo.present ? data.chequeNo.value : this.chequeNo,
       fromId: data.fromId.present ? data.fromId.value : this.fromId,
       toId: data.toId.present ? data.toId.value : this.toId,
+      siteId: data.siteId.present ? data.siteId.value : this.siteId,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
       updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
@@ -1968,6 +2001,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
           ..write('chequeNo: $chequeNo, ')
           ..write('fromId: $fromId, ')
           ..write('toId: $toId, ')
+          ..write('siteId: $siteId, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -1975,8 +2009,8 @@ class Transaction extends DataClass implements Insertable<Transaction> {
   }
 
   @override
-  int get hashCode => Object.hash(
-      id, remarks, amount, chequeNo, fromId, toId, createdAt, updatedAt);
+  int get hashCode => Object.hash(id, remarks, amount, chequeNo, fromId, toId,
+      siteId, createdAt, updatedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -1987,6 +2021,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
           other.chequeNo == this.chequeNo &&
           other.fromId == this.fromId &&
           other.toId == this.toId &&
+          other.siteId == this.siteId &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
 }
@@ -1998,6 +2033,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
   final Value<String?> chequeNo;
   final Value<int> fromId;
   final Value<int> toId;
+  final Value<int> siteId;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   const TransactionsCompanion({
@@ -2007,6 +2043,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     this.chequeNo = const Value.absent(),
     this.fromId = const Value.absent(),
     this.toId = const Value.absent(),
+    this.siteId = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
   });
@@ -2017,12 +2054,14 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     this.chequeNo = const Value.absent(),
     required int fromId,
     required int toId,
+    required int siteId,
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
   })  : remarks = Value(remarks),
         amount = Value(amount),
         fromId = Value(fromId),
-        toId = Value(toId);
+        toId = Value(toId),
+        siteId = Value(siteId);
   static Insertable<Transaction> custom({
     Expression<int>? id,
     Expression<String>? remarks,
@@ -2030,6 +2069,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     Expression<String>? chequeNo,
     Expression<int>? fromId,
     Expression<int>? toId,
+    Expression<int>? siteId,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
   }) {
@@ -2040,6 +2080,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
       if (chequeNo != null) 'cheque_no': chequeNo,
       if (fromId != null) 'from_id': fromId,
       if (toId != null) 'to_id': toId,
+      if (siteId != null) 'site_id': siteId,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
     });
@@ -2052,6 +2093,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
       Value<String?>? chequeNo,
       Value<int>? fromId,
       Value<int>? toId,
+      Value<int>? siteId,
       Value<DateTime>? createdAt,
       Value<DateTime>? updatedAt}) {
     return TransactionsCompanion(
@@ -2061,6 +2103,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
       chequeNo: chequeNo ?? this.chequeNo,
       fromId: fromId ?? this.fromId,
       toId: toId ?? this.toId,
+      siteId: siteId ?? this.siteId,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
     );
@@ -2087,6 +2130,9 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
     if (toId.present) {
       map['to_id'] = Variable<int>(toId.value);
     }
+    if (siteId.present) {
+      map['site_id'] = Variable<int>(siteId.value);
+    }
     if (createdAt.present) {
       map['created_at'] = Variable<DateTime>(createdAt.value);
     }
@@ -2105,6 +2151,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
           ..write('chequeNo: $chequeNo, ')
           ..write('fromId: $fromId, ')
           ..write('toId: $toId, ')
+          ..write('siteId: $siteId, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
           ..write(')'))
@@ -3615,6 +3662,19 @@ class $$SitesTableFilterComposer
                 $state.db, $state.db.partners, joinBuilder, parentComposers)));
     return f(composer);
   }
+
+  ComposableFilter transactionsRefs(
+      ComposableFilter Function($$TransactionsTableFilterComposer f) f) {
+    final $$TransactionsTableFilterComposer composer = $state.composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $state.db.transactions,
+        getReferencedColumn: (t) => t.siteId,
+        builder: (joinBuilder, parentComposers) =>
+            $$TransactionsTableFilterComposer(ComposerState($state.db,
+                $state.db.transactions, joinBuilder, parentComposers)));
+    return f(composer);
+  }
 }
 
 class $$SitesTableOrderingComposer
@@ -4163,6 +4223,7 @@ typedef $$TransactionsTableCreateCompanionBuilder = TransactionsCompanion
   Value<String?> chequeNo,
   required int fromId,
   required int toId,
+  required int siteId,
   Value<DateTime> createdAt,
   Value<DateTime> updatedAt,
 });
@@ -4174,6 +4235,7 @@ typedef $$TransactionsTableUpdateCompanionBuilder = TransactionsCompanion
   Value<String?> chequeNo,
   Value<int> fromId,
   Value<int> toId,
+  Value<int> siteId,
   Value<DateTime> createdAt,
   Value<DateTime> updatedAt,
 });
@@ -4201,6 +4263,7 @@ class $$TransactionsTableTableManager extends RootTableManager<
             Value<String?> chequeNo = const Value.absent(),
             Value<int> fromId = const Value.absent(),
             Value<int> toId = const Value.absent(),
+            Value<int> siteId = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<DateTime> updatedAt = const Value.absent(),
           }) =>
@@ -4211,6 +4274,7 @@ class $$TransactionsTableTableManager extends RootTableManager<
             chequeNo: chequeNo,
             fromId: fromId,
             toId: toId,
+            siteId: siteId,
             createdAt: createdAt,
             updatedAt: updatedAt,
           ),
@@ -4221,6 +4285,7 @@ class $$TransactionsTableTableManager extends RootTableManager<
             Value<String?> chequeNo = const Value.absent(),
             required int fromId,
             required int toId,
+            required int siteId,
             Value<DateTime> createdAt = const Value.absent(),
             Value<DateTime> updatedAt = const Value.absent(),
           }) =>
@@ -4231,6 +4296,7 @@ class $$TransactionsTableTableManager extends RootTableManager<
             chequeNo: chequeNo,
             fromId: fromId,
             toId: toId,
+            siteId: siteId,
             createdAt: createdAt,
             updatedAt: updatedAt,
           ),
@@ -4279,6 +4345,18 @@ class $$TransactionsTableFilterComposer
       column: $state.table.updatedAt,
       builder: (column, joinBuilders) =>
           ColumnFilters(column, joinBuilders: joinBuilders));
+
+  $$SitesTableFilterComposer get siteId {
+    final $$SitesTableFilterComposer composer = $state.composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.siteId,
+        referencedTable: $state.db.sites,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder, parentComposers) => $$SitesTableFilterComposer(
+            ComposerState(
+                $state.db, $state.db.sites, joinBuilder, parentComposers)));
+    return composer;
+  }
 }
 
 class $$TransactionsTableOrderingComposer
@@ -4323,6 +4401,18 @@ class $$TransactionsTableOrderingComposer
       column: $state.table.updatedAt,
       builder: (column, joinBuilders) =>
           ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  $$SitesTableOrderingComposer get siteId {
+    final $$SitesTableOrderingComposer composer = $state.composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.siteId,
+        referencedTable: $state.db.sites,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder, parentComposers) => $$SitesTableOrderingComposer(
+            ComposerState(
+                $state.db, $state.db.sites, joinBuilder, parentComposers)));
+    return composer;
+  }
 }
 
 typedef $$CategoriesTableCreateCompanionBuilder = CategoriesCompanion Function({
