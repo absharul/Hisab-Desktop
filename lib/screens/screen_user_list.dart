@@ -55,8 +55,7 @@ class _ScreenUserListingState extends State<ScreenUserListing> {
                       vertical: 8.0, horizontal: 16.0),
                   padding: const EdgeInsets.all(16.0),
                   decoration: BoxDecoration(
-                    color: Colors
-                        .grey[200], // Light grey background for differentiation
+                    color: Colors.white, // Light grey background for differentiation
                     border: Border.all(
                         color: Colors.black,
                         width: 0.5), // Blue border for differentiation
@@ -65,8 +64,8 @@ class _ScreenUserListingState extends State<ScreenUserListing> {
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.location_on,
-                          color: Colors.blue), // Icon to make it look different
+                      const Icon(Icons.person,
+                          color: Colors.black), // Icon to make it look different
                       const SizedBox(width: 10),
                       Text(
                         site.name,
@@ -76,6 +75,32 @@ class _ScreenUserListingState extends State<ScreenUserListing> {
                           color: Colors.black,
                         ),
                       ),
+                      const Expanded(child: SizedBox()),
+                      Column(
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.edit),
+                            onPressed: () {
+                              // Add your edit functionality here
+                            },
+                          ),
+                          const Text("Edit"),
+                        ],
+                      ),
+                      const SizedBox(
+                        width: 100,
+                      ),
+                      Column(
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.delete),
+                            onPressed: () {
+                              // Add your delete functionality here
+                            },
+                          ),
+                          const Text("Delete"),
+                        ],
+                      )
                     ],
                   ),
                 ),

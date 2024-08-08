@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hisab/database/app_database.dart';
 import 'package:hisab/routes/route.dart';
-
 import 'package:hisab/theme.dart';
 
 final AppDatabase database = AppDatabase();
@@ -23,7 +22,7 @@ class MyApp extends StatelessWidget {
       routerConfig: router,
     );
     // return MaterialApp(
-    //   home: ScreenSiteDetails()
+    //   home: Todos(),
     // );
   }
 }

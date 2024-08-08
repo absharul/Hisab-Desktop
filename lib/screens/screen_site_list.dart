@@ -59,6 +59,32 @@ class ScreenSiteListing extends StatelessWidget {
                           color: Colors.black,
                         ),
                       ),
+                      const Expanded(child: SizedBox()),
+                      Column(
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.edit),
+                            onPressed: () {
+                              // Add your edit functionality here
+                            },
+                          ),
+                          const Text("Edit"),
+                        ],
+                      ),
+                      const SizedBox(
+                        width: 100,
+                      ),
+                      Column(
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.delete),
+                            onPressed: () {
+                              // Add your delete functionality here
+                            },
+                          ),
+                          const Text("Delete"),
+                        ],
+                      )
                     ],
                   ),
                 ),

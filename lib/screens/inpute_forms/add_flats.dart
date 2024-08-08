@@ -100,7 +100,7 @@ void showFlatsInputDialog(BuildContext context) {
         ),
         actions: [
           TextButton(
-            child: Text('Cancel'),
+            child: const Text('Cancel'),
             onPressed: () {
               Navigator.of(context).pop();
             },

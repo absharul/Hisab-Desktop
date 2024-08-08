@@ -19,7 +19,7 @@ class ScreenSiteDetails extends StatelessWidget {
         ),
         centerTitle: true,
       ),
-      body:  DefaultTabController(
+      body: DefaultTabController(
         length: 3,
         child: Column(
           children: [
@@ -36,7 +36,13 @@ class ScreenSiteDetails extends StatelessWidget {
             Expanded(
               child: TabBarView(
                 // children: [FlatsTab(), TransactionTab(site: site), PartnerTab(site:site)],
-                children: [FlatsTab(),TransactionTab(site: site,), PartnerTab(site: site)],
+                children: [
+                  const FlatsTab(),
+                  TransactionTab(
+                    site: site,
+                  ),
+                  PartnerTab(site: site)
+                ],
               ),
             ),
           ],

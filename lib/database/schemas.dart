@@ -24,7 +24,7 @@ class Flats extends Table {
   IntColumn get area => integer()();
   TextColumn get type => text().withLength(min: 1, max: 10)();
   IntColumn get rate => integer()();
-  BoolColumn get isSold => boolean().withDefault(Constant(false))();
+  BoolColumn get isSold => boolean().withDefault(const Constant(false))();
   IntColumn get siteId =>
       integer().customConstraint('REFERENCES sites(id) NOT NULL')();
 }

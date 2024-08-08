@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hisab/main.dart';
 import 'package:hisab/screens/inpute_forms/add_partner.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../../database/app_database.dart';
 
@@ -58,8 +59,7 @@ class _PartnerTabState extends State<PartnerTab> {
                       mainAxisAlignment: MainAxisAlignment.start,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        Expanded(
-                          child: Column(
+                         Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
@@ -75,49 +75,45 @@ class _PartnerTabState extends State<PartnerTab> {
                               // Add more text or widgets here if needed
                             ],
                           ),
-                        ),
-                        const SizedBox(width: 20),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Container(
-                              height: 20,
-                              width: 80,
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF4EA6B2),
-                                borderRadius: BorderRadius.circular(15.0),
-                              ),
-                              child: const Center(
-                                child: Text(
-                                  "View",
-                                  style: TextStyle(
-                                    color: Colors.white,
+                            const Expanded(child: SizedBox()),
+                            Column(
+                              children: [
+                                IconButton(
+                                  icon: Icon(
+                                    PhosphorIcons.pencilSimple(),
+                                    size: 30.0,
                                   ),
-                                  textAlign: TextAlign.center,
+                                  onPressed: () {
+                                    // Add your desired action here
+                                    print("Edit partners detail");
+                                  },
+                                  tooltip: "Edit Partner list", // For accessibility
                                 ),
-                              ),
+                                const Text(
+                                  "Edit",
+                                  style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                                ),
+                              ],
                             ),
-                            const SizedBox(width: 20),
-                            Container(
-                              height: 20,
-                              width: 80,
-                              decoration: BoxDecoration(
-                                color: const Color(0xFFFF2E00),
-                                borderRadius: BorderRadius.circular(15.0),
-                              ),
-                              child: const Center(
-                                child: Text(
-                                  "Terminate",
-                                  style: TextStyle(
-                                    color: Colors.white,
+                            const SizedBox(width: 100),
+                            Column(
+                              children: [
+                                IconButton(
+                                  icon: const Icon(
+                                      Icons.delete
                                   ),
-                                  textAlign: TextAlign.center,
+                                  onPressed: () {
+                                    // Add your desired action here
+                                    print("Delete button pressed");
+                                  },
+                                  tooltip: "Delete", // For accessibility
                                 ),
-                              ),
+                                const Text(
+                                  "Delete",
+                                  style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                                ),
+                              ],
                             ),
-                          ],
-                        ),
                       ],
                     ),
                   ),

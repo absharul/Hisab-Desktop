@@ -54,8 +54,8 @@ class _ScreenSubCategoryListState extends State<ScreenSubCategoryList> {
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.location_on,
-                          color: Colors.blue), // Icon to make it look different
+                      const Icon(Icons.category,
+                          color: Colors.black), // Icon to make it look different
                       const SizedBox(width: 10),
                       Text(
                         site.name,
@@ -65,6 +65,32 @@ class _ScreenSubCategoryListState extends State<ScreenSubCategoryList> {
                           color: Colors.black,
                         ),
                       ),
+                      const Expanded(child: SizedBox()),
+                      Column(
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.edit),
+                            onPressed: () {
+                              // Add your edit functionality here
+                            },
+                          ),
+                          const Text("Edit"),
+                        ],
+                      ),
+                      const SizedBox(
+                        width: 100,
+                      ),
+                      Column(
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.delete),
+                            onPressed: () {
+                              // Add your delete functionality here
+                            },
+                          ),
+                          const Text("Delete"),
+                        ],
+                      )
                     ],
                   ),
                 ),
