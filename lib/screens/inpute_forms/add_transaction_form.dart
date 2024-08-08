@@ -2,6 +2,7 @@ import 'dart:developer';
 
 import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hisab/database/app_database.dart';
 import 'package:hisab/main.dart';
 import 'package:hisab/routes/route.dart';
@@ -236,6 +237,9 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
                                     const SizedBox(height: 10),
                                     TextFormField(
                                       controller: fromAccountNumberController,
+                                      inputFormatters: <TextInputFormatter>[
+                                        FilteringTextInputFormatter.digitsOnly, // Allows only digits
+                                      ],
                                       decoration: const InputDecoration(
                                         border: OutlineInputBorder(),
                                         labelText: 'Account Number',
@@ -399,6 +403,9 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
                                   children: [
                                     const SizedBox(height: 10),
                                     TextFormField(
+                                      inputFormatters: <TextInputFormatter>[
+                                        FilteringTextInputFormatter.digitsOnly, // Allows only digits
+                                      ],
                                       controller: toAccountNumberController,
                                       decoration: const InputDecoration(
                                         border: OutlineInputBorder(),
@@ -494,6 +501,9 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
                               ),
                               const SizedBox(height: 10),
                               TextFormField(
+                                inputFormatters: <TextInputFormatter>[
+                                  FilteringTextInputFormatter.digitsOnly, // Allows only digits
+                                ],
                                 controller: amountController,
                                 decoration: const InputDecoration(
                                   hintText: 'Amount in Rs',
@@ -509,6 +519,9 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
                               ),
                               const SizedBox(height: 10),
                               TextFormField(
+                                inputFormatters: <TextInputFormatter>[
+                                  FilteringTextInputFormatter.digitsOnly, // Allows only digits
+                                ],
                                 controller: chequeController,
                                 decoration: const InputDecoration(
                                   hintText: '876342524',

@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hisab/utils/helper_functions.dart';
 
 import '../../database/app_database.dart';
@@ -43,6 +44,9 @@ void showPartnerInputDialog({
                       },
                     ),
                     TextFormField(
+                      inputFormatters: <TextInputFormatter>[
+                        FilteringTextInputFormatter.digitsOnly, // Allows only digits
+                      ],
                       controller: shareController,
                       decoration: const InputDecoration(
                         hintText: 'Share Price',

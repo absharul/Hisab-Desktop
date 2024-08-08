@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:hisab/main.dart';
 import 'package:hisab/utils/helper_functions.dart';
 
@@ -42,6 +43,9 @@ void showFlatsInputDialog(BuildContext context) {
                     TextFormField(
                       controller: areaController,
                       keyboardType: TextInputType.number,
+                      inputFormatters: <TextInputFormatter>[
+                        FilteringTextInputFormatter.digitsOnly, // Allows only digits
+                      ],
                       decoration: const InputDecoration(
                         hintText: 'Area',
                         labelText: 'Area *',
@@ -79,6 +83,9 @@ void showFlatsInputDialog(BuildContext context) {
                     TextFormField(
                       controller: priceController,
                       keyboardType: TextInputType.number,
+                      inputFormatters: <TextInputFormatter>[
+                        FilteringTextInputFormatter.digitsOnly, // Allows only digits
+                      ],
                       decoration: const InputDecoration(
                         hintText: 'Rate per sq foot',
                         labelText: 'Rate *',
