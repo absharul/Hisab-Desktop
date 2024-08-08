@@ -1,3 +1,4 @@
+import 'package:drift/drift.dart' as drift;
 import 'package:drift/drift.dart';
 
 class Firms extends Table {
@@ -18,7 +19,7 @@ class Sites extends Table {
   DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
 }
 
-class Flats extends Table {
+class Flats extends drift.Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text().withLength(min: 1, max: 50)();
   IntColumn get area => integer()();

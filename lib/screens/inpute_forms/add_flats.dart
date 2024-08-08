@@ -1,4 +1,7 @@
+import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
+
+import '../../database/app_database.dart';
 
 void showFlatsInputDialog(BuildContext context) {
   final TextEditingController nameController = TextEditingController();
@@ -32,7 +35,8 @@ void showFlatsInputDialog(BuildContext context) {
                             ? 'Do not use the @ char.'
                             : null;
                       },
-                    ), //flat name
+                    ),
+                    const SizedBox(height: 5.0),
                     TextFormField(
                       controller: areaController,
                       keyboardType: TextInputType.number,
@@ -45,7 +49,8 @@ void showFlatsInputDialog(BuildContext context) {
                             ? 'Do not use the @ char.'
                             : null;
                       },
-                    ), // area
+                    ),
+                    const SizedBox(height: 5.0),
                     DropdownButtonFormField<String>(
                       value: selectedFlatType,
                       decoration: const InputDecoration(
@@ -67,7 +72,8 @@ void showFlatsInputDialog(BuildContext context) {
                         }
                         return null;
                       },
-                    ), //type
+                    ),
+                    const SizedBox(height: 5.0),
                     TextFormField(
                       controller: priceController,
                       keyboardType: TextInputType.number,
@@ -80,7 +86,8 @@ void showFlatsInputDialog(BuildContext context) {
                             ? 'Do not use the @ char.'
                             : null;
                       },
-                    ), //Rate per sq foot
+                    ),
+                    const SizedBox(height: 5.0),
                     Row(
                       children: [
                         Checkbox(
@@ -108,6 +115,22 @@ void showFlatsInputDialog(BuildContext context) {
           TextButton(
             child: const Text('Save'),
             onPressed: () {
+              final name = nameController.text;
+              final area = int.tryParse(areaController.text) ?? 0;
+              final rate = int.tryParse(priceController.text) ?? 0;
+
+              final flat = FlatsCompanion(
+                name: drift.Value(name),
+                area: drift.Value(area),
+                type: drift.Value(selectedFlatType!),
+                rate: drift.Value(rate),
+                isSold: drift.Value(isSold),
+                siteId: const drift.Value(1), // Replace with actual siteId
+              );
+              print(flat);
+              // Call method to insert the flat
+              // e.g., yourDatabase.insertFlat(flat);
+
               Navigator.of(context).pop();
             },
           ),

@@ -1,9 +1,9 @@
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
 import 'package:hisab/database/schemas.dart';
-import 'package:path_provider/path_provider.dart';
 import 'dart:io';
 import 'package:path/path.dart' as p;
+import 'package:path_provider/path_provider.dart';
 
 part 'app_database.g.dart';
 
@@ -71,6 +71,8 @@ class AppDatabase extends _$AppDatabase {
   // FLATS
   Future<List<Flat>> getAllFlats() => select(flats).get();
   Future<int> insertFlat(Insertable<Flat> flat) => into(flats).insert(flat);
+  Stream<List<Flat>> watchAllFlats() => select(flats).watch();
+
 
   // PARTNERS
   Future<List<Partner>> getAllPartners() => select(partners).get();
