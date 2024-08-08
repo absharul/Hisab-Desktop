@@ -2,22 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:hisab/database/app_database.dart';
 import 'package:hisab/routes/route.dart';
 import 'package:hisab/theme.dart';
-import 'package:provider/provider.dart';
 
-final AppDatabase  database = AppDatabase();
-
+final AppDatabase database = AppDatabase();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  runApp(
-    MultiProvider(
-      providers: [
-        Provider<AppDatabase>(
-          create: (context) => database,
-        ),
-      ],
-      child: const MyApp(),
-    ),
-  );
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
@@ -32,8 +21,5 @@ class MyApp extends StatelessWidget {
       theme: appTheme,
       routerConfig: router,
     );
-    // return MaterialApp(
-    //   home: Todos(),
-    // );
   }
 }

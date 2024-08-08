@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hisab/database/app_database.dart';
+import 'package:hisab/main.dart';
 import 'package:provider/provider.dart';
 import '../inpute_forms/add_flats.dart';
 
@@ -8,11 +9,9 @@ class FlatsTab extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final appDatabase = Provider.of<AppDatabase>(context);
-
     return Scaffold(
       body: StreamBuilder<List<Flat>>(
-        stream: appDatabase.watchAllFlats(),
+        stream: database.watchAllFlats(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
@@ -29,14 +28,17 @@ class FlatsTab extends StatelessWidget {
             itemBuilder: (context, index) {
               final flat = flats[index];
               return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10, vertical: 10),
                 child: Container(
-                  margin: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+                  margin: const EdgeInsets.symmetric(
+                      vertical: 8.0, horizontal: 16.0),
                   padding: const EdgeInsets.all(16.0),
                   decoration: BoxDecoration(
                     color: Colors.white,
                     border: Border.all(color: Colors.black, width: 0.5),
-                    borderRadius: BorderRadius.circular(0), // No rounded corners for old-school look
+                    borderRadius: BorderRadius.circular(
+                        0), // No rounded corners for old-school look
                   ),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
@@ -105,7 +107,8 @@ class FlatsTab extends StatelessWidget {
                             onPressed: () {
                               // Add your sell functionality here
                             },
-                            child: const Text('Sell', style: TextStyle(color: Colors.white)),
+                            child: const Text('Sell',
+                                style: TextStyle(color: Colors.white)),
                           ),
                         ],
                       ),

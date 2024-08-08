@@ -1,5 +1,7 @@
 import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
+import 'package:hisab/main.dart';
+import 'package:hisab/utils/helper_functions.dart';
 
 import '../../database/app_database.dart';
 
@@ -114,7 +116,7 @@ void showFlatsInputDialog(BuildContext context) {
           ),
           TextButton(
             child: const Text('Save'),
-            onPressed: () {
+            onPressed: () async {
               final name = nameController.text;
               final area = int.tryParse(areaController.text) ?? 0;
               final rate = int.tryParse(priceController.text) ?? 0;
@@ -127,11 +129,15 @@ void showFlatsInputDialog(BuildContext context) {
                 isSold: drift.Value(isSold),
                 siteId: const drift.Value(1), // Replace with actual siteId
               );
-              print(flat);
-              // Call method to insert the flat
-              // e.g., yourDatabase.insertFlat(flat);
 
-              Navigator.of(context).pop();
+              await database.insertFlat(flat).then((value) {
+                HFunction.showFlushBarSuccess(
+                    context: context,
+                    message: "Flat was successfully added",
+                    afterPop: () {
+                      Navigator.of(context).pop();
+                    });
+              });
             },
           ),
         ],
