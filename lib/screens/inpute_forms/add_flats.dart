@@ -14,7 +14,7 @@ void showFlatsInputDialog(BuildContext context) {
     context: context,
     builder: (BuildContext context) {
       return AlertDialog(
-        title: Text('Add Flat'),
+        title: const Text('Add Flat'),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -101,7 +101,7 @@ void showFlatsInputDialog(BuildContext context) {
         ),
         actions: [
           TextButton(
-            child: Text('Cancel'),
+            child: const Text('Cancel'),
             onPressed: () {
               Navigator.of(context).pop();
             },

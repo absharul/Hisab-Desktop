@@ -13,10 +13,10 @@ class ScreenSiteDetails extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(
+        title: const Text(
           // site.name,
           "Nashik",
-          style: const TextStyle(color: Colors.black),
+          style: TextStyle(color: Colors.black),
         ),
         centerTitle: true,
       ),
@@ -37,7 +37,7 @@ class ScreenSiteDetails extends StatelessWidget {
             Expanded(
               child: TabBarView(
                 // children: [FlatsTab(), TransactionTab(site: site), PartnerTab(site:site)],
-                children: [FlatsTab(),TransactionTab(site: site,), PartnerTab(site: site)],
+                children: [const FlatsTab(),TransactionTab(site: site,), PartnerTab(site: site)],
               ),
             ),
           ],

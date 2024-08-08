@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:smooth_page_indicator/smooth_page_indicator.dart';
 
@@ -153,7 +152,7 @@ void showTransactionInputDialog(BuildContext context) {
             children: [
               ElevatedButton(
                 style: ButtonStyle(
-                  shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                  shape: WidgetStateProperty.all<RoundedRectangleBorder>(
                     RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(18.0),
                     ),
@@ -168,7 +167,7 @@ void showTransactionInputDialog(BuildContext context) {
                   style: TextStyle(fontSize: 16),
                 ),
               ),
-              Expanded(child: SizedBox()),
+              const Expanded(child: SizedBox()),
               if (!isAddingBank)
                 SizedBox(
                   width: 150,

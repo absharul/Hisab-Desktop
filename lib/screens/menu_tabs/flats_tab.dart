@@ -30,9 +30,9 @@ class FlatsTab extends StatelessWidget {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Text(
+                        const Text(
                           "Flat Name",
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontFamily: 'Courier', // Old-school font
                             fontSize: 20.0,
                             color: Colors.black,
@@ -40,9 +40,9 @@ class FlatsTab extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 5),
-                        Text(
+                        const Text(
                           "Area: 564 sqft",
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontFamily: 'Courier', // Old-school font
                             fontSize: 16.0,
                             color: Colors.black,
@@ -50,9 +50,9 @@ class FlatsTab extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 5),
-                        Text(
+                        const Text(
                           "Type: 2BHK",
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontFamily: 'Courier', // Old-school font
                             fontSize: 16.0,
                             color: Colors.black,
@@ -60,9 +60,9 @@ class FlatsTab extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 5),
-                        Text(
+                        const Text(
                           "Rate per sqft: 2850",
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontFamily: 'Courier', // Old-school font
                             fontSize: 16.0,
                             color: Colors.black,
@@ -70,9 +70,9 @@ class FlatsTab extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 5),
-                        Text(
+                        const Text(
                           "Status: Sold",
-                          style: const TextStyle(
+                          style: TextStyle(
                             fontFamily: 'Courier', // Old-school font
                             fontSize: 16.0,
                             color: Colors.black,

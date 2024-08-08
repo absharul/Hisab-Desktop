@@ -692,7 +692,7 @@ class $FlatsTable extends Flats with TableInfo<$FlatsTable, Flat> {
       requiredDuringInsert: false,
       defaultConstraints:
           GeneratedColumn.constraintIsAlways('CHECK ("is_sold" IN (0, 1))'),
-      defaultValue: Constant(false));
+      defaultValue: const Constant(false));
   static const VerificationMeta _siteIdMeta = const VerificationMeta('siteId');
   @override
   late final GeneratedColumn<int> siteId = GeneratedColumn<int>(
@@ -1014,6 +1014,568 @@ class FlatsCompanion extends UpdateCompanion<Flat> {
           ..write('rate: $rate, ')
           ..write('isSold: $isSold, ')
           ..write('siteId: $siteId')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $CategoriesTable extends Categories
+    with TableInfo<$CategoriesTable, Category> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $CategoriesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      additionalChecks:
+          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 50),
+      type: DriftSqlType.string,
+      requiredDuringInsert: true);
+  static const VerificationMeta _createdAtMeta =
+      const VerificationMeta('createdAt');
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  static const VerificationMeta _updatedAtMeta =
+      const VerificationMeta('updatedAt');
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+      'updated_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  @override
+  List<GeneratedColumn> get $columns => [id, name, createdAt, updatedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'categories';
+  @override
+  VerificationContext validateIntegrity(Insertable<Category> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta,
+          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta,
+          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  Category map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return Category(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      createdAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+      updatedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at'])!,
+    );
+  }
+
+  @override
+  $CategoriesTable createAlias(String alias) {
+    return $CategoriesTable(attachedDatabase, alias);
+  }
+}
+
+class Category extends DataClass implements Insertable<Category> {
+  final int id;
+  final String name;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  const Category(
+      {required this.id,
+      required this.name,
+      required this.createdAt,
+      required this.updatedAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['name'] = Variable<String>(name);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  CategoriesCompanion toCompanion(bool nullToAbsent) {
+    return CategoriesCompanion(
+      id: Value(id),
+      name: Value(name),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory Category.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return Category(
+      id: serializer.fromJson<int>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'name': serializer.toJson<String>(name),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  Category copyWith(
+          {int? id, String? name, DateTime? createdAt, DateTime? updatedAt}) =>
+      Category(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        createdAt: createdAt ?? this.createdAt,
+        updatedAt: updatedAt ?? this.updatedAt,
+      );
+  Category copyWithCompanion(CategoriesCompanion data) {
+    return Category(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('Category(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, name, createdAt, updatedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is Category &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class CategoriesCompanion extends UpdateCompanion<Category> {
+  final Value<int> id;
+  final Value<String> name;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  const CategoriesCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+  });
+  CategoriesCompanion.insert({
+    this.id = const Value.absent(),
+    required String name,
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+  }) : name = Value(name);
+  static Insertable<Category> custom({
+    Expression<int>? id,
+    Expression<String>? name,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+    });
+  }
+
+  CategoriesCompanion copyWith(
+      {Value<int>? id,
+      Value<String>? name,
+      Value<DateTime>? createdAt,
+      Value<DateTime>? updatedAt}) {
+    return CategoriesCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('CategoriesCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $SubCategoriesTable extends SubCategories
+    with TableInfo<$SubCategoriesTable, SubCategory> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SubCategoriesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _nameMeta = const VerificationMeta('name');
+  @override
+  late final GeneratedColumn<String> name = GeneratedColumn<String>(
+      'name', aliasedName, false,
+      additionalChecks:
+          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 50),
+      type: DriftSqlType.string,
+      requiredDuringInsert: true);
+  static const VerificationMeta _categoryIdMeta =
+      const VerificationMeta('categoryId');
+  @override
+  late final GeneratedColumn<int> categoryId = GeneratedColumn<int>(
+      'category_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      $customConstraints: 'REFERENCES categories(id) NOT NULL');
+  static const VerificationMeta _createdAtMeta =
+      const VerificationMeta('createdAt');
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+      'created_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  static const VerificationMeta _updatedAtMeta =
+      const VerificationMeta('updatedAt');
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+      'updated_at', aliasedName, false,
+      type: DriftSqlType.dateTime,
+      requiredDuringInsert: false,
+      defaultValue: currentDateAndTime);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, name, categoryId, createdAt, updatedAt];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'sub_categories';
+  @override
+  VerificationContext validateIntegrity(Insertable<SubCategory> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('name')) {
+      context.handle(
+          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
+    } else if (isInserting) {
+      context.missing(_nameMeta);
+    }
+    if (data.containsKey('category_id')) {
+      context.handle(
+          _categoryIdMeta,
+          categoryId.isAcceptableOrUnknown(
+              data['category_id']!, _categoryIdMeta));
+    } else if (isInserting) {
+      context.missing(_categoryIdMeta);
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(_createdAtMeta,
+          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(_updatedAtMeta,
+          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  SubCategory map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SubCategory(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      name: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
+      categoryId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}category_id'])!,
+      createdAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
+      updatedAt: attachedDatabase.typeMapping
+          .read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at'])!,
+    );
+  }
+
+  @override
+  $SubCategoriesTable createAlias(String alias) {
+    return $SubCategoriesTable(attachedDatabase, alias);
+  }
+}
+
+class SubCategory extends DataClass implements Insertable<SubCategory> {
+  final int id;
+  final String name;
+  final int categoryId;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  const SubCategory(
+      {required this.id,
+      required this.name,
+      required this.categoryId,
+      required this.createdAt,
+      required this.updatedAt});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['name'] = Variable<String>(name);
+    map['category_id'] = Variable<int>(categoryId);
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  SubCategoriesCompanion toCompanion(bool nullToAbsent) {
+    return SubCategoriesCompanion(
+      id: Value(id),
+      name: Value(name),
+      categoryId: Value(categoryId),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory SubCategory.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SubCategory(
+      id: serializer.fromJson<int>(json['id']),
+      name: serializer.fromJson<String>(json['name']),
+      categoryId: serializer.fromJson<int>(json['categoryId']),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'name': serializer.toJson<String>(name),
+      'categoryId': serializer.toJson<int>(categoryId),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  SubCategory copyWith(
+          {int? id,
+          String? name,
+          int? categoryId,
+          DateTime? createdAt,
+          DateTime? updatedAt}) =>
+      SubCategory(
+        id: id ?? this.id,
+        name: name ?? this.name,
+        categoryId: categoryId ?? this.categoryId,
+        createdAt: createdAt ?? this.createdAt,
+        updatedAt: updatedAt ?? this.updatedAt,
+      );
+  SubCategory copyWithCompanion(SubCategoriesCompanion data) {
+    return SubCategory(
+      id: data.id.present ? data.id.value : this.id,
+      name: data.name.present ? data.name.value : this.name,
+      categoryId:
+          data.categoryId.present ? data.categoryId.value : this.categoryId,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SubCategory(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('categoryId: $categoryId, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(id, name, categoryId, createdAt, updatedAt);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SubCategory &&
+          other.id == this.id &&
+          other.name == this.name &&
+          other.categoryId == this.categoryId &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class SubCategoriesCompanion extends UpdateCompanion<SubCategory> {
+  final Value<int> id;
+  final Value<String> name;
+  final Value<int> categoryId;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  const SubCategoriesCompanion({
+    this.id = const Value.absent(),
+    this.name = const Value.absent(),
+    this.categoryId = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+  });
+  SubCategoriesCompanion.insert({
+    this.id = const Value.absent(),
+    required String name,
+    required int categoryId,
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+  })  : name = Value(name),
+        categoryId = Value(categoryId);
+  static Insertable<SubCategory> custom({
+    Expression<int>? id,
+    Expression<String>? name,
+    Expression<int>? categoryId,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (name != null) 'name': name,
+      if (categoryId != null) 'category_id': categoryId,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+    });
+  }
+
+  SubCategoriesCompanion copyWith(
+      {Value<int>? id,
+      Value<String>? name,
+      Value<int>? categoryId,
+      Value<DateTime>? createdAt,
+      Value<DateTime>? updatedAt}) {
+    return SubCategoriesCompanion(
+      id: id ?? this.id,
+      name: name ?? this.name,
+      categoryId: categoryId ?? this.categoryId,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (name.present) {
+      map['name'] = Variable<String>(name.value);
+    }
+    if (categoryId.present) {
+      map['category_id'] = Variable<int>(categoryId.value);
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SubCategoriesCompanion(')
+          ..write('id: $id, ')
+          ..write('name: $name, ')
+          ..write('categoryId: $categoryId, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
           ..write(')'))
         .toString();
   }
@@ -1357,6 +1919,649 @@ class UsersCompanion extends UpdateCompanion<User> {
           ..write('subCategory: $subCategory, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $BankAccountsTable extends BankAccounts
+    with TableInfo<$BankAccountsTable, BankAccount> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $BankAccountsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _accountNumberMeta =
+      const VerificationMeta('accountNumber');
+  @override
+  late final GeneratedColumn<String> accountNumber = GeneratedColumn<String>(
+      'account_number', aliasedName, false,
+      additionalChecks:
+          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 50),
+      type: DriftSqlType.string,
+      requiredDuringInsert: true);
+  static const VerificationMeta _bankNameMeta =
+      const VerificationMeta('bankName');
+  @override
+  late final GeneratedColumn<String> bankName = GeneratedColumn<String>(
+      'bank_name', aliasedName, false,
+      additionalChecks:
+          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 50),
+      type: DriftSqlType.string,
+      requiredDuringInsert: true);
+  static const VerificationMeta _ifscMeta = const VerificationMeta('ifsc');
+  @override
+  late final GeneratedColumn<String> ifsc = GeneratedColumn<String>(
+      'ifsc', aliasedName, false,
+      additionalChecks:
+          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 50),
+      type: DriftSqlType.string,
+      requiredDuringInsert: true);
+  static const VerificationMeta _accountHolderMeta =
+      const VerificationMeta('accountHolder');
+  @override
+  late final GeneratedColumn<String> accountHolder = GeneratedColumn<String>(
+      'account_holder', aliasedName, false,
+      additionalChecks:
+          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 50),
+      type: DriftSqlType.string,
+      requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, accountNumber, bankName, ifsc, accountHolder];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'bank_accounts';
+  @override
+  VerificationContext validateIntegrity(Insertable<BankAccount> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('account_number')) {
+      context.handle(
+          _accountNumberMeta,
+          accountNumber.isAcceptableOrUnknown(
+              data['account_number']!, _accountNumberMeta));
+    } else if (isInserting) {
+      context.missing(_accountNumberMeta);
+    }
+    if (data.containsKey('bank_name')) {
+      context.handle(_bankNameMeta,
+          bankName.isAcceptableOrUnknown(data['bank_name']!, _bankNameMeta));
+    } else if (isInserting) {
+      context.missing(_bankNameMeta);
+    }
+    if (data.containsKey('ifsc')) {
+      context.handle(
+          _ifscMeta, ifsc.isAcceptableOrUnknown(data['ifsc']!, _ifscMeta));
+    } else if (isInserting) {
+      context.missing(_ifscMeta);
+    }
+    if (data.containsKey('account_holder')) {
+      context.handle(
+          _accountHolderMeta,
+          accountHolder.isAcceptableOrUnknown(
+              data['account_holder']!, _accountHolderMeta));
+    } else if (isInserting) {
+      context.missing(_accountHolderMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  BankAccount map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return BankAccount(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      accountNumber: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}account_number'])!,
+      bankName: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}bank_name'])!,
+      ifsc: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}ifsc'])!,
+      accountHolder: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}account_holder'])!,
+    );
+  }
+
+  @override
+  $BankAccountsTable createAlias(String alias) {
+    return $BankAccountsTable(attachedDatabase, alias);
+  }
+}
+
+class BankAccount extends DataClass implements Insertable<BankAccount> {
+  final int id;
+  final String accountNumber;
+  final String bankName;
+  final String ifsc;
+  final String accountHolder;
+  const BankAccount(
+      {required this.id,
+      required this.accountNumber,
+      required this.bankName,
+      required this.ifsc,
+      required this.accountHolder});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['account_number'] = Variable<String>(accountNumber);
+    map['bank_name'] = Variable<String>(bankName);
+    map['ifsc'] = Variable<String>(ifsc);
+    map['account_holder'] = Variable<String>(accountHolder);
+    return map;
+  }
+
+  BankAccountsCompanion toCompanion(bool nullToAbsent) {
+    return BankAccountsCompanion(
+      id: Value(id),
+      accountNumber: Value(accountNumber),
+      bankName: Value(bankName),
+      ifsc: Value(ifsc),
+      accountHolder: Value(accountHolder),
+    );
+  }
+
+  factory BankAccount.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return BankAccount(
+      id: serializer.fromJson<int>(json['id']),
+      accountNumber: serializer.fromJson<String>(json['accountNumber']),
+      bankName: serializer.fromJson<String>(json['bankName']),
+      ifsc: serializer.fromJson<String>(json['ifsc']),
+      accountHolder: serializer.fromJson<String>(json['accountHolder']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'accountNumber': serializer.toJson<String>(accountNumber),
+      'bankName': serializer.toJson<String>(bankName),
+      'ifsc': serializer.toJson<String>(ifsc),
+      'accountHolder': serializer.toJson<String>(accountHolder),
+    };
+  }
+
+  BankAccount copyWith(
+          {int? id,
+          String? accountNumber,
+          String? bankName,
+          String? ifsc,
+          String? accountHolder}) =>
+      BankAccount(
+        id: id ?? this.id,
+        accountNumber: accountNumber ?? this.accountNumber,
+        bankName: bankName ?? this.bankName,
+        ifsc: ifsc ?? this.ifsc,
+        accountHolder: accountHolder ?? this.accountHolder,
+      );
+  BankAccount copyWithCompanion(BankAccountsCompanion data) {
+    return BankAccount(
+      id: data.id.present ? data.id.value : this.id,
+      accountNumber: data.accountNumber.present
+          ? data.accountNumber.value
+          : this.accountNumber,
+      bankName: data.bankName.present ? data.bankName.value : this.bankName,
+      ifsc: data.ifsc.present ? data.ifsc.value : this.ifsc,
+      accountHolder: data.accountHolder.present
+          ? data.accountHolder.value
+          : this.accountHolder,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('BankAccount(')
+          ..write('id: $id, ')
+          ..write('accountNumber: $accountNumber, ')
+          ..write('bankName: $bankName, ')
+          ..write('ifsc: $ifsc, ')
+          ..write('accountHolder: $accountHolder')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, accountNumber, bankName, ifsc, accountHolder);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is BankAccount &&
+          other.id == this.id &&
+          other.accountNumber == this.accountNumber &&
+          other.bankName == this.bankName &&
+          other.ifsc == this.ifsc &&
+          other.accountHolder == this.accountHolder);
+}
+
+class BankAccountsCompanion extends UpdateCompanion<BankAccount> {
+  final Value<int> id;
+  final Value<String> accountNumber;
+  final Value<String> bankName;
+  final Value<String> ifsc;
+  final Value<String> accountHolder;
+  const BankAccountsCompanion({
+    this.id = const Value.absent(),
+    this.accountNumber = const Value.absent(),
+    this.bankName = const Value.absent(),
+    this.ifsc = const Value.absent(),
+    this.accountHolder = const Value.absent(),
+  });
+  BankAccountsCompanion.insert({
+    this.id = const Value.absent(),
+    required String accountNumber,
+    required String bankName,
+    required String ifsc,
+    required String accountHolder,
+  })  : accountNumber = Value(accountNumber),
+        bankName = Value(bankName),
+        ifsc = Value(ifsc),
+        accountHolder = Value(accountHolder);
+  static Insertable<BankAccount> custom({
+    Expression<int>? id,
+    Expression<String>? accountNumber,
+    Expression<String>? bankName,
+    Expression<String>? ifsc,
+    Expression<String>? accountHolder,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (accountNumber != null) 'account_number': accountNumber,
+      if (bankName != null) 'bank_name': bankName,
+      if (ifsc != null) 'ifsc': ifsc,
+      if (accountHolder != null) 'account_holder': accountHolder,
+    });
+  }
+
+  BankAccountsCompanion copyWith(
+      {Value<int>? id,
+      Value<String>? accountNumber,
+      Value<String>? bankName,
+      Value<String>? ifsc,
+      Value<String>? accountHolder}) {
+    return BankAccountsCompanion(
+      id: id ?? this.id,
+      accountNumber: accountNumber ?? this.accountNumber,
+      bankName: bankName ?? this.bankName,
+      ifsc: ifsc ?? this.ifsc,
+      accountHolder: accountHolder ?? this.accountHolder,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (accountNumber.present) {
+      map['account_number'] = Variable<String>(accountNumber.value);
+    }
+    if (bankName.present) {
+      map['bank_name'] = Variable<String>(bankName.value);
+    }
+    if (ifsc.present) {
+      map['ifsc'] = Variable<String>(ifsc.value);
+    }
+    if (accountHolder.present) {
+      map['account_holder'] = Variable<String>(accountHolder.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('BankAccountsCompanion(')
+          ..write('id: $id, ')
+          ..write('accountNumber: $accountNumber, ')
+          ..write('bankName: $bankName, ')
+          ..write('ifsc: $ifsc, ')
+          ..write('accountHolder: $accountHolder')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $EntityPaymentMethodsTable extends EntityPaymentMethods
+    with TableInfo<$EntityPaymentMethodsTable, EntityPaymentMethod> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $EntityPaymentMethodsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<int> id = GeneratedColumn<int>(
+      'id', aliasedName, false,
+      hasAutoIncrement: true,
+      type: DriftSqlType.int,
+      requiredDuringInsert: false,
+      defaultConstraints:
+          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
+  static const VerificationMeta _entityIdMeta =
+      const VerificationMeta('entityId');
+  @override
+  late final GeneratedColumn<int> entityId = GeneratedColumn<int>(
+      'entity_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      $customConstraints: 'REFERENCES users(id) NOT NULL');
+  static const VerificationMeta _entityTypeMeta =
+      const VerificationMeta('entityType');
+  @override
+  late final GeneratedColumn<String> entityType = GeneratedColumn<String>(
+      'entity_type', aliasedName, false,
+      additionalChecks:
+          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 50),
+      type: DriftSqlType.string,
+      requiredDuringInsert: true);
+  static const VerificationMeta _bankAccountIdMeta =
+      const VerificationMeta('bankAccountId');
+  @override
+  late final GeneratedColumn<int> bankAccountId = GeneratedColumn<int>(
+      'bank_account_id', aliasedName, false,
+      type: DriftSqlType.int,
+      requiredDuringInsert: true,
+      $customConstraints: 'REFERENCES bankAccounts(id) NOT NULL');
+  static const VerificationMeta _paymentMethodMeta =
+      const VerificationMeta('paymentMethod');
+  @override
+  late final GeneratedColumn<String> paymentMethod = GeneratedColumn<String>(
+      'payment_method', aliasedName, false,
+      additionalChecks:
+          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 50),
+      type: DriftSqlType.string,
+      requiredDuringInsert: true);
+  @override
+  List<GeneratedColumn> get $columns =>
+      [id, entityId, entityType, bankAccountId, paymentMethod];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'entity_payment_methods';
+  @override
+  VerificationContext validateIntegrity(
+      Insertable<EntityPaymentMethod> instance,
+      {bool isInserting = false}) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    }
+    if (data.containsKey('entity_id')) {
+      context.handle(_entityIdMeta,
+          entityId.isAcceptableOrUnknown(data['entity_id']!, _entityIdMeta));
+    } else if (isInserting) {
+      context.missing(_entityIdMeta);
+    }
+    if (data.containsKey('entity_type')) {
+      context.handle(
+          _entityTypeMeta,
+          entityType.isAcceptableOrUnknown(
+              data['entity_type']!, _entityTypeMeta));
+    } else if (isInserting) {
+      context.missing(_entityTypeMeta);
+    }
+    if (data.containsKey('bank_account_id')) {
+      context.handle(
+          _bankAccountIdMeta,
+          bankAccountId.isAcceptableOrUnknown(
+              data['bank_account_id']!, _bankAccountIdMeta));
+    } else if (isInserting) {
+      context.missing(_bankAccountIdMeta);
+    }
+    if (data.containsKey('payment_method')) {
+      context.handle(
+          _paymentMethodMeta,
+          paymentMethod.isAcceptableOrUnknown(
+              data['payment_method']!, _paymentMethodMeta));
+    } else if (isInserting) {
+      context.missing(_paymentMethodMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {id};
+  @override
+  EntityPaymentMethod map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return EntityPaymentMethod(
+      id: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
+      entityId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}entity_id'])!,
+      entityType: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}entity_type'])!,
+      bankAccountId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}bank_account_id'])!,
+      paymentMethod: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}payment_method'])!,
+    );
+  }
+
+  @override
+  $EntityPaymentMethodsTable createAlias(String alias) {
+    return $EntityPaymentMethodsTable(attachedDatabase, alias);
+  }
+}
+
+class EntityPaymentMethod extends DataClass
+    implements Insertable<EntityPaymentMethod> {
+  final int id;
+  final int entityId;
+  final String entityType;
+  final int bankAccountId;
+  final String paymentMethod;
+  const EntityPaymentMethod(
+      {required this.id,
+      required this.entityId,
+      required this.entityType,
+      required this.bankAccountId,
+      required this.paymentMethod});
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['id'] = Variable<int>(id);
+    map['entity_id'] = Variable<int>(entityId);
+    map['entity_type'] = Variable<String>(entityType);
+    map['bank_account_id'] = Variable<int>(bankAccountId);
+    map['payment_method'] = Variable<String>(paymentMethod);
+    return map;
+  }
+
+  EntityPaymentMethodsCompanion toCompanion(bool nullToAbsent) {
+    return EntityPaymentMethodsCompanion(
+      id: Value(id),
+      entityId: Value(entityId),
+      entityType: Value(entityType),
+      bankAccountId: Value(bankAccountId),
+      paymentMethod: Value(paymentMethod),
+    );
+  }
+
+  factory EntityPaymentMethod.fromJson(Map<String, dynamic> json,
+      {ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return EntityPaymentMethod(
+      id: serializer.fromJson<int>(json['id']),
+      entityId: serializer.fromJson<int>(json['entityId']),
+      entityType: serializer.fromJson<String>(json['entityType']),
+      bankAccountId: serializer.fromJson<int>(json['bankAccountId']),
+      paymentMethod: serializer.fromJson<String>(json['paymentMethod']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'id': serializer.toJson<int>(id),
+      'entityId': serializer.toJson<int>(entityId),
+      'entityType': serializer.toJson<String>(entityType),
+      'bankAccountId': serializer.toJson<int>(bankAccountId),
+      'paymentMethod': serializer.toJson<String>(paymentMethod),
+    };
+  }
+
+  EntityPaymentMethod copyWith(
+          {int? id,
+          int? entityId,
+          String? entityType,
+          int? bankAccountId,
+          String? paymentMethod}) =>
+      EntityPaymentMethod(
+        id: id ?? this.id,
+        entityId: entityId ?? this.entityId,
+        entityType: entityType ?? this.entityType,
+        bankAccountId: bankAccountId ?? this.bankAccountId,
+        paymentMethod: paymentMethod ?? this.paymentMethod,
+      );
+  EntityPaymentMethod copyWithCompanion(EntityPaymentMethodsCompanion data) {
+    return EntityPaymentMethod(
+      id: data.id.present ? data.id.value : this.id,
+      entityId: data.entityId.present ? data.entityId.value : this.entityId,
+      entityType:
+          data.entityType.present ? data.entityType.value : this.entityType,
+      bankAccountId: data.bankAccountId.present
+          ? data.bankAccountId.value
+          : this.bankAccountId,
+      paymentMethod: data.paymentMethod.present
+          ? data.paymentMethod.value
+          : this.paymentMethod,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('EntityPaymentMethod(')
+          ..write('id: $id, ')
+          ..write('entityId: $entityId, ')
+          ..write('entityType: $entityType, ')
+          ..write('bankAccountId: $bankAccountId, ')
+          ..write('paymentMethod: $paymentMethod')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode =>
+      Object.hash(id, entityId, entityType, bankAccountId, paymentMethod);
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is EntityPaymentMethod &&
+          other.id == this.id &&
+          other.entityId == this.entityId &&
+          other.entityType == this.entityType &&
+          other.bankAccountId == this.bankAccountId &&
+          other.paymentMethod == this.paymentMethod);
+}
+
+class EntityPaymentMethodsCompanion
+    extends UpdateCompanion<EntityPaymentMethod> {
+  final Value<int> id;
+  final Value<int> entityId;
+  final Value<String> entityType;
+  final Value<int> bankAccountId;
+  final Value<String> paymentMethod;
+  const EntityPaymentMethodsCompanion({
+    this.id = const Value.absent(),
+    this.entityId = const Value.absent(),
+    this.entityType = const Value.absent(),
+    this.bankAccountId = const Value.absent(),
+    this.paymentMethod = const Value.absent(),
+  });
+  EntityPaymentMethodsCompanion.insert({
+    this.id = const Value.absent(),
+    required int entityId,
+    required String entityType,
+    required int bankAccountId,
+    required String paymentMethod,
+  })  : entityId = Value(entityId),
+        entityType = Value(entityType),
+        bankAccountId = Value(bankAccountId),
+        paymentMethod = Value(paymentMethod);
+  static Insertable<EntityPaymentMethod> custom({
+    Expression<int>? id,
+    Expression<int>? entityId,
+    Expression<String>? entityType,
+    Expression<int>? bankAccountId,
+    Expression<String>? paymentMethod,
+  }) {
+    return RawValuesInsertable({
+      if (id != null) 'id': id,
+      if (entityId != null) 'entity_id': entityId,
+      if (entityType != null) 'entity_type': entityType,
+      if (bankAccountId != null) 'bank_account_id': bankAccountId,
+      if (paymentMethod != null) 'payment_method': paymentMethod,
+    });
+  }
+
+  EntityPaymentMethodsCompanion copyWith(
+      {Value<int>? id,
+      Value<int>? entityId,
+      Value<String>? entityType,
+      Value<int>? bankAccountId,
+      Value<String>? paymentMethod}) {
+    return EntityPaymentMethodsCompanion(
+      id: id ?? this.id,
+      entityId: entityId ?? this.entityId,
+      entityType: entityType ?? this.entityType,
+      bankAccountId: bankAccountId ?? this.bankAccountId,
+      paymentMethod: paymentMethod ?? this.paymentMethod,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (id.present) {
+      map['id'] = Variable<int>(id.value);
+    }
+    if (entityId.present) {
+      map['entity_id'] = Variable<int>(entityId.value);
+    }
+    if (entityType.present) {
+      map['entity_type'] = Variable<String>(entityType.value);
+    }
+    if (bankAccountId.present) {
+      map['bank_account_id'] = Variable<int>(bankAccountId.value);
+    }
+    if (paymentMethod.present) {
+      map['payment_method'] = Variable<String>(paymentMethod.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('EntityPaymentMethodsCompanion(')
+          ..write('id: $id, ')
+          ..write('entityId: $entityId, ')
+          ..write('entityType: $entityType, ')
+          ..write('bankAccountId: $bankAccountId, ')
+          ..write('paymentMethod: $paymentMethod')
           ..write(')'))
         .toString();
   }
@@ -2112,1225 +3317,20 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
   }
 }
 
-class $CategoriesTable extends Categories
-    with TableInfo<$CategoriesTable, Category> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $CategoriesTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
-      hasAutoIncrement: true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
-  static const VerificationMeta _nameMeta = const VerificationMeta('name');
-  @override
-  late final GeneratedColumn<String> name = GeneratedColumn<String>(
-      'name', aliasedName, false,
-      additionalChecks:
-          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 50),
-      type: DriftSqlType.string,
-      requiredDuringInsert: true);
-  static const VerificationMeta _createdAtMeta =
-      const VerificationMeta('createdAt');
-  @override
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
-      'created_at', aliasedName, false,
-      type: DriftSqlType.dateTime,
-      requiredDuringInsert: false,
-      defaultValue: currentDateAndTime);
-  static const VerificationMeta _updatedAtMeta =
-      const VerificationMeta('updatedAt');
-  @override
-  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
-      'updated_at', aliasedName, false,
-      type: DriftSqlType.dateTime,
-      requiredDuringInsert: false,
-      defaultValue: currentDateAndTime);
-  @override
-  List<GeneratedColumn> get $columns => [id, name, createdAt, updatedAt];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'categories';
-  @override
-  VerificationContext validateIntegrity(Insertable<Category> instance,
-      {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('name')) {
-      context.handle(
-          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
-    } else if (isInserting) {
-      context.missing(_nameMeta);
-    }
-    if (data.containsKey('created_at')) {
-      context.handle(_createdAtMeta,
-          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
-    }
-    if (data.containsKey('updated_at')) {
-      context.handle(_updatedAtMeta,
-          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  Category map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return Category(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      name: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
-      createdAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
-      updatedAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at'])!,
-    );
-  }
-
-  @override
-  $CategoriesTable createAlias(String alias) {
-    return $CategoriesTable(attachedDatabase, alias);
-  }
-}
-
-class Category extends DataClass implements Insertable<Category> {
-  final int id;
-  final String name;
-  final DateTime createdAt;
-  final DateTime updatedAt;
-  const Category(
-      {required this.id,
-      required this.name,
-      required this.createdAt,
-      required this.updatedAt});
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
-    map['name'] = Variable<String>(name);
-    map['created_at'] = Variable<DateTime>(createdAt);
-    map['updated_at'] = Variable<DateTime>(updatedAt);
-    return map;
-  }
-
-  CategoriesCompanion toCompanion(bool nullToAbsent) {
-    return CategoriesCompanion(
-      id: Value(id),
-      name: Value(name),
-      createdAt: Value(createdAt),
-      updatedAt: Value(updatedAt),
-    );
-  }
-
-  factory Category.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return Category(
-      id: serializer.fromJson<int>(json['id']),
-      name: serializer.fromJson<String>(json['name']),
-      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
-      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
-      'name': serializer.toJson<String>(name),
-      'createdAt': serializer.toJson<DateTime>(createdAt),
-      'updatedAt': serializer.toJson<DateTime>(updatedAt),
-    };
-  }
-
-  Category copyWith(
-          {int? id, String? name, DateTime? createdAt, DateTime? updatedAt}) =>
-      Category(
-        id: id ?? this.id,
-        name: name ?? this.name,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt,
-      );
-  Category copyWithCompanion(CategoriesCompanion data) {
-    return Category(
-      id: data.id.present ? data.id.value : this.id,
-      name: data.name.present ? data.name.value : this.name,
-      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
-      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('Category(')
-          ..write('id: $id, ')
-          ..write('name: $name, ')
-          ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(id, name, createdAt, updatedAt);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is Category &&
-          other.id == this.id &&
-          other.name == this.name &&
-          other.createdAt == this.createdAt &&
-          other.updatedAt == this.updatedAt);
-}
-
-class CategoriesCompanion extends UpdateCompanion<Category> {
-  final Value<int> id;
-  final Value<String> name;
-  final Value<DateTime> createdAt;
-  final Value<DateTime> updatedAt;
-  const CategoriesCompanion({
-    this.id = const Value.absent(),
-    this.name = const Value.absent(),
-    this.createdAt = const Value.absent(),
-    this.updatedAt = const Value.absent(),
-  });
-  CategoriesCompanion.insert({
-    this.id = const Value.absent(),
-    required String name,
-    this.createdAt = const Value.absent(),
-    this.updatedAt = const Value.absent(),
-  }) : name = Value(name);
-  static Insertable<Category> custom({
-    Expression<int>? id,
-    Expression<String>? name,
-    Expression<DateTime>? createdAt,
-    Expression<DateTime>? updatedAt,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (name != null) 'name': name,
-      if (createdAt != null) 'created_at': createdAt,
-      if (updatedAt != null) 'updated_at': updatedAt,
-    });
-  }
-
-  CategoriesCompanion copyWith(
-      {Value<int>? id,
-      Value<String>? name,
-      Value<DateTime>? createdAt,
-      Value<DateTime>? updatedAt}) {
-    return CategoriesCompanion(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<int>(id.value);
-    }
-    if (name.present) {
-      map['name'] = Variable<String>(name.value);
-    }
-    if (createdAt.present) {
-      map['created_at'] = Variable<DateTime>(createdAt.value);
-    }
-    if (updatedAt.present) {
-      map['updated_at'] = Variable<DateTime>(updatedAt.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('CategoriesCompanion(')
-          ..write('id: $id, ')
-          ..write('name: $name, ')
-          ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class $SubCategoriesTable extends SubCategories
-    with TableInfo<$SubCategoriesTable, SubCategory> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $SubCategoriesTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
-      hasAutoIncrement: true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
-  static const VerificationMeta _nameMeta = const VerificationMeta('name');
-  @override
-  late final GeneratedColumn<String> name = GeneratedColumn<String>(
-      'name', aliasedName, false,
-      additionalChecks:
-          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 50),
-      type: DriftSqlType.string,
-      requiredDuringInsert: true);
-  static const VerificationMeta _categoryIdMeta =
-      const VerificationMeta('categoryId');
-  @override
-  late final GeneratedColumn<int> categoryId = GeneratedColumn<int>(
-      'category_id', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: true,
-      $customConstraints: 'REFERENCES categories(id) NOT NULL');
-  static const VerificationMeta _createdAtMeta =
-      const VerificationMeta('createdAt');
-  @override
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
-      'created_at', aliasedName, false,
-      type: DriftSqlType.dateTime,
-      requiredDuringInsert: false,
-      defaultValue: currentDateAndTime);
-  static const VerificationMeta _updatedAtMeta =
-      const VerificationMeta('updatedAt');
-  @override
-  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
-      'updated_at', aliasedName, false,
-      type: DriftSqlType.dateTime,
-      requiredDuringInsert: false,
-      defaultValue: currentDateAndTime);
-  @override
-  List<GeneratedColumn> get $columns =>
-      [id, name, categoryId, createdAt, updatedAt];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'sub_categories';
-  @override
-  VerificationContext validateIntegrity(Insertable<SubCategory> instance,
-      {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('name')) {
-      context.handle(
-          _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
-    } else if (isInserting) {
-      context.missing(_nameMeta);
-    }
-    if (data.containsKey('category_id')) {
-      context.handle(
-          _categoryIdMeta,
-          categoryId.isAcceptableOrUnknown(
-              data['category_id']!, _categoryIdMeta));
-    } else if (isInserting) {
-      context.missing(_categoryIdMeta);
-    }
-    if (data.containsKey('created_at')) {
-      context.handle(_createdAtMeta,
-          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
-    }
-    if (data.containsKey('updated_at')) {
-      context.handle(_updatedAtMeta,
-          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  SubCategory map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return SubCategory(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      name: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
-      categoryId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}category_id'])!,
-      createdAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
-      updatedAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at'])!,
-    );
-  }
-
-  @override
-  $SubCategoriesTable createAlias(String alias) {
-    return $SubCategoriesTable(attachedDatabase, alias);
-  }
-}
-
-class SubCategory extends DataClass implements Insertable<SubCategory> {
-  final int id;
-  final String name;
-  final int categoryId;
-  final DateTime createdAt;
-  final DateTime updatedAt;
-  const SubCategory(
-      {required this.id,
-      required this.name,
-      required this.categoryId,
-      required this.createdAt,
-      required this.updatedAt});
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
-    map['name'] = Variable<String>(name);
-    map['category_id'] = Variable<int>(categoryId);
-    map['created_at'] = Variable<DateTime>(createdAt);
-    map['updated_at'] = Variable<DateTime>(updatedAt);
-    return map;
-  }
-
-  SubCategoriesCompanion toCompanion(bool nullToAbsent) {
-    return SubCategoriesCompanion(
-      id: Value(id),
-      name: Value(name),
-      categoryId: Value(categoryId),
-      createdAt: Value(createdAt),
-      updatedAt: Value(updatedAt),
-    );
-  }
-
-  factory SubCategory.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return SubCategory(
-      id: serializer.fromJson<int>(json['id']),
-      name: serializer.fromJson<String>(json['name']),
-      categoryId: serializer.fromJson<int>(json['categoryId']),
-      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
-      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
-      'name': serializer.toJson<String>(name),
-      'categoryId': serializer.toJson<int>(categoryId),
-      'createdAt': serializer.toJson<DateTime>(createdAt),
-      'updatedAt': serializer.toJson<DateTime>(updatedAt),
-    };
-  }
-
-  SubCategory copyWith(
-          {int? id,
-          String? name,
-          int? categoryId,
-          DateTime? createdAt,
-          DateTime? updatedAt}) =>
-      SubCategory(
-        id: id ?? this.id,
-        name: name ?? this.name,
-        categoryId: categoryId ?? this.categoryId,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt,
-      );
-  SubCategory copyWithCompanion(SubCategoriesCompanion data) {
-    return SubCategory(
-      id: data.id.present ? data.id.value : this.id,
-      name: data.name.present ? data.name.value : this.name,
-      categoryId:
-          data.categoryId.present ? data.categoryId.value : this.categoryId,
-      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
-      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('SubCategory(')
-          ..write('id: $id, ')
-          ..write('name: $name, ')
-          ..write('categoryId: $categoryId, ')
-          ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode => Object.hash(id, name, categoryId, createdAt, updatedAt);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is SubCategory &&
-          other.id == this.id &&
-          other.name == this.name &&
-          other.categoryId == this.categoryId &&
-          other.createdAt == this.createdAt &&
-          other.updatedAt == this.updatedAt);
-}
-
-class SubCategoriesCompanion extends UpdateCompanion<SubCategory> {
-  final Value<int> id;
-  final Value<String> name;
-  final Value<int> categoryId;
-  final Value<DateTime> createdAt;
-  final Value<DateTime> updatedAt;
-  const SubCategoriesCompanion({
-    this.id = const Value.absent(),
-    this.name = const Value.absent(),
-    this.categoryId = const Value.absent(),
-    this.createdAt = const Value.absent(),
-    this.updatedAt = const Value.absent(),
-  });
-  SubCategoriesCompanion.insert({
-    this.id = const Value.absent(),
-    required String name,
-    required int categoryId,
-    this.createdAt = const Value.absent(),
-    this.updatedAt = const Value.absent(),
-  })  : name = Value(name),
-        categoryId = Value(categoryId);
-  static Insertable<SubCategory> custom({
-    Expression<int>? id,
-    Expression<String>? name,
-    Expression<int>? categoryId,
-    Expression<DateTime>? createdAt,
-    Expression<DateTime>? updatedAt,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (name != null) 'name': name,
-      if (categoryId != null) 'category_id': categoryId,
-      if (createdAt != null) 'created_at': createdAt,
-      if (updatedAt != null) 'updated_at': updatedAt,
-    });
-  }
-
-  SubCategoriesCompanion copyWith(
-      {Value<int>? id,
-      Value<String>? name,
-      Value<int>? categoryId,
-      Value<DateTime>? createdAt,
-      Value<DateTime>? updatedAt}) {
-    return SubCategoriesCompanion(
-      id: id ?? this.id,
-      name: name ?? this.name,
-      categoryId: categoryId ?? this.categoryId,
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<int>(id.value);
-    }
-    if (name.present) {
-      map['name'] = Variable<String>(name.value);
-    }
-    if (categoryId.present) {
-      map['category_id'] = Variable<int>(categoryId.value);
-    }
-    if (createdAt.present) {
-      map['created_at'] = Variable<DateTime>(createdAt.value);
-    }
-    if (updatedAt.present) {
-      map['updated_at'] = Variable<DateTime>(updatedAt.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('SubCategoriesCompanion(')
-          ..write('id: $id, ')
-          ..write('name: $name, ')
-          ..write('categoryId: $categoryId, ')
-          ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class $BankAccountsTable extends BankAccounts
-    with TableInfo<$BankAccountsTable, BankAccount> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $BankAccountsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
-      hasAutoIncrement: true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
-  static const VerificationMeta _accountNumberMeta =
-      const VerificationMeta('accountNumber');
-  @override
-  late final GeneratedColumn<String> accountNumber = GeneratedColumn<String>(
-      'account_number', aliasedName, false,
-      additionalChecks:
-          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 50),
-      type: DriftSqlType.string,
-      requiredDuringInsert: true);
-  static const VerificationMeta _bankNameMeta =
-      const VerificationMeta('bankName');
-  @override
-  late final GeneratedColumn<String> bankName = GeneratedColumn<String>(
-      'bank_name', aliasedName, false,
-      additionalChecks:
-          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 50),
-      type: DriftSqlType.string,
-      requiredDuringInsert: true);
-  static const VerificationMeta _ifscMeta = const VerificationMeta('ifsc');
-  @override
-  late final GeneratedColumn<String> ifsc = GeneratedColumn<String>(
-      'ifsc', aliasedName, false,
-      additionalChecks:
-          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 50),
-      type: DriftSqlType.string,
-      requiredDuringInsert: true);
-  static const VerificationMeta _accountHolderMeta =
-      const VerificationMeta('accountHolder');
-  @override
-  late final GeneratedColumn<String> accountHolder = GeneratedColumn<String>(
-      'account_holder', aliasedName, false,
-      additionalChecks:
-          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 50),
-      type: DriftSqlType.string,
-      requiredDuringInsert: true);
-  @override
-  List<GeneratedColumn> get $columns =>
-      [id, accountNumber, bankName, ifsc, accountHolder];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'bank_accounts';
-  @override
-  VerificationContext validateIntegrity(Insertable<BankAccount> instance,
-      {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('account_number')) {
-      context.handle(
-          _accountNumberMeta,
-          accountNumber.isAcceptableOrUnknown(
-              data['account_number']!, _accountNumberMeta));
-    } else if (isInserting) {
-      context.missing(_accountNumberMeta);
-    }
-    if (data.containsKey('bank_name')) {
-      context.handle(_bankNameMeta,
-          bankName.isAcceptableOrUnknown(data['bank_name']!, _bankNameMeta));
-    } else if (isInserting) {
-      context.missing(_bankNameMeta);
-    }
-    if (data.containsKey('ifsc')) {
-      context.handle(
-          _ifscMeta, ifsc.isAcceptableOrUnknown(data['ifsc']!, _ifscMeta));
-    } else if (isInserting) {
-      context.missing(_ifscMeta);
-    }
-    if (data.containsKey('account_holder')) {
-      context.handle(
-          _accountHolderMeta,
-          accountHolder.isAcceptableOrUnknown(
-              data['account_holder']!, _accountHolderMeta));
-    } else if (isInserting) {
-      context.missing(_accountHolderMeta);
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  BankAccount map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return BankAccount(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      accountNumber: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}account_number'])!,
-      bankName: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}bank_name'])!,
-      ifsc: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}ifsc'])!,
-      accountHolder: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}account_holder'])!,
-    );
-  }
-
-  @override
-  $BankAccountsTable createAlias(String alias) {
-    return $BankAccountsTable(attachedDatabase, alias);
-  }
-}
-
-class BankAccount extends DataClass implements Insertable<BankAccount> {
-  final int id;
-  final String accountNumber;
-  final String bankName;
-  final String ifsc;
-  final String accountHolder;
-  const BankAccount(
-      {required this.id,
-      required this.accountNumber,
-      required this.bankName,
-      required this.ifsc,
-      required this.accountHolder});
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
-    map['account_number'] = Variable<String>(accountNumber);
-    map['bank_name'] = Variable<String>(bankName);
-    map['ifsc'] = Variable<String>(ifsc);
-    map['account_holder'] = Variable<String>(accountHolder);
-    return map;
-  }
-
-  BankAccountsCompanion toCompanion(bool nullToAbsent) {
-    return BankAccountsCompanion(
-      id: Value(id),
-      accountNumber: Value(accountNumber),
-      bankName: Value(bankName),
-      ifsc: Value(ifsc),
-      accountHolder: Value(accountHolder),
-    );
-  }
-
-  factory BankAccount.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return BankAccount(
-      id: serializer.fromJson<int>(json['id']),
-      accountNumber: serializer.fromJson<String>(json['accountNumber']),
-      bankName: serializer.fromJson<String>(json['bankName']),
-      ifsc: serializer.fromJson<String>(json['ifsc']),
-      accountHolder: serializer.fromJson<String>(json['accountHolder']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
-      'accountNumber': serializer.toJson<String>(accountNumber),
-      'bankName': serializer.toJson<String>(bankName),
-      'ifsc': serializer.toJson<String>(ifsc),
-      'accountHolder': serializer.toJson<String>(accountHolder),
-    };
-  }
-
-  BankAccount copyWith(
-          {int? id,
-          String? accountNumber,
-          String? bankName,
-          String? ifsc,
-          String? accountHolder}) =>
-      BankAccount(
-        id: id ?? this.id,
-        accountNumber: accountNumber ?? this.accountNumber,
-        bankName: bankName ?? this.bankName,
-        ifsc: ifsc ?? this.ifsc,
-        accountHolder: accountHolder ?? this.accountHolder,
-      );
-  BankAccount copyWithCompanion(BankAccountsCompanion data) {
-    return BankAccount(
-      id: data.id.present ? data.id.value : this.id,
-      accountNumber: data.accountNumber.present
-          ? data.accountNumber.value
-          : this.accountNumber,
-      bankName: data.bankName.present ? data.bankName.value : this.bankName,
-      ifsc: data.ifsc.present ? data.ifsc.value : this.ifsc,
-      accountHolder: data.accountHolder.present
-          ? data.accountHolder.value
-          : this.accountHolder,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('BankAccount(')
-          ..write('id: $id, ')
-          ..write('accountNumber: $accountNumber, ')
-          ..write('bankName: $bankName, ')
-          ..write('ifsc: $ifsc, ')
-          ..write('accountHolder: $accountHolder')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode =>
-      Object.hash(id, accountNumber, bankName, ifsc, accountHolder);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is BankAccount &&
-          other.id == this.id &&
-          other.accountNumber == this.accountNumber &&
-          other.bankName == this.bankName &&
-          other.ifsc == this.ifsc &&
-          other.accountHolder == this.accountHolder);
-}
-
-class BankAccountsCompanion extends UpdateCompanion<BankAccount> {
-  final Value<int> id;
-  final Value<String> accountNumber;
-  final Value<String> bankName;
-  final Value<String> ifsc;
-  final Value<String> accountHolder;
-  const BankAccountsCompanion({
-    this.id = const Value.absent(),
-    this.accountNumber = const Value.absent(),
-    this.bankName = const Value.absent(),
-    this.ifsc = const Value.absent(),
-    this.accountHolder = const Value.absent(),
-  });
-  BankAccountsCompanion.insert({
-    this.id = const Value.absent(),
-    required String accountNumber,
-    required String bankName,
-    required String ifsc,
-    required String accountHolder,
-  })  : accountNumber = Value(accountNumber),
-        bankName = Value(bankName),
-        ifsc = Value(ifsc),
-        accountHolder = Value(accountHolder);
-  static Insertable<BankAccount> custom({
-    Expression<int>? id,
-    Expression<String>? accountNumber,
-    Expression<String>? bankName,
-    Expression<String>? ifsc,
-    Expression<String>? accountHolder,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (accountNumber != null) 'account_number': accountNumber,
-      if (bankName != null) 'bank_name': bankName,
-      if (ifsc != null) 'ifsc': ifsc,
-      if (accountHolder != null) 'account_holder': accountHolder,
-    });
-  }
-
-  BankAccountsCompanion copyWith(
-      {Value<int>? id,
-      Value<String>? accountNumber,
-      Value<String>? bankName,
-      Value<String>? ifsc,
-      Value<String>? accountHolder}) {
-    return BankAccountsCompanion(
-      id: id ?? this.id,
-      accountNumber: accountNumber ?? this.accountNumber,
-      bankName: bankName ?? this.bankName,
-      ifsc: ifsc ?? this.ifsc,
-      accountHolder: accountHolder ?? this.accountHolder,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<int>(id.value);
-    }
-    if (accountNumber.present) {
-      map['account_number'] = Variable<String>(accountNumber.value);
-    }
-    if (bankName.present) {
-      map['bank_name'] = Variable<String>(bankName.value);
-    }
-    if (ifsc.present) {
-      map['ifsc'] = Variable<String>(ifsc.value);
-    }
-    if (accountHolder.present) {
-      map['account_holder'] = Variable<String>(accountHolder.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('BankAccountsCompanion(')
-          ..write('id: $id, ')
-          ..write('accountNumber: $accountNumber, ')
-          ..write('bankName: $bankName, ')
-          ..write('ifsc: $ifsc, ')
-          ..write('accountHolder: $accountHolder')
-          ..write(')'))
-        .toString();
-  }
-}
-
-class $EntityPaymentMethodsTable extends EntityPaymentMethods
-    with TableInfo<$EntityPaymentMethodsTable, EntityPaymentMethod> {
-  @override
-  final GeneratedDatabase attachedDatabase;
-  final String? _alias;
-  $EntityPaymentMethodsTable(this.attachedDatabase, [this._alias]);
-  static const VerificationMeta _idMeta = const VerificationMeta('id');
-  @override
-  late final GeneratedColumn<int> id = GeneratedColumn<int>(
-      'id', aliasedName, false,
-      hasAutoIncrement: true,
-      type: DriftSqlType.int,
-      requiredDuringInsert: false,
-      defaultConstraints:
-          GeneratedColumn.constraintIsAlways('PRIMARY KEY AUTOINCREMENT'));
-  static const VerificationMeta _entityIdMeta =
-      const VerificationMeta('entityId');
-  @override
-  late final GeneratedColumn<int> entityId = GeneratedColumn<int>(
-      'entity_id', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: true,
-      $customConstraints: 'REFERENCES users(id) NOT NULL');
-  static const VerificationMeta _entityTypeMeta =
-      const VerificationMeta('entityType');
-  @override
-  late final GeneratedColumn<String> entityType = GeneratedColumn<String>(
-      'entity_type', aliasedName, false,
-      additionalChecks:
-          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 50),
-      type: DriftSqlType.string,
-      requiredDuringInsert: true);
-  static const VerificationMeta _bankAccountIdMeta =
-      const VerificationMeta('bankAccountId');
-  @override
-  late final GeneratedColumn<int> bankAccountId = GeneratedColumn<int>(
-      'bank_account_id', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: true,
-      $customConstraints: 'REFERENCES bankAccounts(id) NOT NULL');
-  static const VerificationMeta _paymentMethodMeta =
-      const VerificationMeta('paymentMethod');
-  @override
-  late final GeneratedColumn<String> paymentMethod = GeneratedColumn<String>(
-      'payment_method', aliasedName, false,
-      additionalChecks:
-          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 50),
-      type: DriftSqlType.string,
-      requiredDuringInsert: true);
-  @override
-  List<GeneratedColumn> get $columns =>
-      [id, entityId, entityType, bankAccountId, paymentMethod];
-  @override
-  String get aliasedName => _alias ?? actualTableName;
-  @override
-  String get actualTableName => $name;
-  static const String $name = 'entity_payment_methods';
-  @override
-  VerificationContext validateIntegrity(
-      Insertable<EntityPaymentMethod> instance,
-      {bool isInserting = false}) {
-    final context = VerificationContext();
-    final data = instance.toColumns(true);
-    if (data.containsKey('id')) {
-      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
-    }
-    if (data.containsKey('entity_id')) {
-      context.handle(_entityIdMeta,
-          entityId.isAcceptableOrUnknown(data['entity_id']!, _entityIdMeta));
-    } else if (isInserting) {
-      context.missing(_entityIdMeta);
-    }
-    if (data.containsKey('entity_type')) {
-      context.handle(
-          _entityTypeMeta,
-          entityType.isAcceptableOrUnknown(
-              data['entity_type']!, _entityTypeMeta));
-    } else if (isInserting) {
-      context.missing(_entityTypeMeta);
-    }
-    if (data.containsKey('bank_account_id')) {
-      context.handle(
-          _bankAccountIdMeta,
-          bankAccountId.isAcceptableOrUnknown(
-              data['bank_account_id']!, _bankAccountIdMeta));
-    } else if (isInserting) {
-      context.missing(_bankAccountIdMeta);
-    }
-    if (data.containsKey('payment_method')) {
-      context.handle(
-          _paymentMethodMeta,
-          paymentMethod.isAcceptableOrUnknown(
-              data['payment_method']!, _paymentMethodMeta));
-    } else if (isInserting) {
-      context.missing(_paymentMethodMeta);
-    }
-    return context;
-  }
-
-  @override
-  Set<GeneratedColumn> get $primaryKey => {id};
-  @override
-  EntityPaymentMethod map(Map<String, dynamic> data, {String? tablePrefix}) {
-    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
-    return EntityPaymentMethod(
-      id: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
-      entityId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}entity_id'])!,
-      entityType: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}entity_type'])!,
-      bankAccountId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}bank_account_id'])!,
-      paymentMethod: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}payment_method'])!,
-    );
-  }
-
-  @override
-  $EntityPaymentMethodsTable createAlias(String alias) {
-    return $EntityPaymentMethodsTable(attachedDatabase, alias);
-  }
-}
-
-class EntityPaymentMethod extends DataClass
-    implements Insertable<EntityPaymentMethod> {
-  final int id;
-  final int entityId;
-  final String entityType;
-  final int bankAccountId;
-  final String paymentMethod;
-  const EntityPaymentMethod(
-      {required this.id,
-      required this.entityId,
-      required this.entityType,
-      required this.bankAccountId,
-      required this.paymentMethod});
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    map['id'] = Variable<int>(id);
-    map['entity_id'] = Variable<int>(entityId);
-    map['entity_type'] = Variable<String>(entityType);
-    map['bank_account_id'] = Variable<int>(bankAccountId);
-    map['payment_method'] = Variable<String>(paymentMethod);
-    return map;
-  }
-
-  EntityPaymentMethodsCompanion toCompanion(bool nullToAbsent) {
-    return EntityPaymentMethodsCompanion(
-      id: Value(id),
-      entityId: Value(entityId),
-      entityType: Value(entityType),
-      bankAccountId: Value(bankAccountId),
-      paymentMethod: Value(paymentMethod),
-    );
-  }
-
-  factory EntityPaymentMethod.fromJson(Map<String, dynamic> json,
-      {ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return EntityPaymentMethod(
-      id: serializer.fromJson<int>(json['id']),
-      entityId: serializer.fromJson<int>(json['entityId']),
-      entityType: serializer.fromJson<String>(json['entityType']),
-      bankAccountId: serializer.fromJson<int>(json['bankAccountId']),
-      paymentMethod: serializer.fromJson<String>(json['paymentMethod']),
-    );
-  }
-  @override
-  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
-    serializer ??= driftRuntimeOptions.defaultSerializer;
-    return <String, dynamic>{
-      'id': serializer.toJson<int>(id),
-      'entityId': serializer.toJson<int>(entityId),
-      'entityType': serializer.toJson<String>(entityType),
-      'bankAccountId': serializer.toJson<int>(bankAccountId),
-      'paymentMethod': serializer.toJson<String>(paymentMethod),
-    };
-  }
-
-  EntityPaymentMethod copyWith(
-          {int? id,
-          int? entityId,
-          String? entityType,
-          int? bankAccountId,
-          String? paymentMethod}) =>
-      EntityPaymentMethod(
-        id: id ?? this.id,
-        entityId: entityId ?? this.entityId,
-        entityType: entityType ?? this.entityType,
-        bankAccountId: bankAccountId ?? this.bankAccountId,
-        paymentMethod: paymentMethod ?? this.paymentMethod,
-      );
-  EntityPaymentMethod copyWithCompanion(EntityPaymentMethodsCompanion data) {
-    return EntityPaymentMethod(
-      id: data.id.present ? data.id.value : this.id,
-      entityId: data.entityId.present ? data.entityId.value : this.entityId,
-      entityType:
-          data.entityType.present ? data.entityType.value : this.entityType,
-      bankAccountId: data.bankAccountId.present
-          ? data.bankAccountId.value
-          : this.bankAccountId,
-      paymentMethod: data.paymentMethod.present
-          ? data.paymentMethod.value
-          : this.paymentMethod,
-    );
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('EntityPaymentMethod(')
-          ..write('id: $id, ')
-          ..write('entityId: $entityId, ')
-          ..write('entityType: $entityType, ')
-          ..write('bankAccountId: $bankAccountId, ')
-          ..write('paymentMethod: $paymentMethod')
-          ..write(')'))
-        .toString();
-  }
-
-  @override
-  int get hashCode =>
-      Object.hash(id, entityId, entityType, bankAccountId, paymentMethod);
-  @override
-  bool operator ==(Object other) =>
-      identical(this, other) ||
-      (other is EntityPaymentMethod &&
-          other.id == this.id &&
-          other.entityId == this.entityId &&
-          other.entityType == this.entityType &&
-          other.bankAccountId == this.bankAccountId &&
-          other.paymentMethod == this.paymentMethod);
-}
-
-class EntityPaymentMethodsCompanion
-    extends UpdateCompanion<EntityPaymentMethod> {
-  final Value<int> id;
-  final Value<int> entityId;
-  final Value<String> entityType;
-  final Value<int> bankAccountId;
-  final Value<String> paymentMethod;
-  const EntityPaymentMethodsCompanion({
-    this.id = const Value.absent(),
-    this.entityId = const Value.absent(),
-    this.entityType = const Value.absent(),
-    this.bankAccountId = const Value.absent(),
-    this.paymentMethod = const Value.absent(),
-  });
-  EntityPaymentMethodsCompanion.insert({
-    this.id = const Value.absent(),
-    required int entityId,
-    required String entityType,
-    required int bankAccountId,
-    required String paymentMethod,
-  })  : entityId = Value(entityId),
-        entityType = Value(entityType),
-        bankAccountId = Value(bankAccountId),
-        paymentMethod = Value(paymentMethod);
-  static Insertable<EntityPaymentMethod> custom({
-    Expression<int>? id,
-    Expression<int>? entityId,
-    Expression<String>? entityType,
-    Expression<int>? bankAccountId,
-    Expression<String>? paymentMethod,
-  }) {
-    return RawValuesInsertable({
-      if (id != null) 'id': id,
-      if (entityId != null) 'entity_id': entityId,
-      if (entityType != null) 'entity_type': entityType,
-      if (bankAccountId != null) 'bank_account_id': bankAccountId,
-      if (paymentMethod != null) 'payment_method': paymentMethod,
-    });
-  }
-
-  EntityPaymentMethodsCompanion copyWith(
-      {Value<int>? id,
-      Value<int>? entityId,
-      Value<String>? entityType,
-      Value<int>? bankAccountId,
-      Value<String>? paymentMethod}) {
-    return EntityPaymentMethodsCompanion(
-      id: id ?? this.id,
-      entityId: entityId ?? this.entityId,
-      entityType: entityType ?? this.entityType,
-      bankAccountId: bankAccountId ?? this.bankAccountId,
-      paymentMethod: paymentMethod ?? this.paymentMethod,
-    );
-  }
-
-  @override
-  Map<String, Expression> toColumns(bool nullToAbsent) {
-    final map = <String, Expression>{};
-    if (id.present) {
-      map['id'] = Variable<int>(id.value);
-    }
-    if (entityId.present) {
-      map['entity_id'] = Variable<int>(entityId.value);
-    }
-    if (entityType.present) {
-      map['entity_type'] = Variable<String>(entityType.value);
-    }
-    if (bankAccountId.present) {
-      map['bank_account_id'] = Variable<int>(bankAccountId.value);
-    }
-    if (paymentMethod.present) {
-      map['payment_method'] = Variable<String>(paymentMethod.value);
-    }
-    return map;
-  }
-
-  @override
-  String toString() {
-    return (StringBuffer('EntityPaymentMethodsCompanion(')
-          ..write('id: $id, ')
-          ..write('entityId: $entityId, ')
-          ..write('entityType: $entityType, ')
-          ..write('bankAccountId: $bankAccountId, ')
-          ..write('paymentMethod: $paymentMethod')
-          ..write(')'))
-        .toString();
-  }
-}
-
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
   late final $FirmsTable firms = $FirmsTable(this);
   late final $SitesTable sites = $SitesTable(this);
   late final $FlatsTable flats = $FlatsTable(this);
-  late final $UsersTable users = $UsersTable(this);
-  late final $PartnersTable partners = $PartnersTable(this);
-  late final $TransactionsTable transactions = $TransactionsTable(this);
   late final $CategoriesTable categories = $CategoriesTable(this);
   late final $SubCategoriesTable subCategories = $SubCategoriesTable(this);
+  late final $UsersTable users = $UsersTable(this);
   late final $BankAccountsTable bankAccounts = $BankAccountsTable(this);
   late final $EntityPaymentMethodsTable entityPaymentMethods =
       $EntityPaymentMethodsTable(this);
+  late final $PartnersTable partners = $PartnersTable(this);
+  late final $TransactionsTable transactions = $TransactionsTable(this);
   @override
   Iterable<TableInfo<Table, Object?>> get allTables =>
       allSchemaEntities.whereType<TableInfo<Table, Object?>>();
@@ -3339,13 +3339,13 @@ abstract class _$AppDatabase extends GeneratedDatabase {
         firms,
         sites,
         flats,
-        users,
-        partners,
-        transactions,
         categories,
         subCategories,
+        users,
         bankAccounts,
-        entityPaymentMethods
+        entityPaymentMethods,
+        partners,
+        transactions
       ];
 }
 
@@ -3824,6 +3824,259 @@ class $$FlatsTableOrderingComposer
   }
 }
 
+typedef $$CategoriesTableCreateCompanionBuilder = CategoriesCompanion Function({
+  Value<int> id,
+  required String name,
+  Value<DateTime> createdAt,
+  Value<DateTime> updatedAt,
+});
+typedef $$CategoriesTableUpdateCompanionBuilder = CategoriesCompanion Function({
+  Value<int> id,
+  Value<String> name,
+  Value<DateTime> createdAt,
+  Value<DateTime> updatedAt,
+});
+
+class $$CategoriesTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $CategoriesTable,
+    Category,
+    $$CategoriesTableFilterComposer,
+    $$CategoriesTableOrderingComposer,
+    $$CategoriesTableCreateCompanionBuilder,
+    $$CategoriesTableUpdateCompanionBuilder> {
+  $$CategoriesTableTableManager(_$AppDatabase db, $CategoriesTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer:
+              $$CategoriesTableFilterComposer(ComposerState(db, table)),
+          orderingComposer:
+              $$CategoriesTableOrderingComposer(ComposerState(db, table)),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<String> name = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<DateTime> updatedAt = const Value.absent(),
+          }) =>
+              CategoriesCompanion(
+            id: id,
+            name: name,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required String name,
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<DateTime> updatedAt = const Value.absent(),
+          }) =>
+              CategoriesCompanion.insert(
+            id: id,
+            name: name,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
+          ),
+        ));
+}
+
+class $$CategoriesTableFilterComposer
+    extends FilterComposer<_$AppDatabase, $CategoriesTable> {
+  $$CategoriesTableFilterComposer(super.$state);
+  ColumnFilters<int> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get name => $state.composableBuilder(
+      column: $state.table.name,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get createdAt => $state.composableBuilder(
+      column: $state.table.createdAt,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get updatedAt => $state.composableBuilder(
+      column: $state.table.updatedAt,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ComposableFilter subCategoriesRefs(
+      ComposableFilter Function($$SubCategoriesTableFilterComposer f) f) {
+    final $$SubCategoriesTableFilterComposer composer = $state.composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $state.db.subCategories,
+        getReferencedColumn: (t) => t.categoryId,
+        builder: (joinBuilder, parentComposers) =>
+            $$SubCategoriesTableFilterComposer(ComposerState($state.db,
+                $state.db.subCategories, joinBuilder, parentComposers)));
+    return f(composer);
+  }
+}
+
+class $$CategoriesTableOrderingComposer
+    extends OrderingComposer<_$AppDatabase, $CategoriesTable> {
+  $$CategoriesTableOrderingComposer(super.$state);
+  ColumnOrderings<int> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get name => $state.composableBuilder(
+      column: $state.table.name,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get createdAt => $state.composableBuilder(
+      column: $state.table.createdAt,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get updatedAt => $state.composableBuilder(
+      column: $state.table.updatedAt,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+}
+
+typedef $$SubCategoriesTableCreateCompanionBuilder = SubCategoriesCompanion
+    Function({
+  Value<int> id,
+  required String name,
+  required int categoryId,
+  Value<DateTime> createdAt,
+  Value<DateTime> updatedAt,
+});
+typedef $$SubCategoriesTableUpdateCompanionBuilder = SubCategoriesCompanion
+    Function({
+  Value<int> id,
+  Value<String> name,
+  Value<int> categoryId,
+  Value<DateTime> createdAt,
+  Value<DateTime> updatedAt,
+});
+
+class $$SubCategoriesTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $SubCategoriesTable,
+    SubCategory,
+    $$SubCategoriesTableFilterComposer,
+    $$SubCategoriesTableOrderingComposer,
+    $$SubCategoriesTableCreateCompanionBuilder,
+    $$SubCategoriesTableUpdateCompanionBuilder> {
+  $$SubCategoriesTableTableManager(_$AppDatabase db, $SubCategoriesTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer:
+              $$SubCategoriesTableFilterComposer(ComposerState(db, table)),
+          orderingComposer:
+              $$SubCategoriesTableOrderingComposer(ComposerState(db, table)),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<String> name = const Value.absent(),
+            Value<int> categoryId = const Value.absent(),
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<DateTime> updatedAt = const Value.absent(),
+          }) =>
+              SubCategoriesCompanion(
+            id: id,
+            name: name,
+            categoryId: categoryId,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required String name,
+            required int categoryId,
+            Value<DateTime> createdAt = const Value.absent(),
+            Value<DateTime> updatedAt = const Value.absent(),
+          }) =>
+              SubCategoriesCompanion.insert(
+            id: id,
+            name: name,
+            categoryId: categoryId,
+            createdAt: createdAt,
+            updatedAt: updatedAt,
+          ),
+        ));
+}
+
+class $$SubCategoriesTableFilterComposer
+    extends FilterComposer<_$AppDatabase, $SubCategoriesTable> {
+  $$SubCategoriesTableFilterComposer(super.$state);
+  ColumnFilters<int> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get name => $state.composableBuilder(
+      column: $state.table.name,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get createdAt => $state.composableBuilder(
+      column: $state.table.createdAt,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<DateTime> get updatedAt => $state.composableBuilder(
+      column: $state.table.updatedAt,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  $$CategoriesTableFilterComposer get categoryId {
+    final $$CategoriesTableFilterComposer composer = $state.composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.categoryId,
+        referencedTable: $state.db.categories,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder, parentComposers) =>
+            $$CategoriesTableFilterComposer(ComposerState($state.db,
+                $state.db.categories, joinBuilder, parentComposers)));
+    return composer;
+  }
+}
+
+class $$SubCategoriesTableOrderingComposer
+    extends OrderingComposer<_$AppDatabase, $SubCategoriesTable> {
+  $$SubCategoriesTableOrderingComposer(super.$state);
+  ColumnOrderings<int> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get name => $state.composableBuilder(
+      column: $state.table.name,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get createdAt => $state.composableBuilder(
+      column: $state.table.createdAt,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<DateTime> get updatedAt => $state.composableBuilder(
+      column: $state.table.updatedAt,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  $$CategoriesTableOrderingComposer get categoryId {
+    final $$CategoriesTableOrderingComposer composer = $state.composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.categoryId,
+        referencedTable: $state.db.categories,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder, parentComposers) =>
+            $$CategoriesTableOrderingComposer(ComposerState($state.db,
+                $state.db.categories, joinBuilder, parentComposers)));
+    return composer;
+  }
+}
+
 typedef $$UsersTableCreateCompanionBuilder = UsersCompanion Function({
   Value<int> id,
   required String name,
@@ -3925,19 +4178,6 @@ class $$UsersTableFilterComposer
       builder: (column, joinBuilders) =>
           ColumnFilters(column, joinBuilders: joinBuilders));
 
-  ComposableFilter partnersRefs(
-      ComposableFilter Function($$PartnersTableFilterComposer f) f) {
-    final $$PartnersTableFilterComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.id,
-        referencedTable: $state.db.partners,
-        getReferencedColumn: (t) => t.builderId,
-        builder: (joinBuilder, parentComposers) =>
-            $$PartnersTableFilterComposer(ComposerState(
-                $state.db, $state.db.partners, joinBuilder, parentComposers)));
-    return f(composer);
-  }
-
   ComposableFilter entityPaymentMethodsRefs(
       ComposableFilter Function($$EntityPaymentMethodsTableFilterComposer f)
           f) {
@@ -3953,6 +4193,19 @@ class $$UsersTableFilterComposer
                     $state.db.entityPaymentMethods,
                     joinBuilder,
                     parentComposers)));
+    return f(composer);
+  }
+
+  ComposableFilter partnersRefs(
+      ComposableFilter Function($$PartnersTableFilterComposer f) f) {
+    final $$PartnersTableFilterComposer composer = $state.composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.id,
+        referencedTable: $state.db.partners,
+        getReferencedColumn: (t) => t.builderId,
+        builder: (joinBuilder, parentComposers) =>
+            $$PartnersTableFilterComposer(ComposerState(
+                $state.db, $state.db.partners, joinBuilder, parentComposers)));
     return f(composer);
   }
 }
@@ -3989,6 +4242,265 @@ class $$UsersTableOrderingComposer
       column: $state.table.updatedAt,
       builder: (column, joinBuilders) =>
           ColumnOrderings(column, joinBuilders: joinBuilders));
+}
+
+typedef $$BankAccountsTableCreateCompanionBuilder = BankAccountsCompanion
+    Function({
+  Value<int> id,
+  required String accountNumber,
+  required String bankName,
+  required String ifsc,
+  required String accountHolder,
+});
+typedef $$BankAccountsTableUpdateCompanionBuilder = BankAccountsCompanion
+    Function({
+  Value<int> id,
+  Value<String> accountNumber,
+  Value<String> bankName,
+  Value<String> ifsc,
+  Value<String> accountHolder,
+});
+
+class $$BankAccountsTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $BankAccountsTable,
+    BankAccount,
+    $$BankAccountsTableFilterComposer,
+    $$BankAccountsTableOrderingComposer,
+    $$BankAccountsTableCreateCompanionBuilder,
+    $$BankAccountsTableUpdateCompanionBuilder> {
+  $$BankAccountsTableTableManager(_$AppDatabase db, $BankAccountsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer:
+              $$BankAccountsTableFilterComposer(ComposerState(db, table)),
+          orderingComposer:
+              $$BankAccountsTableOrderingComposer(ComposerState(db, table)),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<String> accountNumber = const Value.absent(),
+            Value<String> bankName = const Value.absent(),
+            Value<String> ifsc = const Value.absent(),
+            Value<String> accountHolder = const Value.absent(),
+          }) =>
+              BankAccountsCompanion(
+            id: id,
+            accountNumber: accountNumber,
+            bankName: bankName,
+            ifsc: ifsc,
+            accountHolder: accountHolder,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required String accountNumber,
+            required String bankName,
+            required String ifsc,
+            required String accountHolder,
+          }) =>
+              BankAccountsCompanion.insert(
+            id: id,
+            accountNumber: accountNumber,
+            bankName: bankName,
+            ifsc: ifsc,
+            accountHolder: accountHolder,
+          ),
+        ));
+}
+
+class $$BankAccountsTableFilterComposer
+    extends FilterComposer<_$AppDatabase, $BankAccountsTable> {
+  $$BankAccountsTableFilterComposer(super.$state);
+  ColumnFilters<int> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get accountNumber => $state.composableBuilder(
+      column: $state.table.accountNumber,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get bankName => $state.composableBuilder(
+      column: $state.table.bankName,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get ifsc => $state.composableBuilder(
+      column: $state.table.ifsc,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get accountHolder => $state.composableBuilder(
+      column: $state.table.accountHolder,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+}
+
+class $$BankAccountsTableOrderingComposer
+    extends OrderingComposer<_$AppDatabase, $BankAccountsTable> {
+  $$BankAccountsTableOrderingComposer(super.$state);
+  ColumnOrderings<int> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get accountNumber => $state.composableBuilder(
+      column: $state.table.accountNumber,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get bankName => $state.composableBuilder(
+      column: $state.table.bankName,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get ifsc => $state.composableBuilder(
+      column: $state.table.ifsc,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get accountHolder => $state.composableBuilder(
+      column: $state.table.accountHolder,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+}
+
+typedef $$EntityPaymentMethodsTableCreateCompanionBuilder
+    = EntityPaymentMethodsCompanion Function({
+  Value<int> id,
+  required int entityId,
+  required String entityType,
+  required int bankAccountId,
+  required String paymentMethod,
+});
+typedef $$EntityPaymentMethodsTableUpdateCompanionBuilder
+    = EntityPaymentMethodsCompanion Function({
+  Value<int> id,
+  Value<int> entityId,
+  Value<String> entityType,
+  Value<int> bankAccountId,
+  Value<String> paymentMethod,
+});
+
+class $$EntityPaymentMethodsTableTableManager extends RootTableManager<
+    _$AppDatabase,
+    $EntityPaymentMethodsTable,
+    EntityPaymentMethod,
+    $$EntityPaymentMethodsTableFilterComposer,
+    $$EntityPaymentMethodsTableOrderingComposer,
+    $$EntityPaymentMethodsTableCreateCompanionBuilder,
+    $$EntityPaymentMethodsTableUpdateCompanionBuilder> {
+  $$EntityPaymentMethodsTableTableManager(
+      _$AppDatabase db, $EntityPaymentMethodsTable table)
+      : super(TableManagerState(
+          db: db,
+          table: table,
+          filteringComposer: $$EntityPaymentMethodsTableFilterComposer(
+              ComposerState(db, table)),
+          orderingComposer: $$EntityPaymentMethodsTableOrderingComposer(
+              ComposerState(db, table)),
+          updateCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            Value<int> entityId = const Value.absent(),
+            Value<String> entityType = const Value.absent(),
+            Value<int> bankAccountId = const Value.absent(),
+            Value<String> paymentMethod = const Value.absent(),
+          }) =>
+              EntityPaymentMethodsCompanion(
+            id: id,
+            entityId: entityId,
+            entityType: entityType,
+            bankAccountId: bankAccountId,
+            paymentMethod: paymentMethod,
+          ),
+          createCompanionCallback: ({
+            Value<int> id = const Value.absent(),
+            required int entityId,
+            required String entityType,
+            required int bankAccountId,
+            required String paymentMethod,
+          }) =>
+              EntityPaymentMethodsCompanion.insert(
+            id: id,
+            entityId: entityId,
+            entityType: entityType,
+            bankAccountId: bankAccountId,
+            paymentMethod: paymentMethod,
+          ),
+        ));
+}
+
+class $$EntityPaymentMethodsTableFilterComposer
+    extends FilterComposer<_$AppDatabase, $EntityPaymentMethodsTable> {
+  $$EntityPaymentMethodsTableFilterComposer(super.$state);
+  ColumnFilters<int> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get entityType => $state.composableBuilder(
+      column: $state.table.entityType,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<int> get bankAccountId => $state.composableBuilder(
+      column: $state.table.bankAccountId,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get paymentMethod => $state.composableBuilder(
+      column: $state.table.paymentMethod,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  $$UsersTableFilterComposer get entityId {
+    final $$UsersTableFilterComposer composer = $state.composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.entityId,
+        referencedTable: $state.db.users,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder, parentComposers) => $$UsersTableFilterComposer(
+            ComposerState(
+                $state.db, $state.db.users, joinBuilder, parentComposers)));
+    return composer;
+  }
+}
+
+class $$EntityPaymentMethodsTableOrderingComposer
+    extends OrderingComposer<_$AppDatabase, $EntityPaymentMethodsTable> {
+  $$EntityPaymentMethodsTableOrderingComposer(super.$state);
+  ColumnOrderings<int> get id => $state.composableBuilder(
+      column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get entityType => $state.composableBuilder(
+      column: $state.table.entityType,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<int> get bankAccountId => $state.composableBuilder(
+      column: $state.table.bankAccountId,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get paymentMethod => $state.composableBuilder(
+      column: $state.table.paymentMethod,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  $$UsersTableOrderingComposer get entityId {
+    final $$UsersTableOrderingComposer composer = $state.composerBuilder(
+        composer: this,
+        getCurrentColumn: (t) => t.entityId,
+        referencedTable: $state.db.users,
+        getReferencedColumn: (t) => t.id,
+        builder: (joinBuilder, parentComposers) => $$UsersTableOrderingComposer(
+            ComposerState(
+                $state.db, $state.db.users, joinBuilder, parentComposers)));
+    return composer;
+  }
 }
 
 typedef $$PartnersTableCreateCompanionBuilder = PartnersCompanion Function({
@@ -4325,518 +4837,6 @@ class $$TransactionsTableOrderingComposer
           ColumnOrderings(column, joinBuilders: joinBuilders));
 }
 
-typedef $$CategoriesTableCreateCompanionBuilder = CategoriesCompanion Function({
-  Value<int> id,
-  required String name,
-  Value<DateTime> createdAt,
-  Value<DateTime> updatedAt,
-});
-typedef $$CategoriesTableUpdateCompanionBuilder = CategoriesCompanion Function({
-  Value<int> id,
-  Value<String> name,
-  Value<DateTime> createdAt,
-  Value<DateTime> updatedAt,
-});
-
-class $$CategoriesTableTableManager extends RootTableManager<
-    _$AppDatabase,
-    $CategoriesTable,
-    Category,
-    $$CategoriesTableFilterComposer,
-    $$CategoriesTableOrderingComposer,
-    $$CategoriesTableCreateCompanionBuilder,
-    $$CategoriesTableUpdateCompanionBuilder> {
-  $$CategoriesTableTableManager(_$AppDatabase db, $CategoriesTable table)
-      : super(TableManagerState(
-          db: db,
-          table: table,
-          filteringComposer:
-              $$CategoriesTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$CategoriesTableOrderingComposer(ComposerState(db, table)),
-          updateCompanionCallback: ({
-            Value<int> id = const Value.absent(),
-            Value<String> name = const Value.absent(),
-            Value<DateTime> createdAt = const Value.absent(),
-            Value<DateTime> updatedAt = const Value.absent(),
-          }) =>
-              CategoriesCompanion(
-            id: id,
-            name: name,
-            createdAt: createdAt,
-            updatedAt: updatedAt,
-          ),
-          createCompanionCallback: ({
-            Value<int> id = const Value.absent(),
-            required String name,
-            Value<DateTime> createdAt = const Value.absent(),
-            Value<DateTime> updatedAt = const Value.absent(),
-          }) =>
-              CategoriesCompanion.insert(
-            id: id,
-            name: name,
-            createdAt: createdAt,
-            updatedAt: updatedAt,
-          ),
-        ));
-}
-
-class $$CategoriesTableFilterComposer
-    extends FilterComposer<_$AppDatabase, $CategoriesTable> {
-  $$CategoriesTableFilterComposer(super.$state);
-  ColumnFilters<int> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get name => $state.composableBuilder(
-      column: $state.table.name,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<DateTime> get createdAt => $state.composableBuilder(
-      column: $state.table.createdAt,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<DateTime> get updatedAt => $state.composableBuilder(
-      column: $state.table.updatedAt,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ComposableFilter subCategoriesRefs(
-      ComposableFilter Function($$SubCategoriesTableFilterComposer f) f) {
-    final $$SubCategoriesTableFilterComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.id,
-        referencedTable: $state.db.subCategories,
-        getReferencedColumn: (t) => t.categoryId,
-        builder: (joinBuilder, parentComposers) =>
-            $$SubCategoriesTableFilterComposer(ComposerState($state.db,
-                $state.db.subCategories, joinBuilder, parentComposers)));
-    return f(composer);
-  }
-}
-
-class $$CategoriesTableOrderingComposer
-    extends OrderingComposer<_$AppDatabase, $CategoriesTable> {
-  $$CategoriesTableOrderingComposer(super.$state);
-  ColumnOrderings<int> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get name => $state.composableBuilder(
-      column: $state.table.name,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<DateTime> get createdAt => $state.composableBuilder(
-      column: $state.table.createdAt,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<DateTime> get updatedAt => $state.composableBuilder(
-      column: $state.table.updatedAt,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-}
-
-typedef $$SubCategoriesTableCreateCompanionBuilder = SubCategoriesCompanion
-    Function({
-  Value<int> id,
-  required String name,
-  required int categoryId,
-  Value<DateTime> createdAt,
-  Value<DateTime> updatedAt,
-});
-typedef $$SubCategoriesTableUpdateCompanionBuilder = SubCategoriesCompanion
-    Function({
-  Value<int> id,
-  Value<String> name,
-  Value<int> categoryId,
-  Value<DateTime> createdAt,
-  Value<DateTime> updatedAt,
-});
-
-class $$SubCategoriesTableTableManager extends RootTableManager<
-    _$AppDatabase,
-    $SubCategoriesTable,
-    SubCategory,
-    $$SubCategoriesTableFilterComposer,
-    $$SubCategoriesTableOrderingComposer,
-    $$SubCategoriesTableCreateCompanionBuilder,
-    $$SubCategoriesTableUpdateCompanionBuilder> {
-  $$SubCategoriesTableTableManager(_$AppDatabase db, $SubCategoriesTable table)
-      : super(TableManagerState(
-          db: db,
-          table: table,
-          filteringComposer:
-              $$SubCategoriesTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$SubCategoriesTableOrderingComposer(ComposerState(db, table)),
-          updateCompanionCallback: ({
-            Value<int> id = const Value.absent(),
-            Value<String> name = const Value.absent(),
-            Value<int> categoryId = const Value.absent(),
-            Value<DateTime> createdAt = const Value.absent(),
-            Value<DateTime> updatedAt = const Value.absent(),
-          }) =>
-              SubCategoriesCompanion(
-            id: id,
-            name: name,
-            categoryId: categoryId,
-            createdAt: createdAt,
-            updatedAt: updatedAt,
-          ),
-          createCompanionCallback: ({
-            Value<int> id = const Value.absent(),
-            required String name,
-            required int categoryId,
-            Value<DateTime> createdAt = const Value.absent(),
-            Value<DateTime> updatedAt = const Value.absent(),
-          }) =>
-              SubCategoriesCompanion.insert(
-            id: id,
-            name: name,
-            categoryId: categoryId,
-            createdAt: createdAt,
-            updatedAt: updatedAt,
-          ),
-        ));
-}
-
-class $$SubCategoriesTableFilterComposer
-    extends FilterComposer<_$AppDatabase, $SubCategoriesTable> {
-  $$SubCategoriesTableFilterComposer(super.$state);
-  ColumnFilters<int> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get name => $state.composableBuilder(
-      column: $state.table.name,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<DateTime> get createdAt => $state.composableBuilder(
-      column: $state.table.createdAt,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<DateTime> get updatedAt => $state.composableBuilder(
-      column: $state.table.updatedAt,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  $$CategoriesTableFilterComposer get categoryId {
-    final $$CategoriesTableFilterComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.categoryId,
-        referencedTable: $state.db.categories,
-        getReferencedColumn: (t) => t.id,
-        builder: (joinBuilder, parentComposers) =>
-            $$CategoriesTableFilterComposer(ComposerState($state.db,
-                $state.db.categories, joinBuilder, parentComposers)));
-    return composer;
-  }
-}
-
-class $$SubCategoriesTableOrderingComposer
-    extends OrderingComposer<_$AppDatabase, $SubCategoriesTable> {
-  $$SubCategoriesTableOrderingComposer(super.$state);
-  ColumnOrderings<int> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get name => $state.composableBuilder(
-      column: $state.table.name,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<DateTime> get createdAt => $state.composableBuilder(
-      column: $state.table.createdAt,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<DateTime> get updatedAt => $state.composableBuilder(
-      column: $state.table.updatedAt,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  $$CategoriesTableOrderingComposer get categoryId {
-    final $$CategoriesTableOrderingComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.categoryId,
-        referencedTable: $state.db.categories,
-        getReferencedColumn: (t) => t.id,
-        builder: (joinBuilder, parentComposers) =>
-            $$CategoriesTableOrderingComposer(ComposerState($state.db,
-                $state.db.categories, joinBuilder, parentComposers)));
-    return composer;
-  }
-}
-
-typedef $$BankAccountsTableCreateCompanionBuilder = BankAccountsCompanion
-    Function({
-  Value<int> id,
-  required String accountNumber,
-  required String bankName,
-  required String ifsc,
-  required String accountHolder,
-});
-typedef $$BankAccountsTableUpdateCompanionBuilder = BankAccountsCompanion
-    Function({
-  Value<int> id,
-  Value<String> accountNumber,
-  Value<String> bankName,
-  Value<String> ifsc,
-  Value<String> accountHolder,
-});
-
-class $$BankAccountsTableTableManager extends RootTableManager<
-    _$AppDatabase,
-    $BankAccountsTable,
-    BankAccount,
-    $$BankAccountsTableFilterComposer,
-    $$BankAccountsTableOrderingComposer,
-    $$BankAccountsTableCreateCompanionBuilder,
-    $$BankAccountsTableUpdateCompanionBuilder> {
-  $$BankAccountsTableTableManager(_$AppDatabase db, $BankAccountsTable table)
-      : super(TableManagerState(
-          db: db,
-          table: table,
-          filteringComposer:
-              $$BankAccountsTableFilterComposer(ComposerState(db, table)),
-          orderingComposer:
-              $$BankAccountsTableOrderingComposer(ComposerState(db, table)),
-          updateCompanionCallback: ({
-            Value<int> id = const Value.absent(),
-            Value<String> accountNumber = const Value.absent(),
-            Value<String> bankName = const Value.absent(),
-            Value<String> ifsc = const Value.absent(),
-            Value<String> accountHolder = const Value.absent(),
-          }) =>
-              BankAccountsCompanion(
-            id: id,
-            accountNumber: accountNumber,
-            bankName: bankName,
-            ifsc: ifsc,
-            accountHolder: accountHolder,
-          ),
-          createCompanionCallback: ({
-            Value<int> id = const Value.absent(),
-            required String accountNumber,
-            required String bankName,
-            required String ifsc,
-            required String accountHolder,
-          }) =>
-              BankAccountsCompanion.insert(
-            id: id,
-            accountNumber: accountNumber,
-            bankName: bankName,
-            ifsc: ifsc,
-            accountHolder: accountHolder,
-          ),
-        ));
-}
-
-class $$BankAccountsTableFilterComposer
-    extends FilterComposer<_$AppDatabase, $BankAccountsTable> {
-  $$BankAccountsTableFilterComposer(super.$state);
-  ColumnFilters<int> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get accountNumber => $state.composableBuilder(
-      column: $state.table.accountNumber,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get bankName => $state.composableBuilder(
-      column: $state.table.bankName,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get ifsc => $state.composableBuilder(
-      column: $state.table.ifsc,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get accountHolder => $state.composableBuilder(
-      column: $state.table.accountHolder,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-}
-
-class $$BankAccountsTableOrderingComposer
-    extends OrderingComposer<_$AppDatabase, $BankAccountsTable> {
-  $$BankAccountsTableOrderingComposer(super.$state);
-  ColumnOrderings<int> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get accountNumber => $state.composableBuilder(
-      column: $state.table.accountNumber,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get bankName => $state.composableBuilder(
-      column: $state.table.bankName,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get ifsc => $state.composableBuilder(
-      column: $state.table.ifsc,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get accountHolder => $state.composableBuilder(
-      column: $state.table.accountHolder,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-}
-
-typedef $$EntityPaymentMethodsTableCreateCompanionBuilder
-    = EntityPaymentMethodsCompanion Function({
-  Value<int> id,
-  required int entityId,
-  required String entityType,
-  required int bankAccountId,
-  required String paymentMethod,
-});
-typedef $$EntityPaymentMethodsTableUpdateCompanionBuilder
-    = EntityPaymentMethodsCompanion Function({
-  Value<int> id,
-  Value<int> entityId,
-  Value<String> entityType,
-  Value<int> bankAccountId,
-  Value<String> paymentMethod,
-});
-
-class $$EntityPaymentMethodsTableTableManager extends RootTableManager<
-    _$AppDatabase,
-    $EntityPaymentMethodsTable,
-    EntityPaymentMethod,
-    $$EntityPaymentMethodsTableFilterComposer,
-    $$EntityPaymentMethodsTableOrderingComposer,
-    $$EntityPaymentMethodsTableCreateCompanionBuilder,
-    $$EntityPaymentMethodsTableUpdateCompanionBuilder> {
-  $$EntityPaymentMethodsTableTableManager(
-      _$AppDatabase db, $EntityPaymentMethodsTable table)
-      : super(TableManagerState(
-          db: db,
-          table: table,
-          filteringComposer: $$EntityPaymentMethodsTableFilterComposer(
-              ComposerState(db, table)),
-          orderingComposer: $$EntityPaymentMethodsTableOrderingComposer(
-              ComposerState(db, table)),
-          updateCompanionCallback: ({
-            Value<int> id = const Value.absent(),
-            Value<int> entityId = const Value.absent(),
-            Value<String> entityType = const Value.absent(),
-            Value<int> bankAccountId = const Value.absent(),
-            Value<String> paymentMethod = const Value.absent(),
-          }) =>
-              EntityPaymentMethodsCompanion(
-            id: id,
-            entityId: entityId,
-            entityType: entityType,
-            bankAccountId: bankAccountId,
-            paymentMethod: paymentMethod,
-          ),
-          createCompanionCallback: ({
-            Value<int> id = const Value.absent(),
-            required int entityId,
-            required String entityType,
-            required int bankAccountId,
-            required String paymentMethod,
-          }) =>
-              EntityPaymentMethodsCompanion.insert(
-            id: id,
-            entityId: entityId,
-            entityType: entityType,
-            bankAccountId: bankAccountId,
-            paymentMethod: paymentMethod,
-          ),
-        ));
-}
-
-class $$EntityPaymentMethodsTableFilterComposer
-    extends FilterComposer<_$AppDatabase, $EntityPaymentMethodsTable> {
-  $$EntityPaymentMethodsTableFilterComposer(super.$state);
-  ColumnFilters<int> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get entityType => $state.composableBuilder(
-      column: $state.table.entityType,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<int> get bankAccountId => $state.composableBuilder(
-      column: $state.table.bankAccountId,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get paymentMethod => $state.composableBuilder(
-      column: $state.table.paymentMethod,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  $$UsersTableFilterComposer get entityId {
-    final $$UsersTableFilterComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.entityId,
-        referencedTable: $state.db.users,
-        getReferencedColumn: (t) => t.id,
-        builder: (joinBuilder, parentComposers) => $$UsersTableFilterComposer(
-            ComposerState(
-                $state.db, $state.db.users, joinBuilder, parentComposers)));
-    return composer;
-  }
-}
-
-class $$EntityPaymentMethodsTableOrderingComposer
-    extends OrderingComposer<_$AppDatabase, $EntityPaymentMethodsTable> {
-  $$EntityPaymentMethodsTableOrderingComposer(super.$state);
-  ColumnOrderings<int> get id => $state.composableBuilder(
-      column: $state.table.id,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get entityType => $state.composableBuilder(
-      column: $state.table.entityType,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<int> get bankAccountId => $state.composableBuilder(
-      column: $state.table.bankAccountId,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get paymentMethod => $state.composableBuilder(
-      column: $state.table.paymentMethod,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  $$UsersTableOrderingComposer get entityId {
-    final $$UsersTableOrderingComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.entityId,
-        referencedTable: $state.db.users,
-        getReferencedColumn: (t) => t.id,
-        builder: (joinBuilder, parentComposers) => $$UsersTableOrderingComposer(
-            ComposerState(
-                $state.db, $state.db.users, joinBuilder, parentComposers)));
-    return composer;
-  }
-}
-
 class $AppDatabaseManager {
   final _$AppDatabase _db;
   $AppDatabaseManager(this._db);
@@ -4846,18 +4846,18 @@ class $AppDatabaseManager {
       $$SitesTableTableManager(_db, _db.sites);
   $$FlatsTableTableManager get flats =>
       $$FlatsTableTableManager(_db, _db.flats);
-  $$UsersTableTableManager get users =>
-      $$UsersTableTableManager(_db, _db.users);
-  $$PartnersTableTableManager get partners =>
-      $$PartnersTableTableManager(_db, _db.partners);
-  $$TransactionsTableTableManager get transactions =>
-      $$TransactionsTableTableManager(_db, _db.transactions);
   $$CategoriesTableTableManager get categories =>
       $$CategoriesTableTableManager(_db, _db.categories);
   $$SubCategoriesTableTableManager get subCategories =>
       $$SubCategoriesTableTableManager(_db, _db.subCategories);
+  $$UsersTableTableManager get users =>
+      $$UsersTableTableManager(_db, _db.users);
   $$BankAccountsTableTableManager get bankAccounts =>
       $$BankAccountsTableTableManager(_db, _db.bankAccounts);
   $$EntityPaymentMethodsTableTableManager get entityPaymentMethods =>
       $$EntityPaymentMethodsTableTableManager(_db, _db.entityPaymentMethods);
+  $$PartnersTableTableManager get partners =>
+      $$PartnersTableTableManager(_db, _db.partners);
+  $$TransactionsTableTableManager get transactions =>
+      $$TransactionsTableTableManager(_db, _db.transactions);
 }

@@ -10,11 +10,11 @@ class WidgetDropdown extends StatefulWidget {
   final Function(ModelDropdown) onChanged;
 
   const WidgetDropdown({
-    Key? key,
+    super.key,
     required this.onChanged,
     this.selectedValue,
     required this.placeHolder,
-  }) : super(key: key);
+  });
 
   @override
   _WidgetDropdownState createState() => _WidgetDropdownState();
@@ -53,11 +53,6 @@ class _WidgetDropdownState extends State<WidgetDropdown> {
   // }
   void initializeList() {
     firmController.readAll().then((value) {
-      if (value == null) {
-        log('readAll() returned null');
-        return;
-      }
-
       log(value.toString());
 
       setState(() {

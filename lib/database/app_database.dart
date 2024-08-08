@@ -11,13 +11,13 @@ part 'app_database.g.dart';
   Firms,
   Sites,
   Flats,
-  Partners,
-  Transactions,
   Categories,
   SubCategories,
   Users,
   BankAccounts,
-  EntityPaymentMethods
+  EntityPaymentMethods,
+  Partners,
+  Transactions
 ])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
@@ -87,6 +87,7 @@ class AppDatabase extends _$AppDatabase {
 LazyDatabase _openConnection() {
   return LazyDatabase(() async {
     final dbFolder = await getApplicationDocumentsDirectory();
+    print(dbFolder.path);
     final file = File(p.join(dbFolder.path, 'db.sqlite'));
     return NativeDatabase(file);
   });
