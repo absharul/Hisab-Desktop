@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hisab/main.dart';
-import 'package:hisab/screens/inpute_forms/add_transaction_form.dart';
+import 'package:hisab/screens/input_forms/add_transaction_form.dart';
 import 'package:hisab/screens/widgets/widget_transaction_card.dart';
 import '../../database/app_database.dart';
 
@@ -12,30 +12,31 @@ class TransactionTab extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: StreamBuilder<List<Transaction>>(
-              stream: database.watchAllTransactions(),
-              builder: (context, snapshot) {
-                if (snapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (snapshot.hasError) {
-                  return Center(child: Text('Error: ${snapshot.error}'));
-                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return const Center(
-                      child: Text('No transactions available.'));
-                }
+          stream: database.watchAllTransactions(site.id),
+          builder: (context, snapshot) {
+            if (snapshot.connectionState == ConnectionState.waiting) {
+              return const Center(child: CircularProgressIndicator());
+            } else if (snapshot.hasError) {
+              return Center(child: Text('Error: ${snapshot.error}'));
+            } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+              return const Center(child: Text('No transactions available.'));
+            }
 
-                final transactions = snapshot.data!;
-                return ListView.builder(
-                  scrollDirection: Axis.vertical,
-                  shrinkWrap: true,
-                  itemCount: transactions.length,
-                  itemBuilder: (BuildContext context, int index) {
-                    final transaction = transactions[index];
-                    return WidgetTransactionCard(transaction: transaction);
-                  },
-                );
-              }),
+            final transactions = snapshot.data!;
+            return ListView.builder(
+              scrollDirection: Axis.vertical,
+              shrinkWrap: true,
+              itemCount: transactions.length,
+              itemBuilder: (BuildContext context, int index) {
+                final transaction = transactions[index];
+                return WidgetTransactionCard(transaction: transaction);
+              },
+            );
+          }),
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color(0xff4EA6B2),
+        shape: const RoundedRectangleBorder(
+            borderRadius: BorderRadius.all(Radius.circular(50))),
         foregroundColor: Colors.black,
         onPressed: () {
           Navigator.of(context).push(
@@ -44,7 +45,10 @@ class TransactionTab extends StatelessWidget {
             ),
           );
         },
-        child: const Icon(Icons.add),
+        child: const Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
       ),
     );
   }

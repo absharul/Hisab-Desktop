@@ -30,15 +30,14 @@ void showPartnerInputDialog({
                     DropdownButtonFormField<User>(
                       value: selectedUser,
                       decoration: const InputDecoration(
-                        labelText: 'Flat Type',
+                        labelText: 'Select User',
                       ),
-                      items: users.map<DropdownMenuItem<User>>(
-                              (User value) {
-                            return DropdownMenuItem<User>(
-                              value: value,
-                              child: Text(value.name),
-                            );
-                          }).toList(),
+                      items: users.map<DropdownMenuItem<User>>((User value) {
+                        return DropdownMenuItem<User>(
+                          value: value,
+                          child: Text(value.name),
+                        );
+                      }).toList(),
                       onChanged: (User? newValue) {
                         selectedUser = newValue;
                       },
@@ -46,16 +45,14 @@ void showPartnerInputDialog({
                     const SizedBox(height: 10),
                     TextFormField(
                       inputFormatters: <TextInputFormatter>[
-                        FilteringTextInputFormatter.digitsOnly, // Allows only digits
+                        FilteringTextInputFormatter
+                            .digitsOnly, // Allows only digits
                       ],
                       controller: shareController,
                       decoration: const InputDecoration(
                         hintText: 'Share Price',
-
                       ),
-
-                    ),  //partner name
-
+                    ), //partner name
                   ],
                 ),
               )
@@ -71,7 +68,7 @@ void showPartnerInputDialog({
           ),
           TextButton(
             child: const Text('Save'),
-            onPressed: () async{
+            onPressed: () async {
               if (selectedUser != null) {
                 try {
                   final partner = PartnersCompanion(
@@ -81,9 +78,12 @@ void showPartnerInputDialog({
                   );
                   await database.insertPartner(partner);
                   router.pop();
-                  HFunction.showFlushBarSuccess(context: context, message: "Successfully Added the partner");
-                }catch(error){
-                  HFunction.showFlushBarError(context: context, message: "Error Adding Partner");
+                  HFunction.showFlushBarSuccess(
+                      context: context,
+                      message: "Successfully Added the partner");
+                } catch (error) {
+                  HFunction.showFlushBarError(
+                      context: context, message: "Error Adding Partner");
                 }
               }
             },

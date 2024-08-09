@@ -50,12 +50,14 @@ class _ScreenSubCategoryListState extends State<ScreenSubCategoryList> {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     border: Border.all(color: Colors.black, width: 0.5),
-                    borderRadius: BorderRadius.circular(0), // Slightly rounded corners
+                    borderRadius:
+                        BorderRadius.circular(0), // Slightly rounded corners
                   ),
                   child: Row(
                     children: [
                       const Icon(Icons.category,
-                          color: Colors.black), // Icon to make it look different
+                          color:
+                              Colors.black), // Icon to make it look different
                       const SizedBox(width: 10),
                       Text(
                         site.name,
@@ -135,7 +137,7 @@ class _ScreenSubCategoryListState extends State<ScreenSubCategoryList> {
                   DropdownButtonFormField<Category>(
                     value: selectedCategory,
                     decoration: const InputDecoration(
-                      labelText: 'Flat Type',
+                      labelText: 'Select Category',
                     ),
                     items: categories
                         .map<DropdownMenuItem<Category>>((Category value) {
