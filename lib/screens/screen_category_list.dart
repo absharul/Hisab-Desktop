@@ -114,7 +114,7 @@ class ScreenCategoryList extends StatelessWidget {
           return Dialog(
             child: Container(
               width: 200,
-              height: 250,
+              height: 150,
               padding: const EdgeInsets.all(10),
               color: Colors.white,
               child: Column(
@@ -125,6 +125,7 @@ class ScreenCategoryList extends StatelessWidget {
                     controller: nameController,
                     decoration: const InputDecoration(hintText: "Name"),
                   ),
+                  const SizedBox(height: 10),
                   ElevatedButton(
                     onPressed: () async {
                       try {

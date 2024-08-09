@@ -14,9 +14,7 @@ class ScreenSiteDetails extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          site.name,
-          style: const TextStyle(color: Colors.black),
-        ),
+          site.name,),
         centerTitle: true,
       ),
       body: DefaultTabController(

@@ -133,7 +133,7 @@ class _ScreenUserListingState extends State<ScreenUserListing> {
           return Dialog(
             child: Container(
               width: 200,
-              height: 250,
+              height: 260,
               padding: const EdgeInsets.all(10),
               color: Colors.white,
               child: Column(
@@ -166,6 +166,7 @@ class _ScreenUserListingState extends State<ScreenUserListing> {
                       selectedSubCategory = newValue;
                     },
                   ),
+                  const SizedBox(height: 10),
                   ElevatedButton(
                     onPressed: () async {
                       try {

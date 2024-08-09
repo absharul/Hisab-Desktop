@@ -43,6 +43,7 @@ void showPartnerInputDialog({
                         selectedUser = newValue;
                       },
                     ),
+                    const SizedBox(height: 10),
                     TextFormField(
                       inputFormatters: <TextInputFormatter>[
                         FilteringTextInputFormatter.digitsOnly, // Allows only digits

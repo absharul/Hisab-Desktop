@@ -120,7 +120,7 @@ class _ScreenSubCategoryListState extends State<ScreenSubCategoryList> {
           return Dialog(
             child: Container(
               width: 200,
-              height: 250,
+              height: 200,
               padding: const EdgeInsets.all(10),
               color: Colors.white,
               child: Column(
@@ -148,6 +148,7 @@ class _ScreenSubCategoryListState extends State<ScreenSubCategoryList> {
                       selectedCategory = newValue;
                     },
                   ),
+                  const SizedBox(height: 10),
                   ElevatedButton(
                     onPressed: () async {
                       if (selectedCategory != null) {

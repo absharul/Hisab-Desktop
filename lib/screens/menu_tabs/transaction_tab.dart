@@ -11,10 +11,7 @@ class TransactionTab extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-          padding:
-              const EdgeInsets.only(top: 20, left: 50, right: 50, bottom: 80),
-          child: StreamBuilder<List<Transaction>>(
+      body: StreamBuilder<List<Transaction>>(
               stream: database.watchAllTransactions(),
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
@@ -36,7 +33,7 @@ class TransactionTab extends StatelessWidget {
                     return WidgetTransactionCard(transaction: transaction);
                   },
                 );
-              })),
+              }),
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color(0xff4EA6B2),
         foregroundColor: Colors.black,

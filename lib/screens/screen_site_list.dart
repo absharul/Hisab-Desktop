@@ -105,70 +105,114 @@ class ScreenSiteListing extends StatelessWidget {
     );
   }
 
+
   void addSitePressed(BuildContext context) async {
     final nameController = TextEditingController();
     final addressController = TextEditingController();
     final firmNameController = TextEditingController();
 
-    ModelDropdown? firm;
+    ModelDropdown? selectedFirm;
+    final List<ModelDropdown> firms = [
+      ModelDropdown(id: 1, name: "Firm A"),
+      ModelDropdown(id: 2, name: "Firm B"),
+      ModelDropdown(id: 3, name: "Firm C"),
+    ];
 
     return showDialog(
-        context: context,
-        builder: (ctx) {
-          return Dialog(
-            child: Container(
-              width: 200,
-              height: 250,
-              padding: const EdgeInsets.all(10),
-              color: Colors.white,
-              child: Column(
-                children: [
-                  const Text("Add Sites"),
-                  const SizedBox(height: 10),
-                  TextField(
-                    controller: nameController,
-                    decoration: const InputDecoration(hintText: "Name"),
+      context: context,
+      builder: (ctx) {
+        return Dialog(
+          child: Container(
+            width: 300, // Adjusted width for better UI
+            padding: const EdgeInsets.all(16),
+            color: Colors.white,
+            child: Column(
+              mainAxisSize: MainAxisSize.min, // Wrap content based on its size
+              children: [
+                const Text(
+                  "Add Site",
+                  style: TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 18,
                   ),
-                  const SizedBox(height: 10),
-                  TextField(
-                    controller: addressController,
-                    decoration: const InputDecoration(hintText: "Address"),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: nameController,
+                  decoration: const InputDecoration(
+                    labelText: "Name",
+                    border: OutlineInputBorder(),
                   ),
-                  const SizedBox(height: 10),
-                  WidgetDropdown(
-                      placeHolder: "Select",
-                      selectedValue: ModelDropdown(id: 0, name: "Firm"),
-                      onChanged: (value) {
-                        firmNameController.text = value.name;
-                        firm = value;
-                      }),
-                  ElevatedButton(
-                    onPressed: () async {
-                      try {
-                        if (firm != null) {
-                          final site = SitesCompanion(
-                            name: drift.Value(nameController.text),
-                            address: drift.Value(addressController.text),
-                            firmId: drift.Value(firm!.id),
-                          );
-                          await siteController.create(site);
-                          router.pop();
-                          HFunction.showFlushBarSuccess(
-                            context: context,
-                            message: "Successfully Added the site",
-                          );
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: addressController,
+                  decoration: const InputDecoration(
+                    labelText: "Address",
+                    border: OutlineInputBorder(),
+                  ),
+                ),
+                const SizedBox(height: 10),
+                DropdownButtonFormField<ModelDropdown>(
+                  value: selectedFirm,
+                  decoration: const InputDecoration(
+                    labelText: "Select Firm",
+                    border: OutlineInputBorder(),
+                  ),
+                  items: firms.map((ModelDropdown firm) {
+                    return DropdownMenuItem<ModelDropdown>(
+                      value: firm,
+                      child: Text(firm.name),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      selectedFirm = value;
+                      firmNameController.text = value.name;
+                    }
+                  },
+                ),
+                const SizedBox(height: 20),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(context).pop(); // Close the dialog
+                      },
+                      child: const Text("Cancel"),
+                    ),
+                    ElevatedButton(
+                      onPressed: () async {
+                        try {
+                          if (selectedFirm != null) {
+                            final site = SitesCompanion(
+                              name: drift.Value(nameController.text),
+                              address: drift.Value(addressController.text),
+                              firmId: drift.Value(selectedFirm!.id),
+                            );
+                            await siteController.create(site);
+                            Navigator.of(context).pop(); // Close the dialog
+                            HFunction.showFlushBarSuccess(
+                              context: context,
+                              message: "Successfully Added the site",
+                            );
+                          }
+                        } catch (error) {
+                          HFunction.showFlushBarError(
+                              context: context, message: error.toString());
                         }
-                      } catch (error) {
-                        HFunction.showFlushBarError(
-                            context: context, message: error.toString());
-                      }
-                    },
-                    child: const Text("Add"),
-                  )
-                ],
-              ),
+                      },
+                      child: const Text("Add"),
+                    ),
+                  ],
+                )
+              ],
             ),
-          );
-        });
+          ),
+        );
+      },
+    );
   }
+
 }

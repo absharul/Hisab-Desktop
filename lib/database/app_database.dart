@@ -101,7 +101,9 @@ class AppDatabase extends _$AppDatabase {
       into(entityPaymentMethods).insert(entityPaymentMethod);
   Future<EntityPaymentMethod> getEntityPaymentMethod(int id) =>
       (select(entityPaymentMethods)..where((t) => t.id.equals(id))).getSingle();
-}
+
+  updateFlat(Flat updatedFlat) {}  // latest changes made here by absharul
+  }
 
 LazyDatabase _openConnection() {
   return LazyDatabase(() async {

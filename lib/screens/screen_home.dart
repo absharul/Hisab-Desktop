@@ -29,10 +29,8 @@ class _ScreenHomeState extends State<ScreenHome>
         appBar: AppBar(
           centerTitle: true,
           title: const Text(
-            'Hisab',
-            style: TextStyle(color: Colors.black),
+            'Hisab',),
           ),
-        ),
         body: Column(
           children: [
             TabBar(controller: tabController, tabs: [

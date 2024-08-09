@@ -15,7 +15,8 @@ ThemeData appTheme = ThemeData(
       fontSize: 24,
       fontWeight: FontWeight.bold,
     ),
-    color: Color(0xFFE9E9E9),
+    // color: Color(0xFFE9E9E9),
+    color: Color(0xFF4EA6B2),
     centerTitle: true,
   ),
   inputDecorationTheme: const InputDecorationTheme(
@@ -24,18 +25,39 @@ ThemeData appTheme = ThemeData(
     ),
   ),
   tabBarTheme: const TabBarTheme(
-      dividerColor: Colors.grey,
-      dividerHeight: 3,
-      indicatorColor: Color(0xFF4EA6B2),
-      unselectedLabelColor: Colors.grey,
-      labelColor: Color(0xFF4EA6B2),
-      indicatorSize: TabBarIndicatorSize.tab,
-      labelStyle: TextStyle(
-        fontSize: 18,
-        fontWeight: FontWeight.bold,
-      )),
+    dividerColor: Colors.grey,
+    dividerHeight: 3,
+    indicatorColor: Color(0xFF4EA6B2),
+    unselectedLabelColor: Colors.grey,
+    labelColor: Color(0xFF4EA6B2),
+    indicatorSize: TabBarIndicatorSize.tab,
+    labelStyle: TextStyle(
+      fontSize: 18,
+      fontWeight: FontWeight.bold,
+    ),
+  ),
   floatingActionButtonTheme: const FloatingActionButtonThemeData(
     backgroundColor: Color(0xFF4EA6B2),
     iconSize: 18,
   ),
+  textButtonTheme: TextButtonThemeData(
+    style: ButtonStyle(
+      backgroundColor: WidgetStateProperty.all(Color(0xFF4EA6B2)),
+      foregroundColor: WidgetStateProperty.all(Colors.white),
+    ),
+  ),
+  elevatedButtonTheme: ElevatedButtonThemeData(
+    style: ButtonStyle(
+      backgroundColor: WidgetStateProperty.all(Color(0xFF4EA6B2)),
+      foregroundColor: WidgetStateProperty.all(Colors.white),
+    ),
+  ),
+  outlinedButtonTheme: OutlinedButtonThemeData(
+    style: ButtonStyle(
+      backgroundColor: WidgetStateProperty.all(Color(0xFF4EA6B2)),
+      foregroundColor: WidgetStateProperty.all(Colors.white),
+    ),
+  ),
 );
+
+

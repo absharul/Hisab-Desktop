@@ -137,6 +137,7 @@ class ScreenFirmListing extends StatelessWidget {
                     controller: addressController,
                     decoration: const InputDecoration(hintText: "Address"),
                   ),
+                  const SizedBox(height: 10),
                   ElevatedButton(
                     onPressed: () async {
                       // deleteDatabase();
