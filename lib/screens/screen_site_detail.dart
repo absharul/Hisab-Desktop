@@ -37,10 +37,8 @@ class ScreenSiteDetails extends StatelessWidget {
               child: TabBarView(
                 // children: [FlatsTab(), TransactionTab(site: site), PartnerTab(site:site)],
                 children: [
-                  const FlatsTab(),
-                  TransactionTab(
-                    site: site,
-                  ),
+                  FlatsTab(site: site),
+                  TransactionTab(site: site),
                   PartnerTab(site: site)
                 ],
               ),

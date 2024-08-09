@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:hisab/database/app_database.dart';
 import 'package:hisab/main.dart';
-import 'package:provider/provider.dart';
 import '../inpute_forms/add_flats.dart';
 
 class FlatsTab extends StatelessWidget {
-  const FlatsTab({super.key});
+  final Site site;
+  const FlatsTab({super.key, required this.site});
 
   @override
   Widget build(BuildContext context) {
@@ -124,7 +124,7 @@ class FlatsTab extends StatelessWidget {
         backgroundColor: const Color(0xff4EA6B2),
         foregroundColor: Colors.black,
         onPressed: () {
-          showFlatsInputDialog(context);
+          showFlatsInputDialog(context: context, siteId: site.id);
         },
         child: const Icon(Icons.add),
       ),

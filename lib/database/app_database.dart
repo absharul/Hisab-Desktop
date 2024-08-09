@@ -66,13 +66,14 @@ class AppDatabase extends _$AppDatabase {
   Stream<List<SubCategory>> watchSubCategory() => select(subCategories).watch();
   // USERS
   Future<List<User>> getUsers() => select(users).get();
+  Future<User> getUserById(int id) =>
+      (select(users)..where((t) => t.id.equals(id))).getSingle();
   Future<int> insertUser(Insertable<User> user) => into(users).insert(user);
   Stream<List<User>> watchUser() => select(users).watch();
   // FLATS
   Future<List<Flat>> getAllFlats() => select(flats).get();
   Future<int> insertFlat(Insertable<Flat> flat) => into(flats).insert(flat);
   Stream<List<Flat>> watchAllFlats() => select(flats).watch();
-
 
   // PARTNERS
   Future<List<Partner>> getAllPartners() => select(partners).get();
@@ -82,6 +83,8 @@ class AppDatabase extends _$AppDatabase {
 
   // TRANSACTIONS
   Future<List<Transaction>> getAllTransactions() => select(transactions).get();
+  Stream<List<Transaction>> watchAllTransactions() =>
+      select(transactions).watch();
   Future<int> insertTransaction(Insertable<Transaction> transaction) =>
       into(transactions).insert(transaction);
 
@@ -89,11 +92,15 @@ class AppDatabase extends _$AppDatabase {
   Future<int> insertBankAccountOne(Insertable<BankAccount> bankAccount) =>
       into(bankAccounts).insert(bankAccount);
   Future<List<BankAccount>> getBankAccounts() => select(bankAccounts).get();
+  Future<BankAccount> getBankAccountById(int id) =>
+      (select(bankAccounts)..where((t) => t.id.equals(id))).getSingle();
 
   // Entity Payment Methods
   Future<int> insertEntityPaymentMethod(
           Insertable<EntityPaymentMethod> entityPaymentMethod) =>
       into(entityPaymentMethods).insert(entityPaymentMethod);
+  Future<EntityPaymentMethod> getEntityPaymentMethod(int id) =>
+      (select(entityPaymentMethods)..where((t) => t.id.equals(id))).getSingle();
 }
 
 LazyDatabase _openConnection() {

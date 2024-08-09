@@ -6,7 +6,8 @@ import 'package:hisab/utils/helper_functions.dart';
 
 import '../../database/app_database.dart';
 
-void showFlatsInputDialog(BuildContext context) {
+void showFlatsInputDialog(
+    {required BuildContext context, required int siteId}) {
   final TextEditingController nameController = TextEditingController();
   final TextEditingController areaController = TextEditingController();
   final TextEditingController priceController = TextEditingController();
@@ -44,7 +45,8 @@ void showFlatsInputDialog(BuildContext context) {
                       controller: areaController,
                       keyboardType: TextInputType.number,
                       inputFormatters: <TextInputFormatter>[
-                        FilteringTextInputFormatter.digitsOnly, // Allows only digits
+                        FilteringTextInputFormatter
+                            .digitsOnly, // Allows only digits
                       ],
                       decoration: const InputDecoration(
                         hintText: 'Area',
@@ -84,7 +86,8 @@ void showFlatsInputDialog(BuildContext context) {
                       controller: priceController,
                       keyboardType: TextInputType.number,
                       inputFormatters: <TextInputFormatter>[
-                        FilteringTextInputFormatter.digitsOnly, // Allows only digits
+                        FilteringTextInputFormatter
+                            .digitsOnly, // Allows only digits
                       ],
                       decoration: const InputDecoration(
                         hintText: 'Rate per sq foot',
@@ -134,7 +137,7 @@ void showFlatsInputDialog(BuildContext context) {
                 type: drift.Value(selectedFlatType!),
                 rate: drift.Value(rate),
                 isSold: drift.Value(isSold),
-                siteId: const drift.Value(1), // Replace with actual siteId
+                siteId: drift.Value(siteId), // Replace with actual siteId
               );
 
               await database.insertFlat(flat).then((value) {
