@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hisab/screens/menu_tabs/flats_tab.dart';
 import 'package:hisab/screens/menu_tabs/transaction_tab.dart';
+import 'package:phosphor_flutter/phosphor_flutter.dart';
 
 import '../database/app_database.dart';
 import 'menu_tabs/partner_tab.dart';
@@ -21,11 +22,29 @@ class ScreenSiteDetails extends StatelessWidget {
         length: 3,
         child: Column(
           children: [
-            const TabBar(
+             TabBar(
               tabs: [
-                Tab(text: 'Flats'),
-                Tab(text: 'Transaction'),
-                Tab(text: 'Partner'),
+                Tab(
+                    icon: Icon(
+                      PhosphorIcons.buildingApartment(),
+                      size: 32.0,
+                      color: Colors.grey,
+                    ),
+                    text: 'Flats'),
+                Tab(
+                    icon: Icon(
+                      PhosphorIcons.swap(),
+                      size: 32.0,
+                      color: Colors.grey,
+                    ),
+                    text: 'Transaction'),
+                Tab(
+                    icon: Icon(
+                      PhosphorIcons.handshake(),
+                      size: 32.0,
+                      color: Colors.grey,
+                    ),
+                    text: 'Partner'),
               ],
               indicatorColor: Color(0xFF4EA6B2),
               indicatorSize: TabBarIndicatorSize.tab,

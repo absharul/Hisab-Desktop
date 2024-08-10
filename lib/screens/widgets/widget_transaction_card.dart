@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hisab/database/app_database.dart';
 import 'package:hisab/main.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:intl/intl.dart';  // Import for date formatting
 
 class WidgetTransactionCard extends StatefulWidget {
   final Transaction transaction;
@@ -16,6 +17,7 @@ class _WidgetTransactionCardState extends State<WidgetTransactionCard> {
   String to = "";
   String fromBankName = "";
   String toBankName = "";
+
   @override
   void initState() {
     super.initState();
@@ -24,9 +26,9 @@ class _WidgetTransactionCardState extends State<WidgetTransactionCard> {
 
   void initializeData() async {
     final fromEntity =
-        await database.getEntityPaymentMethod(widget.transaction.fromId);
+    await database.getEntityPaymentMethod(widget.transaction.fromId);
     final toEntity =
-        await database.getEntityPaymentMethod(widget.transaction.toId);
+    await database.getEntityPaymentMethod(widget.transaction.toId);
 
     await database.getUserById(fromEntity.entityId).then((value) {
       from = value.name;
@@ -36,7 +38,7 @@ class _WidgetTransactionCardState extends State<WidgetTransactionCard> {
     });
 
     final fromBank =
-        await database.getBankAccountById(fromEntity.bankAccountId);
+    await database.getBankAccountById(fromEntity.bankAccountId);
     final toBank = await database.getBankAccountById(toEntity.bankAccountId);
     setState(() {
       fromBankName = fromBank.bankName;
@@ -53,7 +55,7 @@ class _WidgetTransactionCardState extends State<WidgetTransactionCard> {
         color: Colors.white,
         border: Border.all(color: Colors.black, width: 0.5),
         borderRadius:
-            BorderRadius.circular(0), // No rounded corners for old-school look
+        BorderRadius.circular(0), // No rounded corners for old-school look
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.start,
@@ -120,28 +122,77 @@ class _WidgetTransactionCardState extends State<WidgetTransactionCard> {
                 ],
               ),
               const SizedBox(height: 5),
-              Row(
-                children: [
-                  Text(
-                    'Amount: \$ ${widget.transaction.amount}',
-                    style: const TextStyle(
-                      fontFamily: 'Courier', // Old-school font
-                      fontSize: 16.0,
-                      color: Colors.black,
-                      fontWeight: FontWeight.normal,
+              Text(
+                'Amount: \$ ${widget.transaction.amount}',
+                style: const TextStyle(
+                  fontFamily: 'Courier', // Old-school font
+                  fontSize: 16.0,
+                  color: Colors.black,
+                  fontWeight: FontWeight.normal,
+                ),
+              ),
+              const SizedBox(height: 5),
+              // Row(
+              //   children: [
+              //     Text(
+              //       'Remarks: ${widget.transaction.remarks}',
+              //       style: const TextStyle(
+              //         fontFamily: 'Courier', // Old-school font
+              //         fontSize: 16.0,
+              //         color: Colors.black,
+              //         fontWeight: FontWeight.normal,
+              //       ),
+              //     ),
+              //     const SizedBox(width: 200),
+              //     Text(
+              //       ' ${DateFormat('dd/MM/yyyy HH:mm').format(widget.transaction.createdAt)}',
+              //       style: const TextStyle(
+              //         fontFamily: 'Courier', // Old-school font
+              //         fontSize: 16.0,
+              //         color: Colors.black,
+              //         fontWeight: FontWeight.normal,
+              //       ),
+              //     ),
+              //   ],
+              // ),
+              RichText(
+                text: TextSpan(
+                  children: [
+                    TextSpan(
+                      text: 'Remarks: ${widget.transaction.remarks} ',
+                      style: const TextStyle(
+                        fontFamily: 'Courier',
+                        fontSize: 16.0,
+                        color: Colors.black,
+                        fontWeight: FontWeight.normal,
+                      ),
                     ),
-                  ),
-                  const SizedBox(width: 10),
-                  Text(
-                    'Remarks: ${widget.transaction.remarks}',
-                    style: const TextStyle(
-                      fontFamily: 'Courier', // Old-school font
-                      fontSize: 16.0,
-                      color: Colors.black,
-                      fontWeight: FontWeight.normal,
+                    const WidgetSpan(
+                      child: SizedBox(width: 100),
                     ),
-                  ),
-                ],
+                    TextSpan(
+                      text: '${DateFormat('dd/MM/yyyy').format(widget.transaction.createdAt)} ',
+                      style: const TextStyle(
+                        fontFamily: 'Courier',
+                        fontSize: 16.0,
+                        color: Colors.black,
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                    const WidgetSpan(
+                      child: SizedBox(width: 20),
+                    ),
+                    TextSpan(
+                      text: '${DateFormat('HH:mm').format(widget.transaction.createdAt)}',
+                      style: const TextStyle(
+                        fontFamily: 'Courier',
+                        fontSize: 16.0,
+                        color: Colors.black,
+                        fontWeight: FontWeight.normal,
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
@@ -187,3 +238,4 @@ class _WidgetTransactionCardState extends State<WidgetTransactionCard> {
     );
   }
 }
+
