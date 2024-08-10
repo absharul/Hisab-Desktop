@@ -28,6 +28,10 @@ class Flats extends drift.Table {
   BoolColumn get isSold => boolean().withDefault(const Constant(false))();
   IntColumn get siteId =>
       integer().customConstraint('REFERENCES sites(id) NOT NULL')();
+  IntColumn get buyerId =>
+      integer().nullable().customConstraint('REFERENCES users(id)')();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
 }
 
 class Categories extends Table {
@@ -62,6 +66,8 @@ class BankAccounts extends Table {
   TextColumn get bankName => text().withLength(min: 1, max: 50)();
   TextColumn get ifsc => text().withLength(min: 1, max: 50)();
   TextColumn get accountHolder => text().withLength(min: 1, max: 50)();
+  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
+  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
 }
 
 class EntityPaymentMethods extends Table {

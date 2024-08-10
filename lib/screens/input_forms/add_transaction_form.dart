@@ -238,7 +238,8 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
                                     TextFormField(
                                       controller: fromAccountNumberController,
                                       inputFormatters: <TextInputFormatter>[
-                                        FilteringTextInputFormatter.digitsOnly, // Allows only digits
+                                        FilteringTextInputFormatter
+                                            .digitsOnly, // Allows only digits
                                       ],
                                       decoration: const InputDecoration(
                                         border: OutlineInputBorder(),
@@ -404,7 +405,8 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
                                     const SizedBox(height: 10),
                                     TextFormField(
                                       inputFormatters: <TextInputFormatter>[
-                                        FilteringTextInputFormatter.digitsOnly, // Allows only digits
+                                        FilteringTextInputFormatter
+                                            .digitsOnly, // Allows only digits
                                       ],
                                       controller: toAccountNumberController,
                                       decoration: const InputDecoration(
@@ -502,7 +504,8 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
                               const SizedBox(height: 10),
                               TextFormField(
                                 inputFormatters: <TextInputFormatter>[
-                                  FilteringTextInputFormatter.digitsOnly, // Allows only digits
+                                  FilteringTextInputFormatter
+                                      .digitsOnly, // Allows only digits
                                 ],
                                 controller: amountController,
                                 decoration: const InputDecoration(
@@ -520,7 +523,8 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
                               const SizedBox(height: 10),
                               TextFormField(
                                 inputFormatters: <TextInputFormatter>[
-                                  FilteringTextInputFormatter.digitsOnly, // Allows only digits
+                                  FilteringTextInputFormatter
+                                      .digitsOnly, // Allows only digits
                                 ],
                                 controller: chequeController,
                                 decoration: const InputDecoration(
@@ -563,7 +567,15 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
                       ElevatedButton(
                         onPressed: () {
                           // Handle next button press
-                          Navigator.of(context).pop();
+                          int currentPage = pageController.page?.toInt() ?? 0;
+                          if (currentPage > 0) {
+                            pageController.previousPage(
+                              duration: const Duration(milliseconds: 300),
+                              curve: Curves.easeInOut,
+                            );
+                          } else {
+                            router.pop();
+                          }
                         },
                         child: const Text('Cancel'),
                       ),

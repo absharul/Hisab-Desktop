@@ -50,7 +50,8 @@ class _ScreenSubCategoryListState extends State<ScreenSubCategoryList> {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     border: Border.all(color: Colors.black, width: 0.5),
-                    borderRadius: BorderRadius.circular(0), // Slightly rounded corners
+                    borderRadius:
+                        BorderRadius.circular(0), // Slightly rounded corners
                   ),
                   child: Row(
                     children: [
@@ -136,7 +137,7 @@ class _ScreenSubCategoryListState extends State<ScreenSubCategoryList> {
                   DropdownButtonFormField<Category>(
                     value: selectedCategory,
                     decoration: const InputDecoration(
-                      labelText: 'Flat Type',
+                      labelText: 'Select Category',
                     ),
                     items: categories
                         .map<DropdownMenuItem<Category>>((Category value) {

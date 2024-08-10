@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:hisab/main.dart';
-import 'package:hisab/screens/inpute_forms/add_partner.dart';
+import 'package:hisab/screens/input_forms/add_partner.dart';
 import 'package:hisab/screens/widgets/widget_partner_card.dart';
 
 import '../../database/app_database.dart';
@@ -33,7 +33,7 @@ class _PartnerTabState extends State<PartnerTab> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: StreamBuilder<List<Partner>>(
-          stream: database.watchPartners(),
+          stream: database.watchPartners(widget.site.id),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());
@@ -61,7 +61,10 @@ class _PartnerTabState extends State<PartnerTab> {
           showPartnerInputDialog(
               context: context, site: widget.site, users: usersList);
         },
-        child: const Icon(Icons.add),
+        child: const Icon(
+          Icons.add,
+          color: Colors.white,
+        ),
       ),
     );
   }

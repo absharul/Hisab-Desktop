@@ -1,10 +1,9 @@
 import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
 import 'package:hisab/database/app_database.dart';
-import 'package:hisab/models/model_dropdown.dart';
+import 'package:hisab/main.dart';
 import 'package:hisab/routes/route.dart';
 import 'package:hisab/screens/screen_site_detail.dart';
-import 'package:hisab/screens/widgets/widget_dropdown.dart';
 import 'package:hisab/utils/helper_functions.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
@@ -44,20 +43,38 @@ class ScreenSiteListing extends StatelessWidget {
                   decoration: BoxDecoration(
                     color: Colors.white,
                     border: Border.all(color: Colors.black, width: 0.5),
-                    borderRadius: BorderRadius.circular(0), // Slightly rounded corners
+                    borderRadius:
+                        BorderRadius.circular(0), // Slightly rounded corners
                   ),
                   child: Row(
                     children: [
                       const Icon(Icons.location_on,
-                          color: Colors.blue), // Icon to make it look different
+                          size: 30,
+                          color:
+                              Colors.black), // Icon to make it look different
                       const SizedBox(width: 10),
-                      Text(
-                        site.name,
-                        style: const TextStyle(
-                          fontFamily: 'Courier', // Old-school font
-                          fontSize: 16.0,
-                          color: Colors.black,
-                        ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            site.name,
+                            style: const TextStyle(
+                              fontFamily: 'Courier', // Old-school font
+                              fontSize: 20.0,
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          Text(
+                            site.address,
+                            style: const TextStyle(
+                              fontFamily: 'Courier', // Old-school font
+                              fontSize: 16.0,
+                              color: Colors.black,
+                              fontWeight: FontWeight.normal,
+                            ),
+                          ),
+                        ],
                       ),
                       const Expanded(child: SizedBox()),
                       Column(
@@ -105,18 +122,13 @@ class ScreenSiteListing extends StatelessWidget {
     );
   }
 
-
   void addSitePressed(BuildContext context) async {
     final nameController = TextEditingController();
     final addressController = TextEditingController();
     final firmNameController = TextEditingController();
 
-    ModelDropdown? selectedFirm;
-    final List<ModelDropdown> firms = [
-      ModelDropdown(id: 1, name: "Firm A"),
-      ModelDropdown(id: 2, name: "Firm B"),
-      ModelDropdown(id: 3, name: "Firm C"),
-    ];
+    Firm? selectedFirm;
+    final List<Firm> firms = await database.getAllFirms();
 
     return showDialog(
       context: context,
@@ -153,14 +165,14 @@ class ScreenSiteListing extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 10),
-                DropdownButtonFormField<ModelDropdown>(
+                DropdownButtonFormField<Firm>(
                   value: selectedFirm,
                   decoration: const InputDecoration(
                     labelText: "Select Firm",
                     border: OutlineInputBorder(),
                   ),
-                  items: firms.map((ModelDropdown firm) {
-                    return DropdownMenuItem<ModelDropdown>(
+                  items: firms.map((Firm firm) {
+                    return DropdownMenuItem<Firm>(
                       value: firm,
                       child: Text(firm.name),
                     );
@@ -192,7 +204,7 @@ class ScreenSiteListing extends StatelessWidget {
                               firmId: drift.Value(selectedFirm!.id),
                             );
                             await siteController.create(site);
-                            Navigator.of(context).pop(); // Close the dialog
+                            router.pop(); // Close the dialog
                             HFunction.showFlushBarSuccess(
                               context: context,
                               message: "Successfully Added the site",
@@ -214,5 +226,4 @@ class ScreenSiteListing extends StatelessWidget {
       },
     );
   }
-
 }

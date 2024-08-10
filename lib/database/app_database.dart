@@ -69,22 +69,51 @@ class AppDatabase extends _$AppDatabase {
   Future<User> getUserById(int id) =>
       (select(users)..where((t) => t.id.equals(id))).getSingle();
   Future<int> insertUser(Insertable<User> user) => into(users).insert(user);
-  Stream<List<User>> watchUser() => select(users).watch();
+  Stream<List<User>> watchUser() => (select(users)
+        ..orderBy([
+          (t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc)
+        ]))
+      .watch();
   // FLATS
   Future<List<Flat>> getAllFlats() => select(flats).get();
   Future<int> insertFlat(Insertable<Flat> flat) => into(flats).insert(flat);
-  Stream<List<Flat>> watchAllFlats() => select(flats).watch();
+  Stream<List<Flat>> watchAllFlats(int siteId) => (select(flats)
+        ..where((t) => t.siteId.equals(siteId))
+        ..orderBy([
+          (t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc)
+        ]))
+      .watch();
+
+  Future<int> updateFlatSoldStatus(
+          {required int flatId, required int userId}) =>
+      (update(flats)..where((t) => t.id.equals(flatId))).write(
+        FlatsCompanion(
+          isSold: const Value(true),
+          buyerId: Value(userId),
+        ),
+      );
 
   // PARTNERS
   Future<List<Partner>> getAllPartners() => select(partners).get();
-  Stream<List<Partner>> watchPartners() => select(partners).watch();
+  Stream<List<Partner>> watchPartners(int siteId) => (select(partners)
+        ..where((t) => t.siteId.equals(siteId))
+        ..orderBy([
+          (t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc)
+        ]))
+      .watch();
   Future<int> insertPartner(Insertable<Partner> partner) =>
       into(partners).insert(partner);
 
   // TRANSACTIONS
   Future<List<Transaction>> getAllTransactions() => select(transactions).get();
-  Stream<List<Transaction>> watchAllTransactions() =>
-      select(transactions).watch();
+  Stream<List<Transaction>> watchAllTransactions(int siteId) =>
+      (select(transactions)
+            ..where((t) => t.siteId.equals(siteId))
+            ..orderBy([
+              (t) =>
+                  OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc)
+            ]))
+          .watch();
   Future<int> insertTransaction(Insertable<Transaction> transaction) =>
       into(transactions).insert(transaction);
 
@@ -101,14 +130,11 @@ class AppDatabase extends _$AppDatabase {
       into(entityPaymentMethods).insert(entityPaymentMethod);
   Future<EntityPaymentMethod> getEntityPaymentMethod(int id) =>
       (select(entityPaymentMethods)..where((t) => t.id.equals(id))).getSingle();
-
-  updateFlat(Flat updatedFlat) {}  // latest changes made here by absharul
-  }
+}
 
 LazyDatabase _openConnection() {
   return LazyDatabase(() async {
     final dbFolder = await getApplicationDocumentsDirectory();
-    print(dbFolder.path);
     final file = File(p.join(dbFolder.path, 'db.sqlite'));
     return NativeDatabase(file);
   });
