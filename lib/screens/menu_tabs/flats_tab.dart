@@ -70,7 +70,13 @@ class _FlatItemState extends State<FlatItem> {
   @override
   void initState() {
     super.initState();
-    _flat = widget.flat; // Initialize with the passed flat
+    _flat = widget.flat;
+    getLists(); // Initialize with the passed flat
+  }
+
+  getLists() async {
+    users = await database.getUsers();
+    setState(() {});
   }
 
   @override
@@ -168,58 +174,59 @@ class _FlatItemState extends State<FlatItem> {
     showDialog(
       context: context!,
       builder: (context) {
-        return AlertDialog(
-          content: Column(
-            children: [
-              DropdownButtonFormField<User>(
-                value: selectedUserToSold,
-                decoration: const InputDecoration(
-                  labelText: 'Flat Type',
-                ),
-                items: users.map<DropdownMenuItem<User>>((User value) {
-                  return DropdownMenuItem<User>(
-                    value: value,
-                    child: Text(value.name),
-                  );
-                }).toList(),
-                onChanged: (User? newValue) {
-                  selectedUserToSold = newValue;
-                },
+        return Dialog(
+          child: Container(
+            width: 200,
+            height: 150,
+            padding: const EdgeInsets.all(10),
+            child: Center(
+              child: Column(
+                children: [
+                  const Text("Sell Flat"),
+                  const SizedBox(height: 10),
+                  DropdownButtonFormField<User>(
+                    value: selectedUserToSold,
+                    decoration: const InputDecoration(
+                      labelText: 'Select User',
+                    ),
+                    items: users.map<DropdownMenuItem<User>>((User value) {
+                      return DropdownMenuItem<User>(
+                        value: value,
+                        child: Text(value.name),
+                      );
+                    }).toList(),
+                    onChanged: (User? newValue) {
+                      selectedUserToSold = newValue;
+                    },
+                  ),
+                  const SizedBox(height: 10),
+                  ElevatedButton(
+                    onPressed: () async {
+                      try {
+                        await database.updateFlatSoldStatus(
+                            flatId: _flat.id, userId: selectedUserToSold!.id);
+                        HFunction.showFlushBarError(
+                            context: context,
+                            message: "Sold Flat Successfully",
+                            afterPop: () {
+                              final updatedFlat =
+                                  _flat.copyWith(isSold: !_flat.isSold);
+                              setState(() {
+                                _flat = updatedFlat;
+                              });
+                              router.pop();
+                            });
+                      } catch (error) {
+                        HFunction.showFlushBarError(
+                            context: context, message: error.toString());
+                      }
+                    },
+                    child: const Text("Sell Flat"),
+                  ),
+                ],
               ),
-              const SizedBox(height: 5.0)
-            ],
+            ),
           ),
-          actions: [
-            TextButton(
-              child: const Text('Cancel'),
-              onPressed: () {
-                router.pop();
-              },
-            ),
-            TextButton(
-              child: const Text('Sell'),
-              onPressed: () async {
-                try {
-                  await database.updateFlatSoldStatus(
-                      flatId: _flat.id, userId: selectedUserToSold!.id);
-                  HFunction.showFlushBarError(
-                      context: context,
-                      message: "Sold Flat Successfully",
-                      afterPop: () {
-                        final updatedFlat =
-                            _flat.copyWith(isSold: !_flat.isSold);
-                        setState(() {
-                          _flat = updatedFlat;
-                        });
-                        router.pop();
-                      });
-                } catch (error) {
-                  HFunction.showFlushBarError(
-                      context: context, message: error.toString());
-                }
-              },
-            ),
-          ],
         );
       },
     );
