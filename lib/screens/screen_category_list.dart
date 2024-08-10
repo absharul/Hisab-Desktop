@@ -48,8 +48,9 @@ class ScreenCategoryList extends StatelessWidget {
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.category,
-                          color: Colors.black), // Icon to make it look different
+                      Icon(
+                        PhosphorIcons.stack(),
+                      ),// Icon to make it look different
                       const SizedBox(width: 10),
                       Text(
                         site.name,

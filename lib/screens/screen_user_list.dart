@@ -65,9 +65,9 @@ class _ScreenUserListingState extends State<ScreenUserListing> {
                   ),
                   child: Row(
                     children: [
-                      const Icon(Icons.person,
-                          color:
-                              Colors.black), // Icon to make it look different
+                      Icon(
+                        PhosphorIcons.user(),
+                      ), // Icon to make it look different
                       const SizedBox(width: 10),
                       Text(
                         site.name,

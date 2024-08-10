@@ -36,35 +36,35 @@ class _ScreenHomeState extends State<ScreenHome>
             TabBar(controller: tabController, tabs: [
               Tab(
                 icon: Icon(
-                  PhosphorIcons.building(),
-                  size: 24,
+                  PhosphorIcons.buildingOffice(),
+                  size: 24.0,
                 ),
                 text: "Firms",
               ),
               Tab(
                 icon: Icon(
-                  PhosphorIcons.building(),
-                  size: 24,
+                  PhosphorIcons.mapPin(),
+                  size: 24.0,
                 ),
                 text: "Sites",
               ),
               Tab(
                 icon: Icon(
-                  PhosphorIcons.building(),
-                  size: 24,
+                  PhosphorIcons.stack(),
+                  size: 24.0,
                 ),
                 text: "Categories",
               ),
               Tab(
                 icon: Icon(
-                  PhosphorIcons.building(),
-                  size: 24,
+                  PhosphorIcons.stackSimple(),
+                  size: 24.0,
                 ),
                 text: "SubCategories",
               ),
               Tab(
                 icon: Icon(
-                  PhosphorIcons.building(),
+                  PhosphorIcons.users(),
                   size: 24,
                 ),
                 text: "Users",
