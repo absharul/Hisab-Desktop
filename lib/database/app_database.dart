@@ -27,13 +27,10 @@ class AppDatabase extends _$AppDatabase {
 
   // FIRMS
   Future<List<Firm>> getAllFirms() => select(firms).get();
-  Future<Firm> getFirm(int id) =>
-      (select(firms)..where((t) => t.id.equals(id))).getSingle();
+  Future<Firm> getFirm(int id) => (select(firms)
+    ..where((t) => t.id.equals(id))).getSingle();
   Stream<List<Firm>> watchAllFirms() => (select(firms)
-        ..orderBy([
-          (t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc)
-        ]))
-      .watch();
+    ..orderBy([(t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc)])).watch();
   Future<int> updateFirm(Firm firm) => into(firms).insertOnConflictUpdate(firm);
   Future<int> insertFirm(Insertable<Firm> firm) => into(firms).insert(firm);
   Future<int> deleteFirm(Insertable<Firm> firm) => delete(firms).delete(firm);

@@ -42,19 +42,19 @@ ThemeData appTheme = ThemeData(
   ),
   textButtonTheme: TextButtonThemeData(
     style: ButtonStyle(
-      backgroundColor: WidgetStateProperty.all(Color(0xFF4EA6B2)),
+      backgroundColor: WidgetStateProperty.all(const Color(0xFF4EA6B2)),
       foregroundColor: WidgetStateProperty.all(Colors.white),
     ),
   ),
   elevatedButtonTheme: ElevatedButtonThemeData(
     style: ButtonStyle(
-      backgroundColor: WidgetStateProperty.all(Color(0xFF4EA6B2)),
+      backgroundColor: WidgetStateProperty.all(const Color(0xFF4EA6B2)),
       foregroundColor: WidgetStateProperty.all(Colors.white),
     ),
   ),
   outlinedButtonTheme: OutlinedButtonThemeData(
     style: ButtonStyle(
-      backgroundColor: WidgetStateProperty.all(Color(0xFF4EA6B2)),
+      backgroundColor: WidgetStateProperty.all(const Color(0xFF4EA6B2)),
       foregroundColor: WidgetStateProperty.all(Colors.white),
     ),
   ),

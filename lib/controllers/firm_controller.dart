@@ -46,7 +46,7 @@ class FirmController extends BaseController<Firm, FirmsCompanion> {
   }
 
   @override
-  Future<int> update(Firm model) {
+  Future<int> update(Firm model) async {
     try {
       final data = database.updateFirm(model);
       return data;

@@ -2,9 +2,7 @@ import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
 import 'package:hisab/database/app_database.dart';
 import 'package:hisab/models/model_dropdown.dart';
-import 'package:hisab/routes/route.dart';
 import 'package:hisab/screens/screen_site_detail.dart';
-import 'package:hisab/screens/widgets/widget_dropdown.dart';
 import 'package:hisab/utils/helper_functions.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
 
@@ -78,8 +76,39 @@ class ScreenSiteListing extends StatelessWidget {
                         children: [
                           IconButton(
                             icon: const Icon(Icons.delete),
-                            onPressed: () {
-                              // Add your delete functionality here
+                            onPressed: () async {
+                              final confirm = await showDialog(
+                                context: context,
+                                builder: (ctx) => AlertDialog(
+                                  title: const Text('Delete Site'),
+                                  content: const Text('Are you sure you want to delete this site?'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.of(ctx).pop(false),
+                                      child: const Text('Cancel'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () => Navigator.of(ctx).pop(true),
+                                      child: const Text('Delete'),
+                                    ),
+                                  ],
+                                ),
+                              );
+
+                              if (confirm == true) {
+                                try {
+                                  await siteController.delete(site);
+                                  HFunction.showFlushBarSuccess(
+                                    context: context,
+                                    message: "Successfully deleted the site",
+                                  );
+                                } catch (error) {
+                                  HFunction.showFlushBarError(
+                                    context: context,
+                                    message: "Failed to delete the site: $error",
+                                  );
+                                }
+                              }
                             },
                           ),
                           const Text("Delete"),
