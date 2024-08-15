@@ -60,12 +60,17 @@ class AppDatabase extends _$AppDatabase {
 
   // SUBCATEGORY
   Future<List<SubCategory>> getSubCategory() => select(subCategories).get();
+  Future<List<SubCategory>> getSubcategoryByCategoryId(int categoryId) async =>
+      (select(subCategories)..where((t) => t.categoryId.equals(categoryId)))
+          .get();
   Future<int> insertSubCategory(Insertable<SubCategory> subCategory) =>
       into(subCategories).insert(subCategory);
 
   Stream<List<SubCategory>> watchSubCategory() => select(subCategories).watch();
   // USERS
   Future<List<User>> getUsers() => select(users).get();
+  Future<List<User>> getUsersByCategoryId(int categoryId) =>
+      (select(users)..where((t) => t.subCategory.equals(categoryId))).get();
   Future<User> getUserById(int id) =>
       (select(users)..where((t) => t.id.equals(id))).getSingle();
   Future<int> insertUser(Insertable<User> user) => into(users).insert(user);

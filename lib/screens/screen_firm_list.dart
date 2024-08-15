@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
 import 'package:hisab/database/app_database.dart';
@@ -223,14 +221,11 @@ class ScreenFirmListing extends StatelessWidget {
                 const SizedBox(height: 10),
                 ElevatedButton(
                   onPressed: () async {
-                    print("Address Controller: ${addressController.text}");
-                    print("Name: ${nameController.text}");
                     try {
                       final updatedFirm = firm.copyWith(
                         name: nameController.text,
                         address: addressController.text,
                       );
-                      log(firm.toString());
                       await firmController.update(updatedFirm);
                       Navigator.of(context).pop(); // Close the dialog
                       HFunction.showFlushBarSuccess(
