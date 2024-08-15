@@ -95,8 +95,43 @@ class ScreenSiteListing extends StatelessWidget {
                         children: [
                           IconButton(
                             icon: const Icon(Icons.delete),
-                            onPressed: () {
-                              // Add your delete functionality here
+                            onPressed: () async {
+                              final confirm = await showDialog(
+                                context: context,
+                                builder: (ctx) => AlertDialog(
+                                  title: const Text('Delete Site'),
+                                  content: const Text(
+                                      'Are you sure you want to delete this site?'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(ctx).pop(false),
+                                      child: const Text('Cancel'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(ctx).pop(true),
+                                      child: const Text('Delete'),
+                                    ),
+                                  ],
+                                ),
+                              );
+
+                              if (confirm == true) {
+                                try {
+                                  await siteController.delete(site);
+                                  HFunction.showFlushBarSuccess(
+                                    context: context,
+                                    message: "Successfully deleted the site",
+                                  );
+                                } catch (error) {
+                                  HFunction.showFlushBarError(
+                                    context: context,
+                                    message:
+                                        "Failed to delete the site: $error",
+                                  );
+                                }
+                              }
                             },
                           ),
                           const Text("Delete"),

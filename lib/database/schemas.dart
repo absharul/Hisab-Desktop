@@ -72,8 +72,7 @@ class BankAccounts extends Table {
 
 class EntityPaymentMethods extends Table {
   IntColumn get id => integer().autoIncrement()();
-  IntColumn get entityId =>
-      integer().customConstraint('REFERENCES users(id) NOT NULL')();
+  IntColumn get entityId => integer()();
   TextColumn get entityType => text().withLength(min: 1, max: 50)();
   IntColumn get bankAccountId =>
       integer().customConstraint('REFERENCES bankAccounts(id) NOT NULL')();

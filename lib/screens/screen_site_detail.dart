@@ -46,9 +46,9 @@ class ScreenSiteDetails extends StatelessWidget {
                     ),
                     text: 'Partner'),
               ],
-              indicatorColor: Color(0xFF4EA6B2),
+              indicatorColor: const Color(0xFF4EA6B2),
               indicatorSize: TabBarIndicatorSize.tab,
-              labelStyle: TextStyle(fontSize: 16.0),
+              labelStyle: const TextStyle(fontSize: 16.0),
             ),
             Expanded(
               child: TabBarView(

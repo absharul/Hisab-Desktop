@@ -183,7 +183,7 @@ class _WidgetTransactionCardState extends State<WidgetTransactionCard> {
                       child: SizedBox(width: 20),
                     ),
                     TextSpan(
-                      text: '${DateFormat('HH:mm').format(widget.transaction.createdAt)}',
+                      text: DateFormat('HH:mm').format(widget.transaction.createdAt),
                       style: const TextStyle(
                         fontFamily: 'Courier',
                         fontSize: 16.0,

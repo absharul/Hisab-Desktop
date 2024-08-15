@@ -45,7 +45,7 @@ class SiteController extends BaseController<Site, SitesCompanion> {
   }
 
   @override
-  Future<int> update(Site model) {
+  Future<bool> update(Site model) {
     try {
       final data = database.updateSite(model);
       return data;

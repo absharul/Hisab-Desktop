@@ -34,7 +34,7 @@ class AppDatabase extends _$AppDatabase {
           (t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc)
         ]))
       .watch();
-  Future<int> updateFirm(Firm firm) => into(firms).insertOnConflictUpdate(firm);
+  Future<bool> updateFirm(Firm firm) => update(firms).replace(firm);
   Future<int> insertFirm(Insertable<Firm> firm) => into(firms).insert(firm);
   Future<int> deleteFirm(Insertable<Firm> firm) => delete(firms).delete(firm);
 
@@ -47,7 +47,7 @@ class AppDatabase extends _$AppDatabase {
       .watch();
   Future<Site> getSite(int id) =>
       (select(sites)..where((t) => t.id.equals(id))).getSingle();
-  Future<int> updateSite(Site site) => into(sites).insertOnConflictUpdate(site);
+  Future<bool> updateSite(Site site) => update(sites).replace(site);
   Future<int> deleteSite(Insertable<Site> site) => delete(sites).delete(site);
   Future<int> insertSite(Insertable<Site> site) => into(sites).insert(site);
 

@@ -5,7 +5,7 @@ abstract class BaseController<T, E> {
 
   Future<List<T>> readAll();
 
-  Future<int> update(T model);
+  Future<bool> update(T model);
 
   Future<int> delete(T model);
 

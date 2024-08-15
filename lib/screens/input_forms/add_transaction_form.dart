@@ -195,7 +195,6 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
                               Row(
                                   crossAxisAlignment: CrossAxisAlignment.center,
                                   children: [
-                                    //  Add radio button on for add bank acc or choose bank acc
                                     Expanded(
                                       child: ListTile(
                                         title: const Text('Add Bank Account'),
