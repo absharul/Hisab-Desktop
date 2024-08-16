@@ -43,6 +43,7 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
   final PageController pageController = PageController();
   final formKeys = List.generate(3, (_) => GlobalKey<FormState>());
 
+  final dropDownKey = GlobalKey();
   // USER DROPDOWN
   List<dynamic> fromUsers = [], toUsers = [];
   dynamic selectedFromUser, selectedToUser;
@@ -107,8 +108,7 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
   void getFromAllUsers() async {
     switch (selectedFromEntityType) {
       case "User":
-        if (fromSubcategory != null)
-          fromUsers = await database.getUsersByCategoryId(fromSubcategory!.id);
+        fromUsers = await database.getUsersByCategoryId(fromSubcategory!.id);
         break;
       case "Firm":
         fromUsers = await database.getAllFirms();
@@ -152,7 +152,6 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
                     child: PageView(
                       controller: pageController,
                       children: [
-                        // Page 1
                         Form(
                           key: formKeys[0],
                           child: SingleChildScrollView(
@@ -185,6 +184,7 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
                                       fromCategory = null;
                                       fromSubcategory = null;
                                     });
+
                                     getFromAllUsers();
                                   },
                                 ),
@@ -243,6 +243,7 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
                                   ),
                                 const SizedBox(height: 10),
                                 DropdownButtonFormField<dynamic>(
+                                  key: dropDownKey,
                                   value: selectedFromUser,
                                   decoration: InputDecoration(
                                     labelText: selectedFromEntityType,
@@ -644,7 +645,6 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
                             ],
                           ),
                         ),
-                        // Page 3
                         Form(
                           key: formKeys[2],
                           child: Column(
@@ -733,8 +733,7 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
                         },
                         child: const Text('Cancel'),
                       ),
-                      const SizedBox(
-                          width: 10), // Add some spacing between the buttons
+                      const SizedBox(width: 10),
                       ElevatedButton(
                         onPressed: () {
                           int currentPage = pageController.page?.toInt() ?? 0;
