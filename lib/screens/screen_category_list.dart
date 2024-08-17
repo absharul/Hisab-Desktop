@@ -1,6 +1,7 @@
 import 'dart:developer';
 import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
+import 'package:hisab/controllers/category_controller.dart';
 import 'package:hisab/database/app_database.dart';
 import 'package:hisab/main.dart';
 import 'package:hisab/routes/route.dart';
@@ -20,12 +21,12 @@ class ScreenCategoryList extends StatelessWidget {
             return const Center(child: CircularProgressIndicator());
           }
 
-          final sites = snapshot.data ?? [];
+          final categories = snapshot.data ?? [];
 
           return ListView.builder(
-            itemCount: sites.length,
+            itemCount: categories.length,
             itemBuilder: (context, index) {
-              final site = sites[index];
+              final category = categories[index];
 
               return InkWell(
                 // onTap: () {
@@ -53,7 +54,7 @@ class ScreenCategoryList extends StatelessWidget {
                       ),// Icon to make it look different
                       const SizedBox(width: 10),
                       Text(
-                        site.name,
+                        category.name,
                         style: const TextStyle(
                           fontFamily: 'Courier', // Old-school font
                           fontSize: 16.0,
@@ -79,11 +80,45 @@ class ScreenCategoryList extends StatelessWidget {
                         children: [
                           IconButton(
                             icon: const Icon(Icons.delete),
-                            onPressed: () {
-                              // Add your delete functionality here
-                            },
-                          ),
-                          const Text("Delete"),
+                            onPressed: () async {
+                              final confirm = await showDialog(
+                                context: context,
+                                builder: (ctx) => AlertDialog(
+                                  title: const Text('Delete Category'),
+                                  content: const Text(
+                                      'Are you sure you want to delete this Category?'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(ctx).pop(false),
+                                      child: const Text('Cancel'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(ctx).pop(true),
+                                      child: const Text('Delete'),
+                                    ),
+                                  ],
+                                ),
+                              );
+
+                              if (confirm == true) {
+                                try {
+                                  await categoryController.delete(category);
+                                  HFunction.showFlushBarSuccess(
+                                    context: context,
+                                    message: "Successfully deleted the category",
+                                  );
+                                } catch (error) {
+                                  HFunction.showFlushBarError(
+                                    context: context,
+                                    message:
+                                    "Failed to delete the category: $error",
+                                  );
+                                }
+                              }
+                            },                         ),
+                            const Text("Delete"),
                         ],
                       )
                     ],

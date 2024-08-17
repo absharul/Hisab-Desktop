@@ -26,9 +26,9 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
   final TextEditingController remarkController = TextEditingController();
 
   final TextEditingController fromAccountNumberController =
-      TextEditingController();
+  TextEditingController();
   final TextEditingController toAccountNumberController =
-      TextEditingController();
+  TextEditingController();
 
   final TextEditingController fromBankNameController = TextEditingController();
   final TextEditingController toBankNameController = TextEditingController();
@@ -37,15 +37,17 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
   final TextEditingController toIfscController = TextEditingController();
 
   final TextEditingController fromHolderNameController =
-      TextEditingController();
+  TextEditingController();
   final TextEditingController toHolderNameController = TextEditingController();
 
   final PageController pageController = PageController();
   final formKeys = List.generate(3, (_) => GlobalKey<FormState>());
 
   final dropDownKey = GlobalKey();
+
   // USER DROPDOWN
-  List<dynamic> fromUsers = [], toUsers = [];
+  List<dynamic> fromUsers = [],
+      toUsers = [];
   dynamic selectedFromUser, selectedToUser;
 
   // ENTITY TYPE DROPDOWN
@@ -57,6 +59,7 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
   List<SubCategory> subCategories = [];
   Category? fromCategory, toCategory;
   SubCategory? fromSubcategory, toSubcategory;
+
 
   // Bank Acc
   EnumPaymentMethod paymentMethod = EnumPaymentMethod.cash;
@@ -96,6 +99,7 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
   // Loaders
 
   bool isLoading = false;
+
   @override
   void initState() {
     super.initState();
@@ -130,8 +134,13 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
   void getAllSubCategories({
     required int categoryId,
   }) async {
-    subCategories = await database.getSubcategoryByCategoryId(categoryId);
-    setState(() {});
+    // Fetch all subcategories for the given categoryId
+    final subCategoryList = await database.getSubcategoryByCategoryId(categoryId);
+
+    // Update the state with the fetched list
+    setState(() {
+      subCategories = subCategoryList;
+    });
   }
 
   void getAllBankAccounts() async {
@@ -147,615 +156,615 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
         child: (isLoading)
             ? const Center(child: CircularProgressIndicator())
             : Column(
+          children: [
+            Expanded(
+              child: PageView(
+                controller: pageController,
                 children: [
-                  Expanded(
-                    child: PageView(
-                      controller: pageController,
-                      children: [
-                        Form(
-                          key: formKeys[0],
-                          child: SingleChildScrollView(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Text(
-                                  'From',
-                                  style: TextStyle(
-                                      fontSize: 18,
-                                      fontWeight: FontWeight.bold),
-                                ),
-                                const SizedBox(height: 10),
-                                DropdownButtonFormField<String>(
-                                  value: selectedFromEntityType,
-                                  decoration: const InputDecoration(
-                                    labelText: 'Entity Type',
-                                    border: OutlineInputBorder(),
-                                  ),
-                                  items: entityTypes.map((String value) {
-                                    return DropdownMenuItem<String>(
-                                      value: value,
-                                      child: Text(value),
-                                    );
-                                  }).toList(),
-                                  onChanged: (String? newValue) {
-                                    setState(() {
-                                      selectedFromEntityType = newValue;
-                                      selectedFromUser = null;
-                                      fromCategory = null;
-                                      fromSubcategory = null;
-                                    });
-
-                                    getFromAllUsers();
-                                  },
-                                ),
-                                if (selectedFromEntityType == "User")
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 10),
-                                    child: DropdownButtonFormField<Category>(
-                                      value: fromCategory,
-                                      decoration: const InputDecoration(
-                                        labelText: 'Category',
-                                        border: OutlineInputBorder(),
-                                      ),
-                                      items: catagories.map((Category value) {
-                                        return DropdownMenuItem<Category>(
-                                          value: value,
-                                          child: Text(value.name),
-                                        );
-                                      }).toList(),
-                                      onChanged: (Category? newValue) {
-                                        setState(() {
-                                          selectedFromUser = null;
-                                          fromCategory = newValue;
-                                          fromSubcategory = null;
-                                        });
-                                        getAllSubCategories(
-                                            categoryId: newValue!.id);
-                                      },
-                                    ),
-                                  ),
-                                if (selectedFromEntityType == "User")
-                                  Padding(
-                                    padding: const EdgeInsets.symmetric(
-                                        vertical: 10),
-                                    child: DropdownButtonFormField<SubCategory>(
-                                      value: fromSubcategory,
-                                      decoration: const InputDecoration(
-                                        labelText: 'Sub Category',
-                                        border: OutlineInputBorder(),
-                                      ),
-                                      items: subCategories
-                                          .map((SubCategory value) {
-                                        return DropdownMenuItem<SubCategory>(
-                                          value: value,
-                                          child: Text(value.name),
-                                        );
-                                      }).toList(),
-                                      onChanged: (SubCategory? newValue) {
-                                        setState(() {
-                                          fromSubcategory = newValue;
-                                          selectedFromUser = null;
-                                        });
-                                        getFromAllUsers();
-                                      },
-                                    ),
-                                  ),
-                                const SizedBox(height: 10),
-                                DropdownButtonFormField<dynamic>(
-                                  key: dropDownKey,
-                                  value: selectedFromUser,
-                                  decoration: InputDecoration(
-                                    labelText: selectedFromEntityType,
-                                    border: const OutlineInputBorder(),
-                                  ),
-                                  items: fromUsers.map((dynamic value) {
-                                    return DropdownMenuItem<dynamic>(
-                                      value: value,
-                                      child: Text(value.name),
-                                    );
-                                  }).toList(),
-                                  onChanged: (dynamic newValue) {
-                                    selectedFromUser = newValue;
-                                  },
-                                ),
-                                const SizedBox(height: 10),
-                                Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Expanded(
-                                        child: ListTile(
-                                          title: const Text('Cash'),
-                                          leading: Radio(
-                                            value: EnumPaymentMethod.cash,
-                                            groupValue: paymentMethod,
-                                            onChanged:
-                                                (EnumPaymentMethod? value) {
-                                              setState(() {
-                                                paymentMethod = value!;
-                                              });
-                                            },
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: ListTile(
-                                          title: const Text('Cheque'),
-                                          leading: Radio(
-                                            value: EnumPaymentMethod.cheque,
-                                            groupValue: paymentMethod,
-                                            onChanged:
-                                                (EnumPaymentMethod? value) {
-                                              setState(() {
-                                                paymentMethod = value!;
-                                              });
-                                            },
-                                          ),
-                                        ),
-                                      ),
-                                    ]),
-                                const SizedBox(height: 10),
-                                Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Expanded(
-                                        child: ListTile(
-                                          title: const Text('Add Bank Account'),
-                                          leading: Radio(
-                                            value: EnumBankAccount.addnew,
-                                            groupValue:
-                                                fromBankAccountRadioOption,
-                                            onChanged:
-                                                (EnumBankAccount? value) {
-                                              setState(() {
-                                                fromBankAccountRadioOption =
-                                                    value!;
-                                              });
-                                            },
-                                          ),
-                                        ),
-                                      ),
-                                      Expanded(
-                                        child: ListTile(
-                                          title:
-                                              const Text('Choose existing one'),
-                                          leading: Radio(
-                                            value:
-                                                EnumBankAccount.chooseexisting,
-                                            groupValue:
-                                                fromBankAccountRadioOption,
-                                            onChanged:
-                                                (EnumBankAccount? value) {
-                                              setState(() {
-                                                fromBankAccountRadioOption =
-                                                    value!;
-                                              });
-                                            },
-                                          ),
-                                        ),
-                                      ),
-                                    ]),
-                                if (fromBankAccountRadioOption ==
-                                    EnumBankAccount.addnew)
-                                  Column(
-                                    children: [
-                                      const SizedBox(height: 10),
-                                      TextFormField(
-                                        controller: fromAccountNumberController,
-                                        inputFormatters: <TextInputFormatter>[
-                                          FilteringTextInputFormatter
-                                              .digitsOnly, // Allows only digits
-                                        ],
-                                        decoration: const InputDecoration(
-                                          border: OutlineInputBorder(),
-                                          labelText: 'Account Number',
-                                        ),
-                                        validator: (value) {
-                                          if (value == null || value.isEmpty) {
-                                            return 'Please enter the account number';
-                                          }
-                                          return null;
-                                        },
-                                      ),
-                                      const SizedBox(height: 10),
-                                      TextFormField(
-                                        controller: fromBankNameController,
-                                        decoration: const InputDecoration(
-                                          border: OutlineInputBorder(),
-                                          labelText: 'Bank Name',
-                                        ),
-                                        validator: (value) {
-                                          if (value == null || value.isEmpty) {
-                                            return 'Please enter the bank name';
-                                          }
-                                          return null;
-                                        },
-                                      ),
-                                      const SizedBox(height: 10),
-                                      TextFormField(
-                                        controller: fromIfscController,
-                                        decoration: const InputDecoration(
-                                          border: OutlineInputBorder(),
-                                          labelText: 'IFSC',
-                                        ),
-                                        validator: (value) {
-                                          if (value == null || value.isEmpty) {
-                                            return 'Please enter the IFSC code';
-                                          }
-                                          return null;
-                                        },
-                                      ),
-                                      const SizedBox(height: 10),
-                                      TextFormField(
-                                        controller: fromHolderNameController,
-                                        decoration: const InputDecoration(
-                                          border: OutlineInputBorder(),
-                                          labelText: 'Holder Name',
-                                        ),
-                                        validator: (value) {
-                                          if (value == null || value.isEmpty) {
-                                            return 'Please enter the holder name';
-                                          }
-                                          return null;
-                                        },
-                                      ),
-                                    ],
-                                  ),
-                                if (fromBankAccountRadioOption ==
-                                    EnumBankAccount.chooseexisting)
-                                  DropdownButtonFormField<BankAccount>(
-                                    value: selectedFromBankAccount,
-                                    decoration: const InputDecoration(
-                                      labelText: 'Select Bank Account',
-                                      border: OutlineInputBorder(),
-                                    ),
-                                    items: listOfBanks.map((BankAccount value) {
-                                      return DropdownMenuItem<BankAccount>(
-                                        value: value,
-                                        child: Text(value.accountNumber),
-                                      );
-                                    }).toList(),
-                                    onChanged: (BankAccount? newValue) {
-                                      selectedFromBankAccount = newValue;
-                                      selectedFromBankAccountId = newValue!.id;
-                                    },
-                                  ),
-                              ],
-                            ),
+                  Form(
+                    key: formKeys[0],
+                    child: SingleChildScrollView(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          const Text(
+                            'From',
+                            style: TextStyle(
+                                fontSize: 18,
+                                fontWeight: FontWeight.bold),
                           ),
-                        ),
-                        // Page 2
-                        Form(
-                          key: formKeys[1],
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'To',
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold),
-                              ),
-                              const SizedBox(height: 10),
-                              DropdownButtonFormField<String>(
-                                value: selectedToEntityType,
+                          const SizedBox(height: 10),
+                          DropdownButtonFormField<String>(
+                            value: selectedFromEntityType,
+                            decoration: const InputDecoration(
+                              labelText: 'Entity Type',
+                              border: OutlineInputBorder(),
+                            ),
+                            items: entityTypes.map((String value) {
+                              return DropdownMenuItem<String>(
+                                value: value,
+                                child: Text(value),
+                              );
+                            }).toList(),
+                            onChanged: (String? newValue) {
+                              setState(() {
+                                selectedFromEntityType = newValue;
+                                selectedFromUser = null;
+                                fromCategory = null;
+                                fromSubcategory = null;
+                              });
+
+                              getFromAllUsers();
+                            },
+                          ),
+                          if (selectedFromEntityType == "User")
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 10),
+                              child: DropdownButtonFormField<Category>(
+                                value: fromCategory,
                                 decoration: const InputDecoration(
-                                  labelText: 'Entity Type',
+                                  labelText: 'Category',
                                   border: OutlineInputBorder(),
                                 ),
-                                items: entityTypes.map((String value) {
-                                  return DropdownMenuItem<String>(
-                                    value: value,
-                                    child: Text(value),
-                                  );
-                                }).toList(),
-                                onChanged: (String? newValue) {
-                                  selectedToEntityType = newValue;
-                                },
-                              ),
-                              const SizedBox(height: 10),
-                              if (selectedToEntityType == "User")
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 10),
-                                  child: DropdownButtonFormField<Category>(
-                                    value: toCategory,
-                                    decoration: const InputDecoration(
-                                      labelText: 'Category',
-                                      border: OutlineInputBorder(),
-                                    ),
-                                    items: catagories.map((Category value) {
-                                      return DropdownMenuItem<Category>(
-                                        value: value,
-                                        child: Text(value.name),
-                                      );
-                                    }).toList(),
-                                    onChanged: (Category? newValue) {
-                                      toCategory = newValue;
-                                      getAllSubCategories(
-                                          categoryId: newValue!.id);
-                                    },
-                                  ),
-                                ),
-                              if (selectedToEntityType == "User")
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 10),
-                                  child: DropdownButtonFormField<SubCategory>(
-                                    value: toSubcategory,
-                                    decoration: const InputDecoration(
-                                      labelText: 'Sub Category',
-                                      border: OutlineInputBorder(),
-                                    ),
-                                    items:
-                                        subCategories.map((SubCategory value) {
-                                      return DropdownMenuItem<SubCategory>(
-                                        value: value,
-                                        child: Text(value.name),
-                                      );
-                                    }).toList(),
-                                    onChanged: (SubCategory? newValue) {
-                                      toSubcategory = newValue;
-                                      getFromAllUsers();
-                                    },
-                                  ),
-                                ),
-                              const SizedBox(height: 10),
-                              DropdownButtonFormField<dynamic>(
-                                value: selectedToUser,
-                                decoration: const InputDecoration(
-                                  labelText: 'User',
-                                  border: OutlineInputBorder(),
-                                ),
-                                items: toUsers.map((dynamic value) {
-                                  return DropdownMenuItem<dynamic>(
+                                items: catagories.map((Category value) {
+                                  return DropdownMenuItem<Category>(
                                     value: value,
                                     child: Text(value.name),
                                   );
                                 }).toList(),
-                                onChanged: (dynamic newValue) {
-                                  selectedToUser = newValue;
+                                onChanged: (Category? newValue) {
+                                  setState(() {
+                                    selectedFromUser = null;
+                                    fromCategory = newValue;
+                                    fromSubcategory = null;
+                                  });
+                                  getAllSubCategories(
+                                      categoryId: newValue!.id);
                                 },
                               ),
-                              const SizedBox(height: 10),
-                              Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    //  Add radio button on for add bank acc or choose bank acc
-                                    Expanded(
-                                      child: ListTile(
-                                        title: const Text('Add Bank Account'),
-                                        leading: Radio(
-                                          value: EnumBankAccount.addnew,
-                                          groupValue: toBankAccountRadioOption,
-                                          onChanged: (EnumBankAccount? value) {
-                                            setState(() {
-                                              toBankAccountRadioOption = value!;
-                                            });
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: ListTile(
-                                        title:
-                                            const Text('Choose existing one'),
-                                        leading: Radio(
-                                          value: EnumBankAccount.chooseexisting,
-                                          groupValue: toBankAccountRadioOption,
-                                          onChanged: (EnumBankAccount? value) {
-                                            setState(() {
-                                              toBankAccountRadioOption = value!;
-                                            });
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                  ]),
-                              if (toBankAccountRadioOption ==
-                                  EnumBankAccount.addnew)
-                                Column(
-                                  children: [
-                                    const SizedBox(height: 10),
-                                    TextFormField(
-                                      inputFormatters: <TextInputFormatter>[
-                                        FilteringTextInputFormatter
-                                            .digitsOnly, // Allows only digits
-                                      ],
-                                      controller: toAccountNumberController,
-                                      decoration: const InputDecoration(
-                                        border: OutlineInputBorder(),
-                                        labelText: 'Account Number',
-                                      ),
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return 'Please enter the account number';
-                                        }
-                                        return null;
-                                      },
-                                    ),
-                                    const SizedBox(height: 10),
-                                    TextFormField(
-                                      controller: toBankNameController,
-                                      decoration: const InputDecoration(
-                                        border: OutlineInputBorder(),
-                                        labelText: 'Bank Name',
-                                      ),
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return 'Please enter the bank name';
-                                        }
-                                        return null;
-                                      },
-                                    ),
-                                    const SizedBox(height: 10),
-                                    TextFormField(
-                                      controller: toIfscController,
-                                      decoration: const InputDecoration(
-                                        border: OutlineInputBorder(),
-                                        labelText: 'IFSC',
-                                      ),
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return 'Please enter the IFSC code';
-                                        }
-                                        return null;
-                                      },
-                                    ),
-                                    const SizedBox(height: 10),
-                                    TextFormField(
-                                      controller: toHolderNameController,
-                                      decoration: const InputDecoration(
-                                        border: OutlineInputBorder(),
-                                        labelText: 'Holder Name',
-                                      ),
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return 'Please enter the holder name';
-                                        }
-                                        return null;
-                                      },
-                                    ),
-                                  ],
+                            ),
+                          if (selectedFromEntityType == "User")
+                            Padding(
+                              padding: const EdgeInsets.symmetric(
+                                  vertical: 10),
+                              child: DropdownButtonFormField<SubCategory>(
+                                value: fromSubcategory,
+                                decoration: const InputDecoration(
+                                  labelText: 'Sub Category',
+                                  border: OutlineInputBorder(),
                                 ),
-                              if (toBankAccountRadioOption ==
-                                  EnumBankAccount.chooseexisting)
-                                DropdownButtonFormField<BankAccount>(
-                                  value: selectedToBankAccount,
-                                  decoration: const InputDecoration(
-                                    labelText: 'Select Bank Account',
-                                    border: OutlineInputBorder(),
+                                items: subCategories
+                                    .map((SubCategory value) {
+                                  return DropdownMenuItem<SubCategory>(
+                                    value: value,
+                                    child: Text(value.name),
+                                  );
+                                }).toList(),
+                                onChanged: (SubCategory? newValue) {
+                                  setState(() {
+                                    fromSubcategory = newValue;
+                                    selectedFromUser = null;
+                                  });
+                                  getFromAllUsers();
+                                },
+                              ),
+                            ),
+                          const SizedBox(height: 10),
+                          DropdownButtonFormField<dynamic>(
+                            key: dropDownKey,
+                            value: selectedFromUser,
+                            decoration: InputDecoration(
+                              labelText: selectedFromEntityType,
+                              border: const OutlineInputBorder(),
+                            ),
+                            items: fromUsers.map((dynamic value) {
+                              return DropdownMenuItem<dynamic>(
+                                value: value,
+                                child: Text(value.name),
+                              );
+                            }).toList(),
+                            onChanged: (dynamic newValue) {
+                              selectedFromUser = newValue;
+                            },
+                          ),
+                          const SizedBox(height: 10),
+                          Row(
+                              crossAxisAlignment:
+                              CrossAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  child: ListTile(
+                                    title: const Text('Cash'),
+                                    leading: Radio(
+                                      value: EnumPaymentMethod.cash,
+                                      groupValue: paymentMethod,
+                                      onChanged:
+                                          (EnumPaymentMethod? value) {
+                                        setState(() {
+                                          paymentMethod = value!;
+                                        });
+                                      },
+                                    ),
                                   ),
-                                  items: listOfBanks
-                                      .where((element) =>
-                                          element.id !=
-                                          selectedFromBankAccountId)
-                                      .map((BankAccount value) {
-                                    return DropdownMenuItem<BankAccount>(
-                                      value: value,
-                                      child: Text(value.accountNumber),
-                                    );
-                                  }).toList(),
-                                  onChanged: (BankAccount? newValue) {
-                                    selectedToBankAccount = newValue;
-                                    selectedToBankAccountId = newValue!.id;
+                                ),
+                                Expanded(
+                                  child: ListTile(
+                                    title: const Text('Cheque'),
+                                    leading: Radio(
+                                      value: EnumPaymentMethod.cheque,
+                                      groupValue: paymentMethod,
+                                      onChanged:
+                                          (EnumPaymentMethod? value) {
+                                        setState(() {
+                                          paymentMethod = value!;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              ]),
+                          const SizedBox(height: 10),
+                          Row(
+                              crossAxisAlignment:
+                              CrossAxisAlignment.center,
+                              children: [
+                                Expanded(
+                                  child: ListTile(
+                                    title: const Text('Add Bank Account'),
+                                    leading: Radio(
+                                      value: EnumBankAccount.addnew,
+                                      groupValue:
+                                      fromBankAccountRadioOption,
+                                      onChanged:
+                                          (EnumBankAccount? value) {
+                                        setState(() {
+                                          fromBankAccountRadioOption =
+                                          value!;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                ),
+                                Expanded(
+                                  child: ListTile(
+                                    title:
+                                    const Text('Choose existing one'),
+                                    leading: Radio(
+                                      value:
+                                      EnumBankAccount.chooseexisting,
+                                      groupValue:
+                                      fromBankAccountRadioOption,
+                                      onChanged:
+                                          (EnumBankAccount? value) {
+                                        setState(() {
+                                          fromBankAccountRadioOption =
+                                          value!;
+                                        });
+                                      },
+                                    ),
+                                  ),
+                                ),
+                              ]),
+                          if (fromBankAccountRadioOption ==
+                              EnumBankAccount.addnew)
+                            Column(
+                              children: [
+                                const SizedBox(height: 10),
+                                TextFormField(
+                                  controller: fromAccountNumberController,
+                                  inputFormatters: <TextInputFormatter>[
+                                    FilteringTextInputFormatter
+                                        .digitsOnly, // Allows only digits
+                                  ],
+                                  decoration: const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    labelText: 'Account Number',
+                                  ),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Please enter the account number';
+                                    }
+                                    return null;
                                   },
                                 ),
-                            ],
-                          ),
+                                const SizedBox(height: 10),
+                                TextFormField(
+                                  controller: fromBankNameController,
+                                  decoration: const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    labelText: 'Bank Name',
+                                  ),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Please enter the bank name';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                const SizedBox(height: 10),
+                                TextFormField(
+                                  controller: fromIfscController,
+                                  decoration: const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    labelText: 'IFSC',
+                                  ),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Please enter the IFSC code';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                                const SizedBox(height: 10),
+                                TextFormField(
+                                  controller: fromHolderNameController,
+                                  decoration: const InputDecoration(
+                                    border: OutlineInputBorder(),
+                                    labelText: 'Holder Name',
+                                  ),
+                                  validator: (value) {
+                                    if (value == null || value.isEmpty) {
+                                      return 'Please enter the holder name';
+                                    }
+                                    return null;
+                                  },
+                                ),
+                              ],
+                            ),
+                          if (fromBankAccountRadioOption ==
+                              EnumBankAccount.chooseexisting)
+                            DropdownButtonFormField<BankAccount>(
+                              value: selectedFromBankAccount,
+                              decoration: const InputDecoration(
+                                labelText: 'Select Bank Account',
+                                border: OutlineInputBorder(),
+                              ),
+                              items: listOfBanks.map((BankAccount value) {
+                                return DropdownMenuItem<BankAccount>(
+                                  value: value,
+                                  child: Text(value.accountNumber),
+                                );
+                              }).toList(),
+                              onChanged: (BankAccount? newValue) {
+                                selectedFromBankAccount = newValue;
+                                selectedFromBankAccountId = newValue!.id;
+                              },
+                            ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  // Page 2
+                  Form(
+                    key: formKeys[1],
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'To',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
                         ),
-                        Form(
-                          key: formKeys[2],
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
+                        const SizedBox(height: 10),
+                        DropdownButtonFormField<String>(
+                          value: selectedToEntityType,
+                          decoration: const InputDecoration(
+                            labelText: 'Entity Type',
+                            border: OutlineInputBorder(),
+                          ),
+                          items: entityTypes.map((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                          onChanged: (String? newValue) {
+                            selectedToEntityType = newValue;
+                          },
+                        ),
+                        const SizedBox(height: 10),
+                        if (selectedToEntityType == "User")
+                          Padding(
+                            padding:
+                            const EdgeInsets.symmetric(vertical: 10),
+                            child: DropdownButtonFormField<Category>(
+                              value: toCategory,
+                              decoration: const InputDecoration(
+                                labelText: 'Category',
+                                border: OutlineInputBorder(),
+                              ),
+                              items: catagories.map((Category value) {
+                                return DropdownMenuItem<Category>(
+                                  value: value,
+                                  child: Text(value.name),
+                                );
+                              }).toList(),
+                              onChanged: (Category? newValue) {
+                                toCategory = newValue;
+                                getAllSubCategories(
+                                    categoryId: newValue!.id);
+                              },
+                            ),
+                          ),
+                        if (selectedToEntityType == "User")
+                          Padding(
+                            padding:
+                            const EdgeInsets.symmetric(vertical: 10),
+                            child: DropdownButtonFormField<SubCategory>(
+                              value: toSubcategory,
+                              decoration: const InputDecoration(
+                                labelText: 'Sub Category',
+                                border: OutlineInputBorder(),
+                              ),
+                              items:
+                              subCategories.map((SubCategory value) {
+                                return DropdownMenuItem<SubCategory>(
+                                  value: value,
+                                  child: Text(value.name),
+                                );
+                              }).toList(),
+                              onChanged: (SubCategory? newValue) {
+                                toSubcategory = newValue;
+                                getFromAllUsers();
+                              },
+                            ),
+                          ),
+                        const SizedBox(height: 10),
+                        DropdownButtonFormField<dynamic>(
+                          value: selectedToUser,
+                          decoration: const InputDecoration(
+                            labelText: 'User',
+                            border: OutlineInputBorder(),
+                          ),
+                          items: toUsers.map((dynamic value) {
+                            return DropdownMenuItem<dynamic>(
+                              value: value,
+                              child: Text(value.name),
+                            );
+                          }).toList(),
+                          onChanged: (dynamic newValue) {
+                            selectedToUser = newValue;
+                          },
+                        ),
+                        const SizedBox(height: 10),
+                        Row(
+                            crossAxisAlignment: CrossAxisAlignment.center,
                             children: [
-                              const Text(
-                                'Details',
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold),
+                              //  Add radio button on for add bank acc or choose bank acc
+                              Expanded(
+                                child: ListTile(
+                                  title: const Text('Add Bank Account'),
+                                  leading: Radio(
+                                    value: EnumBankAccount.addnew,
+                                    groupValue: toBankAccountRadioOption,
+                                    onChanged: (EnumBankAccount? value) {
+                                      setState(() {
+                                        toBankAccountRadioOption = value!;
+                                      });
+                                    },
+                                  ),
+                                ),
                               ),
+                              Expanded(
+                                child: ListTile(
+                                  title:
+                                  const Text('Choose existing one'),
+                                  leading: Radio(
+                                    value: EnumBankAccount.chooseexisting,
+                                    groupValue: toBankAccountRadioOption,
+                                    onChanged: (EnumBankAccount? value) {
+                                      setState(() {
+                                        toBankAccountRadioOption = value!;
+                                      });
+                                    },
+                                  ),
+                                ),
+                              ),
+                            ]),
+                        if (toBankAccountRadioOption ==
+                            EnumBankAccount.addnew)
+                          Column(
+                            children: [
                               const SizedBox(height: 10),
                               TextFormField(
                                 inputFormatters: <TextInputFormatter>[
                                   FilteringTextInputFormatter
                                       .digitsOnly, // Allows only digits
                                 ],
-                                controller: amountController,
+                                controller: toAccountNumberController,
                                 decoration: const InputDecoration(
-                                  hintText: 'Amount in Rs',
-                                  labelText: 'Amount',
                                   border: OutlineInputBorder(),
+                                  labelText: 'Account Number',
                                 ),
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
-                                    return 'Please enter a amount';
+                                    return 'Please enter the account number';
                                   }
                                   return null;
                                 },
                               ),
                               const SizedBox(height: 10),
                               TextFormField(
-                                inputFormatters: <TextInputFormatter>[
-                                  FilteringTextInputFormatter
-                                      .digitsOnly, // Allows only digits
-                                ],
-                                controller: chequeController,
+                                controller: toBankNameController,
                                 decoration: const InputDecoration(
-                                  hintText: '876342524',
-                                  labelText: 'Cheque Number',
                                   border: OutlineInputBorder(),
+                                  labelText: 'Bank Name',
                                 ),
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
-                                    return 'Please enter a description';
+                                    return 'Please enter the bank name';
                                   }
                                   return null;
                                 },
                               ),
                               const SizedBox(height: 10),
                               TextFormField(
-                                controller: remarkController,
+                                controller: toIfscController,
                                 decoration: const InputDecoration(
-                                  hintText: 'eg. Good work!',
-                                  labelText: 'Remarks',
                                   border: OutlineInputBorder(),
+                                  labelText: 'IFSC',
                                 ),
                                 validator: (value) {
                                   if (value == null || value.isEmpty) {
-                                    return 'Please enter a description';
+                                    return 'Please enter the IFSC code';
+                                  }
+                                  return null;
+                                },
+                              ),
+                              const SizedBox(height: 10),
+                              TextFormField(
+                                controller: toHolderNameController,
+                                decoration: const InputDecoration(
+                                  border: OutlineInputBorder(),
+                                  labelText: 'Holder Name',
+                                ),
+                                validator: (value) {
+                                  if (value == null || value.isEmpty) {
+                                    return 'Please enter the holder name';
                                   }
                                   return null;
                                 },
                               ),
                             ],
                           ),
+                        if (toBankAccountRadioOption ==
+                            EnumBankAccount.chooseexisting)
+                          DropdownButtonFormField<BankAccount>(
+                            value: selectedToBankAccount,
+                            decoration: const InputDecoration(
+                              labelText: 'Select Bank Account',
+                              border: OutlineInputBorder(),
+                            ),
+                            items: listOfBanks
+                                .where((element) =>
+                            element.id !=
+                                selectedFromBankAccountId)
+                                .map((BankAccount value) {
+                              return DropdownMenuItem<BankAccount>(
+                                value: value,
+                                child: Text(value.accountNumber),
+                              );
+                            }).toList(),
+                            onChanged: (BankAccount? newValue) {
+                              selectedToBankAccount = newValue;
+                              selectedToBankAccountId = newValue!.id;
+                            },
+                          ),
+                      ],
+                    ),
+                  ),
+                  Form(
+                    key: formKeys[2],
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text(
+                          'Details',
+                          style: TextStyle(
+                              fontSize: 18, fontWeight: FontWeight.bold),
+                        ),
+                        const SizedBox(height: 10),
+                        TextFormField(
+                          inputFormatters: <TextInputFormatter>[
+                            FilteringTextInputFormatter
+                                .digitsOnly, // Allows only digits
+                          ],
+                          controller: amountController,
+                          decoration: const InputDecoration(
+                            hintText: 'Amount in Rs',
+                            labelText: 'Amount',
+                            border: OutlineInputBorder(),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter a amount';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 10),
+                        TextFormField(
+                          inputFormatters: <TextInputFormatter>[
+                            FilteringTextInputFormatter
+                                .digitsOnly, // Allows only digits
+                          ],
+                          controller: chequeController,
+                          decoration: const InputDecoration(
+                            hintText: '876342524',
+                            labelText: 'Cheque Number',
+                            border: OutlineInputBorder(),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter a description';
+                            }
+                            return null;
+                          },
+                        ),
+                        const SizedBox(height: 10),
+                        TextFormField(
+                          controller: remarkController,
+                          decoration: const InputDecoration(
+                            hintText: 'eg. Good work!',
+                            labelText: 'Remarks',
+                            border: OutlineInputBorder(),
+                          ),
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return 'Please enter a description';
+                            }
+                            return null;
+                          },
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 10),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      ElevatedButton(
-                        onPressed: () {
-                          // Handle next button press
-                          int currentPage = pageController.page?.toInt() ?? 0;
-                          if (currentPage > 0) {
-                            pageController.previousPage(
-                              duration: const Duration(milliseconds: 300),
-                              curve: Curves.easeInOut,
-                            );
-                          } else {
-                            router.pop();
-                          }
-                        },
-                        child: const Text('Cancel'),
-                      ),
-                      const SizedBox(width: 10),
-                      ElevatedButton(
-                        onPressed: () {
-                          int currentPage = pageController.page?.toInt() ?? 0;
-                          handleNextPage(currentPage);
-                        },
-                        child: const Text('Next'),
-                      ),
-                    ],
-                  ),
-                  SmoothPageIndicator(
-                    controller: pageController,
-                    count: 3,
-                    effect: const WormEffect(
-                      dotWidth: 10,
-                      dotHeight: 10,
-                      spacing: 16,
-                      activeDotColor: Colors.blue,
-                      dotColor: Colors.grey,
-                    ),
-                  ),
                 ],
               ),
+            ),
+            const SizedBox(height: 10),
+            Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                ElevatedButton(
+                  onPressed: () {
+                    // Handle next button press
+                    int currentPage = pageController.page?.toInt() ?? 0;
+                    if (currentPage > 0) {
+                      pageController.previousPage(
+                        duration: const Duration(milliseconds: 300),
+                        curve: Curves.easeInOut,
+                      );
+                    } else {
+                      router.pop();
+                    }
+                  },
+                  child: const Text('Cancel'),
+                ),
+                const SizedBox(width: 10),
+                ElevatedButton(
+                  onPressed: () {
+                    int currentPage = pageController.page?.toInt() ?? 0;
+                    handleNextPage(currentPage);
+                  },
+                  child: const Text('Next'),
+                ),
+              ],
+            ),
+            SmoothPageIndicator(
+              controller: pageController,
+              count: 3,
+              effect: const WormEffect(
+                dotWidth: 10,
+                dotHeight: 10,
+                spacing: 16,
+                activeDotColor: Colors.blue,
+                dotColor: Colors.grey,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -777,7 +786,7 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
         bankName: drift.Value(
             from ? fromBankNameController.text : toBankNameController.text),
         ifsc:
-            drift.Value(from ? fromIfscController.text : toIfscController.text),
+        drift.Value(from ? fromIfscController.text : toIfscController.text),
       );
       int result = await database.insertBankAccountOne(bankAccount);
       if (from) {

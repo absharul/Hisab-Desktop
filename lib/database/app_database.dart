@@ -53,32 +53,47 @@ class AppDatabase extends _$AppDatabase {
 
   // CATEGORY
   Future<List<Category>> getCategory() => select(categories).get();
+  Future<Category> getCategoryById(int id) =>
+      (select(categories)..where((t) => t.id.equals(id))).getSingle();
   Future<int> insertCategory(Insertable<Category> category) =>
       into(categories).insert(category);
-
+  Future<int> deleteCategory(Insertable<Category> category) =>
+      delete(categories).delete(category);
+  Future<bool> updateCategory(Category category) =>
+      update(categories).replace(category);
   Stream<List<Category>> watchCategory() => select(categories).watch();
+
+
 
   // SUBCATEGORY
   Future<List<SubCategory>> getSubCategory() => select(subCategories).get();
-  Future<List<SubCategory>> getSubcategoryByCategoryId(int categoryId) async =>
-      (select(subCategories)..where((t) => t.categoryId.equals(categoryId)))
-          .get();
+  Future<List<SubCategory>> getSubcategoryByCategoryId(int categoryId) =>
+      (select(subCategories)..where((t) => t.categoryId.equals(categoryId))).get();
+  Future<SubCategory> getSubCategoryById(int id) =>
+      (select(subCategories)..where((t) => t.id.equals(id))).getSingle();
   Future<int> insertSubCategory(Insertable<SubCategory> subCategory) =>
       into(subCategories).insert(subCategory);
-
+  Future<int> deleteSubCategory(Insertable<SubCategory> subCategory) =>
+      delete(subCategories).delete(subCategory);
+  Future<bool> updateSubCategory(SubCategory subCategory) =>
+      update(subCategories).replace(subCategory);
   Stream<List<SubCategory>> watchSubCategory() => select(subCategories).watch();
-  // USERS
+
+// USERS
   Future<List<User>> getUsers() => select(users).get();
   Future<List<User>> getUsersByCategoryId(int categoryId) =>
       (select(users)..where((t) => t.subCategory.equals(categoryId))).get();
   Future<User> getUserById(int id) =>
       (select(users)..where((t) => t.id.equals(id))).getSingle();
   Future<int> insertUser(Insertable<User> user) => into(users).insert(user);
+  Future<bool> updateUser(User user) => update(users).replace(user);
+  Future<int> deleteUser(Insertable<User> user) => delete(users).delete(user);
   Stream<List<User>> watchUser() => (select(users)
-        ..orderBy([
+    ..orderBy([
           (t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc)
-        ]))
+    ]))
       .watch();
+
   // FLATS
   Future<List<Flat>> getAllFlats() => select(flats).get();
   Future<int> insertFlat(Insertable<Flat> flat) => into(flats).insert(flat);
