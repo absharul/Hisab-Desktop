@@ -63,6 +63,8 @@ class Users extends Table {
 class BankAccounts extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get accountNumber => text().withLength(min: 1, max: 50)();
+  IntColumn get entityId => integer()();
+  TextColumn get entityType => text().withLength(min: 1, max: 50)();
   TextColumn get bankName => text().withLength(min: 1, max: 50)();
   TextColumn get ifsc => text().withLength(min: 1, max: 50)();
   TextColumn get accountHolder => text().withLength(min: 1, max: 50)();

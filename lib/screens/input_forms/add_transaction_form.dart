@@ -1,6 +1,7 @@
 import 'dart:developer';
 
 import 'package:drift/drift.dart' as drift;
+import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:hisab/database/app_database.dart';
@@ -99,27 +100,47 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
   @override
   void initState() {
     super.initState();
-    getFromAllUsers();
-    getAllBankAccounts();
+    initialize();
     getAllCategories();
   }
 
+  void initialize() {
+    selectedFromEntityType = "Site";
+    selectedFromUser = widget.site;
+  }
+
   // queries
-  void getFromAllUsers() async {
-    switch (selectedFromEntityType) {
+  void getFromAllUsers({
+    bool isFrom = true,
+  }) async {
+    List<dynamic> list = [];
+    switch (isFrom ? selectedFromEntityType : selectedToEntityType) {
       case "User":
-        fromUsers = await database.getUsersByCategoryId(fromSubcategory!.id);
+        list = await database.getUsersByCategoryId(
+            isFrom ? fromSubcategory!.id : toSubcategory!.id);
         break;
       case "Firm":
-        fromUsers = await database.getAllFirms();
+        list = await database.getAllFirms();
         break;
       case "Site":
-        fromUsers = await database.getAllSites();
+        list = await database.getAllSites();
         break;
       default:
-        fromUsers = await database.getUsers();
+        list = await database.getUsers();
     }
-    setState(() {});
+
+    if (isFrom) {
+      fromUsers = list;
+    } else {
+      toUsers = list;
+    }
+    setState(() {
+      if (isFrom) {
+        selectedFromUser = null;
+      } else {
+        selectedToUser = null;
+      }
+    });
   }
 
   void getAllCategories() async {
@@ -134,7 +155,11 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
     setState(() {});
   }
 
-  void getAllBankAccounts() async {
+  void getAllBankAccounts({bool isFrom = false}) async {
+    if (selectedFromUser != null || selectedToUser != null) {
+      listOfBanks = await database.getBankAccountByEntityId(
+          isFrom ? selectedFromUser.id : selectedToUser.id);
+    }
     listOfBanks = await database.getBankAccounts();
     setState(() {});
   }
@@ -242,22 +267,40 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
                                     ),
                                   ),
                                 const SizedBox(height: 10),
-                                DropdownButtonFormField<dynamic>(
-                                  key: dropDownKey,
-                                  value: selectedFromUser,
-                                  decoration: InputDecoration(
-                                    labelText: selectedFromEntityType,
-                                    border: const OutlineInputBorder(),
+                                DropdownSearch<dynamic>(
+                                  popupProps: PopupProps.menu(
+                                    showSelectedItems: false,
+                                    showSearchBox: true,
+                                    itemBuilder: (context, dynamic item,
+                                        bool isSelected) {
+                                      return ListTile(
+                                        title: Text(item.name),
+                                      );
+                                    },
                                   ),
-                                  items: fromUsers.map((dynamic value) {
-                                    return DropdownMenuItem<dynamic>(
-                                      value: value,
-                                      child: Text(value.name),
-                                    );
-                                  }).toList(),
-                                  onChanged: (dynamic newValue) {
-                                    selectedFromUser = newValue;
+                                  items: fromUsers,
+                                  dropdownDecoratorProps:
+                                      DropDownDecoratorProps(
+                                    dropdownSearchDecoration: InputDecoration(
+                                      labelText: selectedFromEntityType,
+                                      hintText:
+                                          "Select $selectedFromEntityType",
+                                    ),
+                                  ),
+                                  onChanged: (value) {
+                                    setState(() {
+                                      selectedFromUser = value;
+                                    });
+                                    getAllBankAccounts();
                                   },
+                                  dropdownBuilder: (selectedFromUser != null)
+                                      ? (ctx, value) {
+                                          return ListTile(
+                                            title: Text(value.name),
+                                          );
+                                        }
+                                      : null,
+                                  selectedItem: selectedFromUser,
                                 ),
                                 const SizedBox(height: 10),
                                 Row(
@@ -429,222 +472,477 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
                         // Page 2
                         Form(
                           key: formKeys[1],
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              const Text(
-                                'To',
-                                style: TextStyle(
-                                    fontSize: 18, fontWeight: FontWeight.bold),
-                              ),
-                              const SizedBox(height: 10),
-                              DropdownButtonFormField<String>(
-                                value: selectedToEntityType,
-                                decoration: const InputDecoration(
-                                  labelText: 'Entity Type',
-                                  border: OutlineInputBorder(),
+                          child: SingleChildScrollView(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                const Text(
+                                  'To',
+                                  style: TextStyle(
+                                      fontSize: 18,
+                                      fontWeight: FontWeight.bold),
                                 ),
-                                items: entityTypes.map((String value) {
-                                  return DropdownMenuItem<String>(
-                                    value: value,
-                                    child: Text(value),
-                                  );
-                                }).toList(),
-                                onChanged: (String? newValue) {
-                                  selectedToEntityType = newValue;
-                                },
-                              ),
-                              const SizedBox(height: 10),
-                              if (selectedToEntityType == "User")
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 10),
-                                  child: DropdownButtonFormField<Category>(
-                                    value: toCategory,
-                                    decoration: const InputDecoration(
-                                      labelText: 'Category',
-                                      border: OutlineInputBorder(),
-                                    ),
-                                    items: catagories.map((Category value) {
-                                      return DropdownMenuItem<Category>(
-                                        value: value,
-                                        child: Text(value.name),
-                                      );
-                                    }).toList(),
-                                    onChanged: (Category? newValue) {
-                                      toCategory = newValue;
-                                      getAllSubCategories(
-                                          categoryId: newValue!.id);
-                                    },
-                                  ),
-                                ),
-                              if (selectedToEntityType == "User")
-                                Padding(
-                                  padding:
-                                      const EdgeInsets.symmetric(vertical: 10),
-                                  child: DropdownButtonFormField<SubCategory>(
-                                    value: toSubcategory,
-                                    decoration: const InputDecoration(
-                                      labelText: 'Sub Category',
-                                      border: OutlineInputBorder(),
-                                    ),
-                                    items:
-                                        subCategories.map((SubCategory value) {
-                                      return DropdownMenuItem<SubCategory>(
-                                        value: value,
-                                        child: Text(value.name),
-                                      );
-                                    }).toList(),
-                                    onChanged: (SubCategory? newValue) {
-                                      toSubcategory = newValue;
-                                      getFromAllUsers();
-                                    },
-                                  ),
-                                ),
-                              const SizedBox(height: 10),
-                              DropdownButtonFormField<dynamic>(
-                                value: selectedToUser,
-                                decoration: const InputDecoration(
-                                  labelText: 'User',
-                                  border: OutlineInputBorder(),
-                                ),
-                                items: toUsers.map((dynamic value) {
-                                  return DropdownMenuItem<dynamic>(
-                                    value: value,
-                                    child: Text(value.name),
-                                  );
-                                }).toList(),
-                                onChanged: (dynamic newValue) {
-                                  selectedToUser = newValue;
-                                },
-                              ),
-                              const SizedBox(height: 10),
-                              Row(
-                                  crossAxisAlignment: CrossAxisAlignment.center,
-                                  children: [
-                                    //  Add radio button on for add bank acc or choose bank acc
-                                    Expanded(
-                                      child: ListTile(
-                                        title: const Text('Add Bank Account'),
-                                        leading: Radio(
-                                          value: EnumBankAccount.addnew,
-                                          groupValue: toBankAccountRadioOption,
-                                          onChanged: (EnumBankAccount? value) {
-                                            setState(() {
-                                              toBankAccountRadioOption = value!;
-                                            });
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                    Expanded(
-                                      child: ListTile(
-                                        title:
-                                            const Text('Choose existing one'),
-                                        leading: Radio(
-                                          value: EnumBankAccount.chooseexisting,
-                                          groupValue: toBankAccountRadioOption,
-                                          onChanged: (EnumBankAccount? value) {
-                                            setState(() {
-                                              toBankAccountRadioOption = value!;
-                                            });
-                                          },
-                                        ),
-                                      ),
-                                    ),
-                                  ]),
-                              if (toBankAccountRadioOption ==
-                                  EnumBankAccount.addnew)
-                                Column(
-                                  children: [
-                                    const SizedBox(height: 10),
-                                    TextFormField(
-                                      inputFormatters: <TextInputFormatter>[
-                                        FilteringTextInputFormatter
-                                            .digitsOnly, // Allows only digits
-                                      ],
-                                      controller: toAccountNumberController,
-                                      decoration: const InputDecoration(
-                                        border: OutlineInputBorder(),
-                                        labelText: 'Account Number',
-                                      ),
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return 'Please enter the account number';
-                                        }
-                                        return null;
-                                      },
-                                    ),
-                                    const SizedBox(height: 10),
-                                    TextFormField(
-                                      controller: toBankNameController,
-                                      decoration: const InputDecoration(
-                                        border: OutlineInputBorder(),
-                                        labelText: 'Bank Name',
-                                      ),
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return 'Please enter the bank name';
-                                        }
-                                        return null;
-                                      },
-                                    ),
-                                    const SizedBox(height: 10),
-                                    TextFormField(
-                                      controller: toIfscController,
-                                      decoration: const InputDecoration(
-                                        border: OutlineInputBorder(),
-                                        labelText: 'IFSC',
-                                      ),
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return 'Please enter the IFSC code';
-                                        }
-                                        return null;
-                                      },
-                                    ),
-                                    const SizedBox(height: 10),
-                                    TextFormField(
-                                      controller: toHolderNameController,
-                                      decoration: const InputDecoration(
-                                        border: OutlineInputBorder(),
-                                        labelText: 'Holder Name',
-                                      ),
-                                      validator: (value) {
-                                        if (value == null || value.isEmpty) {
-                                          return 'Please enter the holder name';
-                                        }
-                                        return null;
-                                      },
-                                    ),
-                                  ],
-                                ),
-                              if (toBankAccountRadioOption ==
-                                  EnumBankAccount.chooseexisting)
-                                DropdownButtonFormField<BankAccount>(
-                                  value: selectedToBankAccount,
+                                const SizedBox(height: 10),
+                                DropdownButtonFormField<String>(
+                                  value: selectedToEntityType,
                                   decoration: const InputDecoration(
-                                    labelText: 'Select Bank Account',
+                                    labelText: 'Entity Type',
                                     border: OutlineInputBorder(),
                                   ),
-                                  items: listOfBanks
-                                      .where((element) =>
-                                          element.id !=
-                                          selectedFromBankAccountId)
-                                      .map((BankAccount value) {
-                                    return DropdownMenuItem<BankAccount>(
+                                  items: entityTypes.map((String value) {
+                                    return DropdownMenuItem<String>(
                                       value: value,
-                                      child: Text(value.accountNumber),
+                                      child: Text(value),
                                     );
                                   }).toList(),
-                                  onChanged: (BankAccount? newValue) {
-                                    selectedToBankAccount = newValue;
-                                    selectedToBankAccountId = newValue!.id;
+                                  onChanged: (String? newValue) {
+                                    setState(() {
+                                      selectedToEntityType = newValue;
+                                      selectedToUser = null;
+                                      toCategory = null;
+                                      toSubcategory = null;
+                                    });
+
+                                    getFromAllUsers(isFrom: false);
                                   },
                                 ),
-                            ],
+                                if (selectedToEntityType == "User")
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 10),
+                                    child: DropdownButtonFormField<Category>(
+                                      value: toCategory,
+                                      decoration: const InputDecoration(
+                                        labelText: 'Category',
+                                        border: OutlineInputBorder(),
+                                      ),
+                                      items: catagories.map((Category value) {
+                                        return DropdownMenuItem<Category>(
+                                          value: value,
+                                          child: Text(value.name),
+                                        );
+                                      }).toList(),
+                                      onChanged: (Category? newValue) {
+                                        setState(() {
+                                          selectedToUser = null;
+                                          toCategory = newValue;
+                                          toSubcategory = null;
+                                        });
+                                        getAllSubCategories(
+                                            categoryId: newValue!.id);
+                                      },
+                                    ),
+                                  ),
+                                if (selectedToEntityType == "User")
+                                  Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                        vertical: 10),
+                                    child: DropdownButtonFormField<SubCategory>(
+                                      value: toSubcategory,
+                                      decoration: const InputDecoration(
+                                        labelText: 'Sub Category',
+                                        border: OutlineInputBorder(),
+                                      ),
+                                      items: subCategories
+                                          .map((SubCategory value) {
+                                        return DropdownMenuItem<SubCategory>(
+                                          value: value,
+                                          child: Text(value.name),
+                                        );
+                                      }).toList(),
+                                      onChanged: (SubCategory? newValue) {
+                                        setState(() {
+                                          toSubcategory = newValue;
+                                          selectedToUser = null;
+                                        });
+                                        getFromAllUsers(isFrom: false);
+                                      },
+                                    ),
+                                  ),
+                                const SizedBox(height: 10),
+                                DropdownSearch<dynamic>(
+                                  popupProps: PopupProps.menu(
+                                    showSelectedItems: false,
+                                    showSearchBox: true,
+                                    itemBuilder: (context, dynamic item,
+                                        bool isSelected) {
+                                      return ListTile(
+                                        title: Text(item.name),
+                                      );
+                                    },
+                                  ),
+                                  items: toUsers,
+                                  dropdownDecoratorProps:
+                                      DropDownDecoratorProps(
+                                    dropdownSearchDecoration: InputDecoration(
+                                      labelText: selectedToEntityType,
+                                      hintText: "Select $selectedToEntityType",
+                                    ),
+                                  ),
+                                  onChanged: (value) {
+                                    setState(() {
+                                      selectedToUser = value;
+                                    });
+                                    getAllBankAccounts(isFrom: false);
+                                  },
+                                  dropdownBuilder: (selectedToUser != null)
+                                      ? (ctx, value) {
+                                          return ListTile(
+                                            title: Text(value.name),
+                                          );
+                                        }
+                                      : null,
+                                  selectedItem: selectedToUser,
+                                ),
+                                const SizedBox(height: 10),
+                                Row(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.center,
+                                    children: [
+                                      Expanded(
+                                        child: ListTile(
+                                          title: const Text('Add Bank Account'),
+                                          leading: Radio(
+                                            value: EnumBankAccount.addnew,
+                                            groupValue:
+                                                toBankAccountRadioOption,
+                                            onChanged:
+                                                (EnumBankAccount? value) {
+                                              setState(() {
+                                                toBankAccountRadioOption =
+                                                    value!;
+                                              });
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                      Expanded(
+                                        child: ListTile(
+                                          title:
+                                              const Text('Choose existing one'),
+                                          leading: Radio(
+                                            value:
+                                                EnumBankAccount.chooseexisting,
+                                            groupValue:
+                                                toBankAccountRadioOption,
+                                            onChanged:
+                                                (EnumBankAccount? value) {
+                                              setState(() {
+                                                toBankAccountRadioOption =
+                                                    value!;
+                                              });
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                    ]),
+                                if (toBankAccountRadioOption ==
+                                    EnumBankAccount.addnew)
+                                  Column(
+                                    children: [
+                                      const SizedBox(height: 10),
+                                      TextFormField(
+                                        controller: toAccountNumberController,
+                                        inputFormatters: <TextInputFormatter>[
+                                          FilteringTextInputFormatter
+                                              .digitsOnly, // Allows only digits
+                                        ],
+                                        decoration: const InputDecoration(
+                                          border: OutlineInputBorder(),
+                                          labelText: 'Account Number',
+                                        ),
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Please enter the account number';
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                      const SizedBox(height: 10),
+                                      TextFormField(
+                                        controller: toBankNameController,
+                                        decoration: const InputDecoration(
+                                          border: OutlineInputBorder(),
+                                          labelText: 'Bank Name',
+                                        ),
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Please enter the bank name';
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                      const SizedBox(height: 10),
+                                      TextFormField(
+                                        controller: toIfscController,
+                                        decoration: const InputDecoration(
+                                          border: OutlineInputBorder(),
+                                          labelText: 'IFSC',
+                                        ),
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Please enter the IFSC code';
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                      const SizedBox(height: 10),
+                                      TextFormField(
+                                        controller: toHolderNameController,
+                                        decoration: const InputDecoration(
+                                          border: OutlineInputBorder(),
+                                          labelText: 'Holder Name',
+                                        ),
+                                        validator: (value) {
+                                          if (value == null || value.isEmpty) {
+                                            return 'Please enter the holder name';
+                                          }
+                                          return null;
+                                        },
+                                      ),
+                                    ],
+                                  ),
+                                if (toBankAccountRadioOption ==
+                                    EnumBankAccount.chooseexisting)
+                                  DropdownButtonFormField<BankAccount>(
+                                    value: selectedToBankAccount,
+                                    decoration: const InputDecoration(
+                                      labelText: 'Select Bank Account',
+                                      border: OutlineInputBorder(),
+                                    ),
+                                    items: listOfBanks.map((BankAccount value) {
+                                      return DropdownMenuItem<BankAccount>(
+                                        value: value,
+                                        child: Text(value.accountNumber),
+                                      );
+                                    }).toList(),
+                                    onChanged: (BankAccount? newValue) {
+                                      selectedToBankAccount = newValue;
+                                      selectedToBankAccountId = newValue!.id;
+                                    },
+                                  ),
+                              ],
+                            ),
                           ),
                         ),
+                        // Form(
+                        //   key: formKeys[1],
+                        //   child: Column(
+                        //     crossAxisAlignment: CrossAxisAlignment.start,
+                        //     children: [
+                        //       const Text(
+                        //         'To',
+                        //         style: TextStyle(
+                        //             fontSize: 18, fontWeight: FontWeight.bold),
+                        //       ),
+                        //       const SizedBox(height: 10),
+                        //       DropdownButtonFormField<String>(
+                        //         value: selectedToEntityType,
+                        //         decoration: const InputDecoration(
+                        //           labelText: 'Entity Type',
+                        //           border: OutlineInputBorder(),
+                        //         ),
+                        //         items: entityTypes.map((String value) {
+                        //           return DropdownMenuItem<String>(
+                        //             value: value,
+                        //             child: Text(value),
+                        //           );
+                        //         }).toList(),
+                        //         onChanged: (String? newValue) {
+                        //           selectedToEntityType = newValue;
+                        //         },
+                        //       ),
+                        //       const SizedBox(height: 10),
+                        //       if (selectedToEntityType == "User")
+                        //         Padding(
+                        //           padding:
+                        //               const EdgeInsets.symmetric(vertical: 10),
+                        //           child: DropdownButtonFormField<Category>(
+                        //             value: toCategory,
+                        //             decoration: const InputDecoration(
+                        //               labelText: 'Category',
+                        //               border: OutlineInputBorder(),
+                        //             ),
+                        //             items: catagories.map((Category value) {
+                        //               return DropdownMenuItem<Category>(
+                        //                 value: value,
+                        //                 child: Text(value.name),
+                        //               );
+                        //             }).toList(),
+                        //             onChanged: (Category? newValue) {
+                        //               toCategory = newValue;
+                        //               getAllSubCategories(
+                        //                   categoryId: newValue!.id);
+                        //             },
+                        //           ),
+                        //         ),
+                        //       if (selectedToEntityType == "User")
+                        //         Padding(
+                        //           padding:
+                        //               const EdgeInsets.symmetric(vertical: 10),
+                        //           child: DropdownButtonFormField<SubCategory>(
+                        //             value: toSubcategory,
+                        //             decoration: const InputDecoration(
+                        //               labelText: 'Sub Category',
+                        //               border: OutlineInputBorder(),
+                        //             ),
+                        //             items:
+                        //                 subCategories.map((SubCategory value) {
+                        //               return DropdownMenuItem<SubCategory>(
+                        //                 value: value,
+                        //                 child: Text(value.name),
+                        //               );
+                        //             }).toList(),
+                        //             onChanged: (SubCategory? newValue) {
+                        //               toSubcategory = newValue;
+                        //               getFromAllUsers();
+                        //             },
+                        //           ),
+                        //         ),
+                        //       const SizedBox(height: 10),
+                        //       DropdownButtonFormField<dynamic>(
+                        //         value: selectedToUser,
+                        //         decoration: const InputDecoration(
+                        //           labelText: 'User',
+                        //           border: OutlineInputBorder(),
+                        //         ),
+                        //         items: toUsers.map((dynamic value) {
+                        //           return DropdownMenuItem<dynamic>(
+                        //             value: value,
+                        //             child: Text(value.name),
+                        //           );
+                        //         }).toList(),
+                        //         onChanged: (dynamic newValue) {
+                        //           selectedToUser = newValue;
+                        //         },
+                        //       ),
+                        //       const SizedBox(height: 10),
+                        //       Row(
+                        //           crossAxisAlignment: CrossAxisAlignment.center,
+                        //           children: [
+                        //             //  Add radio button on for add bank acc or choose bank acc
+                        //             Expanded(
+                        //               child: ListTile(
+                        //                 title: const Text('Add Bank Account'),
+                        //                 leading: Radio(
+                        //                   value: EnumBankAccount.addnew,
+                        //                   groupValue: toBankAccountRadioOption,
+                        //                   onChanged: (EnumBankAccount? value) {
+                        //                     setState(() {
+                        //                       toBankAccountRadioOption = value!;
+                        //                     });
+                        //                   },
+                        //                 ),
+                        //               ),
+                        //             ),
+                        //             Expanded(
+                        //               child: ListTile(
+                        //                 title:
+                        //                     const Text('Choose existing one'),
+                        //                 leading: Radio(
+                        //                   value: EnumBankAccount.chooseexisting,
+                        //                   groupValue: toBankAccountRadioOption,
+                        //                   onChanged: (EnumBankAccount? value) {
+                        //                     setState(() {
+                        //                       toBankAccountRadioOption = value!;
+                        //                     });
+                        //                   },
+                        //                 ),
+                        //               ),
+                        //             ),
+                        //           ]),
+                        //       if (toBankAccountRadioOption ==
+                        //           EnumBankAccount.addnew)
+                        //         Column(
+                        //           children: [
+                        //             const SizedBox(height: 10),
+                        //             TextFormField(
+                        //               inputFormatters: <TextInputFormatter>[
+                        //                 FilteringTextInputFormatter
+                        //                     .digitsOnly, // Allows only digits
+                        //               ],
+                        //               controller: toAccountNumberController,
+                        //               decoration: const InputDecoration(
+                        //                 border: OutlineInputBorder(),
+                        //                 labelText: 'Account Number',
+                        //               ),
+                        //               validator: (value) {
+                        //                 if (value == null || value.isEmpty) {
+                        //                   return 'Please enter the account number';
+                        //                 }
+                        //                 return null;
+                        //               },
+                        //             ),
+                        //             const SizedBox(height: 10),
+                        //             TextFormField(
+                        //               controller: toBankNameController,
+                        //               decoration: const InputDecoration(
+                        //                 border: OutlineInputBorder(),
+                        //                 labelText: 'Bank Name',
+                        //               ),
+                        //               validator: (value) {
+                        //                 if (value == null || value.isEmpty) {
+                        //                   return 'Please enter the bank name';
+                        //                 }
+                        //                 return null;
+                        //               },
+                        //             ),
+                        //             const SizedBox(height: 10),
+                        //             TextFormField(
+                        //               controller: toIfscController,
+                        //               decoration: const InputDecoration(
+                        //                 border: OutlineInputBorder(),
+                        //                 labelText: 'IFSC',
+                        //               ),
+                        //               validator: (value) {
+                        //                 if (value == null || value.isEmpty) {
+                        //                   return 'Please enter the IFSC code';
+                        //                 }
+                        //                 return null;
+                        //               },
+                        //             ),
+                        //             const SizedBox(height: 10),
+                        //             TextFormField(
+                        //               controller: toHolderNameController,
+                        //               decoration: const InputDecoration(
+                        //                 border: OutlineInputBorder(),
+                        //                 labelText: 'Holder Name',
+                        //               ),
+                        //               validator: (value) {
+                        //                 if (value == null || value.isEmpty) {
+                        //                   return 'Please enter the holder name';
+                        //                 }
+                        //                 return null;
+                        //               },
+                        //             ),
+                        //           ],
+                        //         ),
+                        //       if (toBankAccountRadioOption ==
+                        //           EnumBankAccount.chooseexisting)
+                        //         DropdownButtonFormField<BankAccount>(
+                        //           value: selectedToBankAccount,
+                        //           decoration: const InputDecoration(
+                        //             labelText: 'Select Bank Account',
+                        //             border: OutlineInputBorder(),
+                        //           ),
+                        //           items: listOfBanks
+                        //               .where((element) =>
+                        //                   element.id !=
+                        //                   selectedFromBankAccountId)
+                        //               .map((BankAccount value) {
+                        //             return DropdownMenuItem<BankAccount>(
+                        //               value: value,
+                        //               child: Text(value.accountNumber),
+                        //             );
+                        //           }).toList(),
+                        //           onChanged: (BankAccount? newValue) {
+                        //             selectedToBankAccount = newValue;
+                        //             selectedToBankAccountId = newValue!.id;
+                        //           },
+                        //         ),
+                        //     ],
+                        //   ),
+                        // ),
                         Form(
                           key: formKeys[2],
                           child: Column(
@@ -763,22 +1061,25 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
   // Mutations
 
   Future<void> insertBankAccount({bool from = true}) async {
-    log("Inserting bank account");
     setState(() {
       isLoading = true;
     });
     try {
       final bankAccount = BankAccountsCompanion(
-        accountHolder: drift.Value(
-            from ? fromHolderNameController.text : toHolderNameController.text),
-        accountNumber: drift.Value(from
-            ? fromAccountNumberController.text
-            : toAccountNumberController.text),
-        bankName: drift.Value(
-            from ? fromBankNameController.text : toBankNameController.text),
-        ifsc:
-            drift.Value(from ? fromIfscController.text : toIfscController.text),
-      );
+          accountHolder: drift.Value(from
+              ? fromHolderNameController.text
+              : toHolderNameController.text),
+          accountNumber: drift.Value(from
+              ? fromAccountNumberController.text
+              : toAccountNumberController.text),
+          bankName: drift.Value(
+              from ? fromBankNameController.text : toBankNameController.text),
+          ifsc: drift.Value(
+              from ? fromIfscController.text : toIfscController.text),
+          entityType: drift.Value(
+              from ? selectedFromEntityType! : selectedToEntityType!),
+          entityId:
+              drift.Value(from ? selectedFromUser.id : selectedToUser.id));
       int result = await database.insertBankAccountOne(bankAccount);
       if (from) {
         selectedFromBankAccountId = result;

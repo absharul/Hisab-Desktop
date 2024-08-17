@@ -2071,6 +2071,21 @@ class $BankAccountsTable extends BankAccounts
           GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 50),
       type: DriftSqlType.string,
       requiredDuringInsert: true);
+  static const VerificationMeta _entityIdMeta =
+      const VerificationMeta('entityId');
+  @override
+  late final GeneratedColumn<int> entityId = GeneratedColumn<int>(
+      'entity_id', aliasedName, false,
+      type: DriftSqlType.int, requiredDuringInsert: true);
+  static const VerificationMeta _entityTypeMeta =
+      const VerificationMeta('entityType');
+  @override
+  late final GeneratedColumn<String> entityType = GeneratedColumn<String>(
+      'entity_type', aliasedName, false,
+      additionalChecks:
+          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 50),
+      type: DriftSqlType.string,
+      requiredDuringInsert: true);
   static const VerificationMeta _bankNameMeta =
       const VerificationMeta('bankName');
   @override
@@ -2114,8 +2129,17 @@ class $BankAccountsTable extends BankAccounts
       requiredDuringInsert: false,
       defaultValue: currentDateAndTime);
   @override
-  List<GeneratedColumn> get $columns =>
-      [id, accountNumber, bankName, ifsc, accountHolder, createdAt, updatedAt];
+  List<GeneratedColumn> get $columns => [
+        id,
+        accountNumber,
+        entityId,
+        entityType,
+        bankName,
+        ifsc,
+        accountHolder,
+        createdAt,
+        updatedAt
+      ];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -2136,6 +2160,20 @@ class $BankAccountsTable extends BankAccounts
               data['account_number']!, _accountNumberMeta));
     } else if (isInserting) {
       context.missing(_accountNumberMeta);
+    }
+    if (data.containsKey('entity_id')) {
+      context.handle(_entityIdMeta,
+          entityId.isAcceptableOrUnknown(data['entity_id']!, _entityIdMeta));
+    } else if (isInserting) {
+      context.missing(_entityIdMeta);
+    }
+    if (data.containsKey('entity_type')) {
+      context.handle(
+          _entityTypeMeta,
+          entityType.isAcceptableOrUnknown(
+              data['entity_type']!, _entityTypeMeta));
+    } else if (isInserting) {
+      context.missing(_entityTypeMeta);
     }
     if (data.containsKey('bank_name')) {
       context.handle(_bankNameMeta,
@@ -2178,6 +2216,10 @@ class $BankAccountsTable extends BankAccounts
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       accountNumber: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}account_number'])!,
+      entityId: attachedDatabase.typeMapping
+          .read(DriftSqlType.int, data['${effectivePrefix}entity_id'])!,
+      entityType: attachedDatabase.typeMapping
+          .read(DriftSqlType.string, data['${effectivePrefix}entity_type'])!,
       bankName: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}bank_name'])!,
       ifsc: attachedDatabase.typeMapping
@@ -2200,6 +2242,8 @@ class $BankAccountsTable extends BankAccounts
 class BankAccount extends DataClass implements Insertable<BankAccount> {
   final int id;
   final String accountNumber;
+  final int entityId;
+  final String entityType;
   final String bankName;
   final String ifsc;
   final String accountHolder;
@@ -2208,6 +2252,8 @@ class BankAccount extends DataClass implements Insertable<BankAccount> {
   const BankAccount(
       {required this.id,
       required this.accountNumber,
+      required this.entityId,
+      required this.entityType,
       required this.bankName,
       required this.ifsc,
       required this.accountHolder,
@@ -2218,6 +2264,8 @@ class BankAccount extends DataClass implements Insertable<BankAccount> {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['account_number'] = Variable<String>(accountNumber);
+    map['entity_id'] = Variable<int>(entityId);
+    map['entity_type'] = Variable<String>(entityType);
     map['bank_name'] = Variable<String>(bankName);
     map['ifsc'] = Variable<String>(ifsc);
     map['account_holder'] = Variable<String>(accountHolder);
@@ -2230,6 +2278,8 @@ class BankAccount extends DataClass implements Insertable<BankAccount> {
     return BankAccountsCompanion(
       id: Value(id),
       accountNumber: Value(accountNumber),
+      entityId: Value(entityId),
+      entityType: Value(entityType),
       bankName: Value(bankName),
       ifsc: Value(ifsc),
       accountHolder: Value(accountHolder),
@@ -2244,6 +2294,8 @@ class BankAccount extends DataClass implements Insertable<BankAccount> {
     return BankAccount(
       id: serializer.fromJson<int>(json['id']),
       accountNumber: serializer.fromJson<String>(json['accountNumber']),
+      entityId: serializer.fromJson<int>(json['entityId']),
+      entityType: serializer.fromJson<String>(json['entityType']),
       bankName: serializer.fromJson<String>(json['bankName']),
       ifsc: serializer.fromJson<String>(json['ifsc']),
       accountHolder: serializer.fromJson<String>(json['accountHolder']),
@@ -2257,6 +2309,8 @@ class BankAccount extends DataClass implements Insertable<BankAccount> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'accountNumber': serializer.toJson<String>(accountNumber),
+      'entityId': serializer.toJson<int>(entityId),
+      'entityType': serializer.toJson<String>(entityType),
       'bankName': serializer.toJson<String>(bankName),
       'ifsc': serializer.toJson<String>(ifsc),
       'accountHolder': serializer.toJson<String>(accountHolder),
@@ -2268,6 +2322,8 @@ class BankAccount extends DataClass implements Insertable<BankAccount> {
   BankAccount copyWith(
           {int? id,
           String? accountNumber,
+          int? entityId,
+          String? entityType,
           String? bankName,
           String? ifsc,
           String? accountHolder,
@@ -2276,6 +2332,8 @@ class BankAccount extends DataClass implements Insertable<BankAccount> {
       BankAccount(
         id: id ?? this.id,
         accountNumber: accountNumber ?? this.accountNumber,
+        entityId: entityId ?? this.entityId,
+        entityType: entityType ?? this.entityType,
         bankName: bankName ?? this.bankName,
         ifsc: ifsc ?? this.ifsc,
         accountHolder: accountHolder ?? this.accountHolder,
@@ -2288,6 +2346,9 @@ class BankAccount extends DataClass implements Insertable<BankAccount> {
       accountNumber: data.accountNumber.present
           ? data.accountNumber.value
           : this.accountNumber,
+      entityId: data.entityId.present ? data.entityId.value : this.entityId,
+      entityType:
+          data.entityType.present ? data.entityType.value : this.entityType,
       bankName: data.bankName.present ? data.bankName.value : this.bankName,
       ifsc: data.ifsc.present ? data.ifsc.value : this.ifsc,
       accountHolder: data.accountHolder.present
@@ -2303,6 +2364,8 @@ class BankAccount extends DataClass implements Insertable<BankAccount> {
     return (StringBuffer('BankAccount(')
           ..write('id: $id, ')
           ..write('accountNumber: $accountNumber, ')
+          ..write('entityId: $entityId, ')
+          ..write('entityType: $entityType, ')
           ..write('bankName: $bankName, ')
           ..write('ifsc: $ifsc, ')
           ..write('accountHolder: $accountHolder, ')
@@ -2313,14 +2376,16 @@ class BankAccount extends DataClass implements Insertable<BankAccount> {
   }
 
   @override
-  int get hashCode => Object.hash(
-      id, accountNumber, bankName, ifsc, accountHolder, createdAt, updatedAt);
+  int get hashCode => Object.hash(id, accountNumber, entityId, entityType,
+      bankName, ifsc, accountHolder, createdAt, updatedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is BankAccount &&
           other.id == this.id &&
           other.accountNumber == this.accountNumber &&
+          other.entityId == this.entityId &&
+          other.entityType == this.entityType &&
           other.bankName == this.bankName &&
           other.ifsc == this.ifsc &&
           other.accountHolder == this.accountHolder &&
@@ -2331,6 +2396,8 @@ class BankAccount extends DataClass implements Insertable<BankAccount> {
 class BankAccountsCompanion extends UpdateCompanion<BankAccount> {
   final Value<int> id;
   final Value<String> accountNumber;
+  final Value<int> entityId;
+  final Value<String> entityType;
   final Value<String> bankName;
   final Value<String> ifsc;
   final Value<String> accountHolder;
@@ -2339,6 +2406,8 @@ class BankAccountsCompanion extends UpdateCompanion<BankAccount> {
   const BankAccountsCompanion({
     this.id = const Value.absent(),
     this.accountNumber = const Value.absent(),
+    this.entityId = const Value.absent(),
+    this.entityType = const Value.absent(),
     this.bankName = const Value.absent(),
     this.ifsc = const Value.absent(),
     this.accountHolder = const Value.absent(),
@@ -2348,18 +2417,24 @@ class BankAccountsCompanion extends UpdateCompanion<BankAccount> {
   BankAccountsCompanion.insert({
     this.id = const Value.absent(),
     required String accountNumber,
+    required int entityId,
+    required String entityType,
     required String bankName,
     required String ifsc,
     required String accountHolder,
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
   })  : accountNumber = Value(accountNumber),
+        entityId = Value(entityId),
+        entityType = Value(entityType),
         bankName = Value(bankName),
         ifsc = Value(ifsc),
         accountHolder = Value(accountHolder);
   static Insertable<BankAccount> custom({
     Expression<int>? id,
     Expression<String>? accountNumber,
+    Expression<int>? entityId,
+    Expression<String>? entityType,
     Expression<String>? bankName,
     Expression<String>? ifsc,
     Expression<String>? accountHolder,
@@ -2369,6 +2444,8 @@ class BankAccountsCompanion extends UpdateCompanion<BankAccount> {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (accountNumber != null) 'account_number': accountNumber,
+      if (entityId != null) 'entity_id': entityId,
+      if (entityType != null) 'entity_type': entityType,
       if (bankName != null) 'bank_name': bankName,
       if (ifsc != null) 'ifsc': ifsc,
       if (accountHolder != null) 'account_holder': accountHolder,
@@ -2380,6 +2457,8 @@ class BankAccountsCompanion extends UpdateCompanion<BankAccount> {
   BankAccountsCompanion copyWith(
       {Value<int>? id,
       Value<String>? accountNumber,
+      Value<int>? entityId,
+      Value<String>? entityType,
       Value<String>? bankName,
       Value<String>? ifsc,
       Value<String>? accountHolder,
@@ -2388,6 +2467,8 @@ class BankAccountsCompanion extends UpdateCompanion<BankAccount> {
     return BankAccountsCompanion(
       id: id ?? this.id,
       accountNumber: accountNumber ?? this.accountNumber,
+      entityId: entityId ?? this.entityId,
+      entityType: entityType ?? this.entityType,
       bankName: bankName ?? this.bankName,
       ifsc: ifsc ?? this.ifsc,
       accountHolder: accountHolder ?? this.accountHolder,
@@ -2404,6 +2485,12 @@ class BankAccountsCompanion extends UpdateCompanion<BankAccount> {
     }
     if (accountNumber.present) {
       map['account_number'] = Variable<String>(accountNumber.value);
+    }
+    if (entityId.present) {
+      map['entity_id'] = Variable<int>(entityId.value);
+    }
+    if (entityType.present) {
+      map['entity_type'] = Variable<String>(entityType.value);
     }
     if (bankName.present) {
       map['bank_name'] = Variable<String>(bankName.value);
@@ -2428,6 +2515,8 @@ class BankAccountsCompanion extends UpdateCompanion<BankAccount> {
     return (StringBuffer('BankAccountsCompanion(')
           ..write('id: $id, ')
           ..write('accountNumber: $accountNumber, ')
+          ..write('entityId: $entityId, ')
+          ..write('entityType: $entityType, ')
           ..write('bankName: $bankName, ')
           ..write('ifsc: $ifsc, ')
           ..write('accountHolder: $accountHolder, ')
@@ -2458,9 +2547,7 @@ class $EntityPaymentMethodsTable extends EntityPaymentMethods
   @override
   late final GeneratedColumn<int> entityId = GeneratedColumn<int>(
       'entity_id', aliasedName, false,
-      type: DriftSqlType.int,
-      requiredDuringInsert: true,
-      $customConstraints: 'REFERENCES users(id) NOT NULL');
+      type: DriftSqlType.int, requiredDuringInsert: true);
   static const VerificationMeta _entityTypeMeta =
       const VerificationMeta('entityType');
   @override
@@ -4027,24 +4114,6 @@ class $$UsersTableFilterComposer
     return f(composer);
   }
 
-  ComposableFilter entityPaymentMethodsRefs(
-      ComposableFilter Function($$EntityPaymentMethodsTableFilterComposer f)
-          f) {
-    final $$EntityPaymentMethodsTableFilterComposer composer =
-        $state.composerBuilder(
-            composer: this,
-            getCurrentColumn: (t) => t.id,
-            referencedTable: $state.db.entityPaymentMethods,
-            getReferencedColumn: (t) => t.entityId,
-            builder: (joinBuilder, parentComposers) =>
-                $$EntityPaymentMethodsTableFilterComposer(ComposerState(
-                    $state.db,
-                    $state.db.entityPaymentMethods,
-                    joinBuilder,
-                    parentComposers)));
-    return f(composer);
-  }
-
   ComposableFilter partnersRefs(
       ComposableFilter Function($$PartnersTableFilterComposer f) f) {
     final $$PartnersTableFilterComposer composer = $state.composerBuilder(
@@ -4578,6 +4647,8 @@ typedef $$BankAccountsTableCreateCompanionBuilder = BankAccountsCompanion
     Function({
   Value<int> id,
   required String accountNumber,
+  required int entityId,
+  required String entityType,
   required String bankName,
   required String ifsc,
   required String accountHolder,
@@ -4588,6 +4659,8 @@ typedef $$BankAccountsTableUpdateCompanionBuilder = BankAccountsCompanion
     Function({
   Value<int> id,
   Value<String> accountNumber,
+  Value<int> entityId,
+  Value<String> entityType,
   Value<String> bankName,
   Value<String> ifsc,
   Value<String> accountHolder,
@@ -4614,6 +4687,8 @@ class $$BankAccountsTableTableManager extends RootTableManager<
           updateCompanionCallback: ({
             Value<int> id = const Value.absent(),
             Value<String> accountNumber = const Value.absent(),
+            Value<int> entityId = const Value.absent(),
+            Value<String> entityType = const Value.absent(),
             Value<String> bankName = const Value.absent(),
             Value<String> ifsc = const Value.absent(),
             Value<String> accountHolder = const Value.absent(),
@@ -4623,6 +4698,8 @@ class $$BankAccountsTableTableManager extends RootTableManager<
               BankAccountsCompanion(
             id: id,
             accountNumber: accountNumber,
+            entityId: entityId,
+            entityType: entityType,
             bankName: bankName,
             ifsc: ifsc,
             accountHolder: accountHolder,
@@ -4632,6 +4709,8 @@ class $$BankAccountsTableTableManager extends RootTableManager<
           createCompanionCallback: ({
             Value<int> id = const Value.absent(),
             required String accountNumber,
+            required int entityId,
+            required String entityType,
             required String bankName,
             required String ifsc,
             required String accountHolder,
@@ -4641,6 +4720,8 @@ class $$BankAccountsTableTableManager extends RootTableManager<
               BankAccountsCompanion.insert(
             id: id,
             accountNumber: accountNumber,
+            entityId: entityId,
+            entityType: entityType,
             bankName: bankName,
             ifsc: ifsc,
             accountHolder: accountHolder,
@@ -4660,6 +4741,16 @@ class $$BankAccountsTableFilterComposer
 
   ColumnFilters<String> get accountNumber => $state.composableBuilder(
       column: $state.table.accountNumber,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<int> get entityId => $state.composableBuilder(
+      column: $state.table.entityId,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
+  ColumnFilters<String> get entityType => $state.composableBuilder(
+      column: $state.table.entityType,
       builder: (column, joinBuilders) =>
           ColumnFilters(column, joinBuilders: joinBuilders));
 
@@ -4699,6 +4790,16 @@ class $$BankAccountsTableOrderingComposer
 
   ColumnOrderings<String> get accountNumber => $state.composableBuilder(
       column: $state.table.accountNumber,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<int> get entityId => $state.composableBuilder(
+      column: $state.table.entityId,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<String> get entityType => $state.composableBuilder(
+      column: $state.table.entityType,
       builder: (column, joinBuilders) =>
           ColumnOrderings(column, joinBuilders: joinBuilders));
 
@@ -4801,6 +4902,11 @@ class $$EntityPaymentMethodsTableFilterComposer
       builder: (column, joinBuilders) =>
           ColumnFilters(column, joinBuilders: joinBuilders));
 
+  ColumnFilters<int> get entityId => $state.composableBuilder(
+      column: $state.table.entityId,
+      builder: (column, joinBuilders) =>
+          ColumnFilters(column, joinBuilders: joinBuilders));
+
   ColumnFilters<String> get entityType => $state.composableBuilder(
       column: $state.table.entityType,
       builder: (column, joinBuilders) =>
@@ -4815,18 +4921,6 @@ class $$EntityPaymentMethodsTableFilterComposer
       column: $state.table.paymentMethod,
       builder: (column, joinBuilders) =>
           ColumnFilters(column, joinBuilders: joinBuilders));
-
-  $$UsersTableFilterComposer get entityId {
-    final $$UsersTableFilterComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.entityId,
-        referencedTable: $state.db.users,
-        getReferencedColumn: (t) => t.id,
-        builder: (joinBuilder, parentComposers) => $$UsersTableFilterComposer(
-            ComposerState(
-                $state.db, $state.db.users, joinBuilder, parentComposers)));
-    return composer;
-  }
 }
 
 class $$EntityPaymentMethodsTableOrderingComposer
@@ -4834,6 +4928,11 @@ class $$EntityPaymentMethodsTableOrderingComposer
   $$EntityPaymentMethodsTableOrderingComposer(super.$state);
   ColumnOrderings<int> get id => $state.composableBuilder(
       column: $state.table.id,
+      builder: (column, joinBuilders) =>
+          ColumnOrderings(column, joinBuilders: joinBuilders));
+
+  ColumnOrderings<int> get entityId => $state.composableBuilder(
+      column: $state.table.entityId,
       builder: (column, joinBuilders) =>
           ColumnOrderings(column, joinBuilders: joinBuilders));
 
@@ -4851,18 +4950,6 @@ class $$EntityPaymentMethodsTableOrderingComposer
       column: $state.table.paymentMethod,
       builder: (column, joinBuilders) =>
           ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  $$UsersTableOrderingComposer get entityId {
-    final $$UsersTableOrderingComposer composer = $state.composerBuilder(
-        composer: this,
-        getCurrentColumn: (t) => t.entityId,
-        referencedTable: $state.db.users,
-        getReferencedColumn: (t) => t.id,
-        builder: (joinBuilder, parentComposers) => $$UsersTableOrderingComposer(
-            ComposerState(
-                $state.db, $state.db.users, joinBuilder, parentComposers)));
-    return composer;
-  }
 }
 
 typedef $$PartnersTableCreateCompanionBuilder = PartnersCompanion Function({

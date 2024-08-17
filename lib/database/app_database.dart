@@ -126,6 +126,8 @@ class AppDatabase extends _$AppDatabase {
   Future<int> insertBankAccountOne(Insertable<BankAccount> bankAccount) =>
       into(bankAccounts).insert(bankAccount);
   Future<List<BankAccount>> getBankAccounts() => select(bankAccounts).get();
+  Future<List<BankAccount>> getBankAccountByEntityId(int entityId) =>
+      (select(bankAccounts)..where((t) => t.entityId.equals(entityId))).get();
   Future<BankAccount> getBankAccountById(int id) =>
       (select(bankAccounts)..where((t) => t.id.equals(id))).getSingle();
 
