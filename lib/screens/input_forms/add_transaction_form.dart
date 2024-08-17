@@ -72,10 +72,12 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
       if (currentPage < 2) {
         Future.wait([
           if (currentPage == 0 &&
-              fromBankAccountRadioOption == EnumBankAccount.addnew)
+              fromBankAccountRadioOption == EnumBankAccount.addnew &&
+              paymentMethod == EnumPaymentMethod.cheque)
             insertBankAccount(from: true),
           if (currentPage == 1 &&
-              toBankAccountRadioOption == EnumBankAccount.addnew)
+              toBankAccountRadioOption == EnumBankAccount.addnew &&
+              paymentMethod == EnumPaymentMethod.cheque)
             insertBankAccount(from: false),
         ]).then((value) {
           pageController.nextPage(
@@ -339,49 +341,52 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
                                       ),
                                     ]),
                                 const SizedBox(height: 10),
-                                Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Expanded(
-                                        child: ListTile(
-                                          title: const Text('Add Bank Account'),
-                                          leading: Radio(
-                                            value: EnumBankAccount.addnew,
-                                            groupValue:
-                                                fromBankAccountRadioOption,
-                                            onChanged:
-                                                (EnumBankAccount? value) {
-                                              setState(() {
-                                                fromBankAccountRadioOption =
-                                                    value!;
-                                              });
-                                            },
+                                if (paymentMethod == EnumPaymentMethod.cheque)
+                                  Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Expanded(
+                                          child: ListTile(
+                                            title:
+                                                const Text('Add Bank Account'),
+                                            leading: Radio(
+                                              value: EnumBankAccount.addnew,
+                                              groupValue:
+                                                  fromBankAccountRadioOption,
+                                              onChanged:
+                                                  (EnumBankAccount? value) {
+                                                setState(() {
+                                                  fromBankAccountRadioOption =
+                                                      value!;
+                                                });
+                                              },
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      Expanded(
-                                        child: ListTile(
-                                          title:
-                                              const Text('Choose existing one'),
-                                          leading: Radio(
-                                            value:
-                                                EnumBankAccount.chooseexisting,
-                                            groupValue:
-                                                fromBankAccountRadioOption,
-                                            onChanged:
-                                                (EnumBankAccount? value) {
-                                              setState(() {
-                                                fromBankAccountRadioOption =
-                                                    value!;
-                                              });
-                                            },
+                                        Expanded(
+                                          child: ListTile(
+                                            title: const Text(
+                                                'Choose existing one'),
+                                            leading: Radio(
+                                              value: EnumBankAccount
+                                                  .chooseexisting,
+                                              groupValue:
+                                                  fromBankAccountRadioOption,
+                                              onChanged:
+                                                  (EnumBankAccount? value) {
+                                                setState(() {
+                                                  fromBankAccountRadioOption =
+                                                      value!;
+                                                });
+                                              },
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                    ]),
-                                if (fromBankAccountRadioOption ==
-                                    EnumBankAccount.addnew)
+                                      ]),
+                                if (paymentMethod == EnumPaymentMethod.cheque &&
+                                    fromBankAccountRadioOption ==
+                                        EnumBankAccount.addnew)
                                   Column(
                                     children: [
                                       const SizedBox(height: 10),
@@ -595,49 +600,52 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
                                   selectedItem: selectedToUser,
                                 ),
                                 const SizedBox(height: 10),
-                                Row(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.center,
-                                    children: [
-                                      Expanded(
-                                        child: ListTile(
-                                          title: const Text('Add Bank Account'),
-                                          leading: Radio(
-                                            value: EnumBankAccount.addnew,
-                                            groupValue:
-                                                toBankAccountRadioOption,
-                                            onChanged:
-                                                (EnumBankAccount? value) {
-                                              setState(() {
-                                                toBankAccountRadioOption =
-                                                    value!;
-                                              });
-                                            },
+                                if (paymentMethod == EnumPaymentMethod.cheque)
+                                  Row(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.center,
+                                      children: [
+                                        Expanded(
+                                          child: ListTile(
+                                            title:
+                                                const Text('Add Bank Account'),
+                                            leading: Radio(
+                                              value: EnumBankAccount.addnew,
+                                              groupValue:
+                                                  toBankAccountRadioOption,
+                                              onChanged:
+                                                  (EnumBankAccount? value) {
+                                                setState(() {
+                                                  toBankAccountRadioOption =
+                                                      value!;
+                                                });
+                                              },
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                      Expanded(
-                                        child: ListTile(
-                                          title:
-                                              const Text('Choose existing one'),
-                                          leading: Radio(
-                                            value:
-                                                EnumBankAccount.chooseexisting,
-                                            groupValue:
-                                                toBankAccountRadioOption,
-                                            onChanged:
-                                                (EnumBankAccount? value) {
-                                              setState(() {
-                                                toBankAccountRadioOption =
-                                                    value!;
-                                              });
-                                            },
+                                        Expanded(
+                                          child: ListTile(
+                                            title: const Text(
+                                                'Choose existing one'),
+                                            leading: Radio(
+                                              value: EnumBankAccount
+                                                  .chooseexisting,
+                                              groupValue:
+                                                  toBankAccountRadioOption,
+                                              onChanged:
+                                                  (EnumBankAccount? value) {
+                                                setState(() {
+                                                  toBankAccountRadioOption =
+                                                      value!;
+                                                });
+                                              },
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                    ]),
+                                      ]),
                                 if (toBankAccountRadioOption ==
-                                    EnumBankAccount.addnew)
+                                        EnumBankAccount.addnew &&
+                                    paymentMethod == EnumPaymentMethod.cheque)
                                   Column(
                                     children: [
                                       const SizedBox(height: 10),
@@ -703,7 +711,8 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
                                     ],
                                   ),
                                 if (toBankAccountRadioOption ==
-                                    EnumBankAccount.chooseexisting)
+                                        EnumBankAccount.chooseexisting &&
+                                    paymentMethod == EnumPaymentMethod.cheque)
                                   DropdownButtonFormField<BankAccount>(
                                     value: selectedToBankAccount,
                                     decoration: const InputDecoration(
@@ -972,25 +981,27 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
                                   return null;
                                 },
                               ),
-                              const SizedBox(height: 10),
-                              TextFormField(
-                                inputFormatters: <TextInputFormatter>[
-                                  FilteringTextInputFormatter
-                                      .digitsOnly, // Allows only digits
-                                ],
-                                controller: chequeController,
-                                decoration: const InputDecoration(
-                                  hintText: '876342524',
-                                  labelText: 'Cheque Number',
-                                  border: OutlineInputBorder(),
+                              if (paymentMethod == EnumPaymentMethod.cheque)
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 10.0),
+                                  child: TextFormField(
+                                    inputFormatters: <TextInputFormatter>[
+                                      FilteringTextInputFormatter.digitsOnly,
+                                    ],
+                                    controller: chequeController,
+                                    decoration: const InputDecoration(
+                                      hintText: '876342524',
+                                      labelText: 'Cheque Number',
+                                      border: OutlineInputBorder(),
+                                    ),
+                                    validator: (value) {
+                                      if (value == null || value.isEmpty) {
+                                        return 'Please enter a description';
+                                      }
+                                      return null;
+                                    },
+                                  ),
                                 ),
-                                validator: (value) {
-                                  if (value == null || value.isEmpty) {
-                                    return 'Please enter a description';
-                                  }
-                                  return null;
-                                },
-                              ),
                               const SizedBox(height: 10),
                               TextFormField(
                                 controller: remarkController,
@@ -1099,7 +1110,7 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
   }
 
   Future<int> insertPaymentEntity({
-    required int bankAccountId,
+    required int? bankAccountId,
     required int entityId,
     required String entityType,
     required String paymentMethod,
@@ -1150,16 +1161,15 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
       isLoading = true;
     });
     try {
-      log("Inserting the submit");
       int fromEntityPaymentMethodId = await insertPaymentEntity(
-        bankAccountId: selectedFromBankAccountId!,
+        bankAccountId: selectedFromBankAccountId,
         entityId: selectedFromUser!.id,
         entityType: selectedFromEntityType!,
         paymentMethod: paymentMethod.name,
       );
 
       int toEntityPaymentMethodId = await insertPaymentEntity(
-        bankAccountId: selectedToBankAccountId!,
+        bankAccountId: selectedToBankAccountId,
         entityId: selectedToUser!.id,
         entityType: selectedToEntityType!,
         paymentMethod: paymentMethod.name,
@@ -1174,11 +1184,12 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
         isLoading = false;
       });
       router.pop();
-    } catch (error) {
+    } catch (error, st) {
       setState(() {
         isLoading = false;
       });
       // Handle the error, e.g., show a snackbar or dialog
+      log("st : ${st}");
       showError(error);
     }
   }

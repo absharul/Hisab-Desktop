@@ -2561,10 +2561,10 @@ class $EntityPaymentMethodsTable extends EntityPaymentMethods
       const VerificationMeta('bankAccountId');
   @override
   late final GeneratedColumn<int> bankAccountId = GeneratedColumn<int>(
-      'bank_account_id', aliasedName, false,
+      'bank_account_id', aliasedName, true,
       type: DriftSqlType.int,
-      requiredDuringInsert: true,
-      $customConstraints: 'REFERENCES bankAccounts(id) NOT NULL');
+      requiredDuringInsert: false,
+      $customConstraints: 'REFERENCES bankAccounts(id) NULL');
   static const VerificationMeta _paymentMethodMeta =
       const VerificationMeta('paymentMethod');
   @override
@@ -2610,8 +2610,6 @@ class $EntityPaymentMethodsTable extends EntityPaymentMethods
           _bankAccountIdMeta,
           bankAccountId.isAcceptableOrUnknown(
               data['bank_account_id']!, _bankAccountIdMeta));
-    } else if (isInserting) {
-      context.missing(_bankAccountIdMeta);
     }
     if (data.containsKey('payment_method')) {
       context.handle(
@@ -2637,7 +2635,7 @@ class $EntityPaymentMethodsTable extends EntityPaymentMethods
       entityType: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}entity_type'])!,
       bankAccountId: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}bank_account_id'])!,
+          .read(DriftSqlType.int, data['${effectivePrefix}bank_account_id']),
       paymentMethod: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}payment_method'])!,
     );
@@ -2654,13 +2652,13 @@ class EntityPaymentMethod extends DataClass
   final int id;
   final int entityId;
   final String entityType;
-  final int bankAccountId;
+  final int? bankAccountId;
   final String paymentMethod;
   const EntityPaymentMethod(
       {required this.id,
       required this.entityId,
       required this.entityType,
-      required this.bankAccountId,
+      this.bankAccountId,
       required this.paymentMethod});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
@@ -2668,7 +2666,9 @@ class EntityPaymentMethod extends DataClass
     map['id'] = Variable<int>(id);
     map['entity_id'] = Variable<int>(entityId);
     map['entity_type'] = Variable<String>(entityType);
-    map['bank_account_id'] = Variable<int>(bankAccountId);
+    if (!nullToAbsent || bankAccountId != null) {
+      map['bank_account_id'] = Variable<int>(bankAccountId);
+    }
     map['payment_method'] = Variable<String>(paymentMethod);
     return map;
   }
@@ -2678,7 +2678,9 @@ class EntityPaymentMethod extends DataClass
       id: Value(id),
       entityId: Value(entityId),
       entityType: Value(entityType),
-      bankAccountId: Value(bankAccountId),
+      bankAccountId: bankAccountId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(bankAccountId),
       paymentMethod: Value(paymentMethod),
     );
   }
@@ -2690,7 +2692,7 @@ class EntityPaymentMethod extends DataClass
       id: serializer.fromJson<int>(json['id']),
       entityId: serializer.fromJson<int>(json['entityId']),
       entityType: serializer.fromJson<String>(json['entityType']),
-      bankAccountId: serializer.fromJson<int>(json['bankAccountId']),
+      bankAccountId: serializer.fromJson<int?>(json['bankAccountId']),
       paymentMethod: serializer.fromJson<String>(json['paymentMethod']),
     );
   }
@@ -2701,7 +2703,7 @@ class EntityPaymentMethod extends DataClass
       'id': serializer.toJson<int>(id),
       'entityId': serializer.toJson<int>(entityId),
       'entityType': serializer.toJson<String>(entityType),
-      'bankAccountId': serializer.toJson<int>(bankAccountId),
+      'bankAccountId': serializer.toJson<int?>(bankAccountId),
       'paymentMethod': serializer.toJson<String>(paymentMethod),
     };
   }
@@ -2710,13 +2712,14 @@ class EntityPaymentMethod extends DataClass
           {int? id,
           int? entityId,
           String? entityType,
-          int? bankAccountId,
+          Value<int?> bankAccountId = const Value.absent(),
           String? paymentMethod}) =>
       EntityPaymentMethod(
         id: id ?? this.id,
         entityId: entityId ?? this.entityId,
         entityType: entityType ?? this.entityType,
-        bankAccountId: bankAccountId ?? this.bankAccountId,
+        bankAccountId:
+            bankAccountId.present ? bankAccountId.value : this.bankAccountId,
         paymentMethod: paymentMethod ?? this.paymentMethod,
       );
   EntityPaymentMethod copyWithCompanion(EntityPaymentMethodsCompanion data) {
@@ -2765,7 +2768,7 @@ class EntityPaymentMethodsCompanion
   final Value<int> id;
   final Value<int> entityId;
   final Value<String> entityType;
-  final Value<int> bankAccountId;
+  final Value<int?> bankAccountId;
   final Value<String> paymentMethod;
   const EntityPaymentMethodsCompanion({
     this.id = const Value.absent(),
@@ -2778,11 +2781,10 @@ class EntityPaymentMethodsCompanion
     this.id = const Value.absent(),
     required int entityId,
     required String entityType,
-    required int bankAccountId,
+    this.bankAccountId = const Value.absent(),
     required String paymentMethod,
   })  : entityId = Value(entityId),
         entityType = Value(entityType),
-        bankAccountId = Value(bankAccountId),
         paymentMethod = Value(paymentMethod);
   static Insertable<EntityPaymentMethod> custom({
     Expression<int>? id,
@@ -2804,7 +2806,7 @@ class EntityPaymentMethodsCompanion
       {Value<int>? id,
       Value<int>? entityId,
       Value<String>? entityType,
-      Value<int>? bankAccountId,
+      Value<int?>? bankAccountId,
       Value<String>? paymentMethod}) {
     return EntityPaymentMethodsCompanion(
       id: id ?? this.id,
@@ -4834,7 +4836,7 @@ typedef $$EntityPaymentMethodsTableCreateCompanionBuilder
   Value<int> id,
   required int entityId,
   required String entityType,
-  required int bankAccountId,
+  Value<int?> bankAccountId,
   required String paymentMethod,
 });
 typedef $$EntityPaymentMethodsTableUpdateCompanionBuilder
@@ -4842,7 +4844,7 @@ typedef $$EntityPaymentMethodsTableUpdateCompanionBuilder
   Value<int> id,
   Value<int> entityId,
   Value<String> entityType,
-  Value<int> bankAccountId,
+  Value<int?> bankAccountId,
   Value<String> paymentMethod,
 });
 
@@ -4867,7 +4869,7 @@ class $$EntityPaymentMethodsTableTableManager extends RootTableManager<
             Value<int> id = const Value.absent(),
             Value<int> entityId = const Value.absent(),
             Value<String> entityType = const Value.absent(),
-            Value<int> bankAccountId = const Value.absent(),
+            Value<int?> bankAccountId = const Value.absent(),
             Value<String> paymentMethod = const Value.absent(),
           }) =>
               EntityPaymentMethodsCompanion(
@@ -4881,7 +4883,7 @@ class $$EntityPaymentMethodsTableTableManager extends RootTableManager<
             Value<int> id = const Value.absent(),
             required int entityId,
             required String entityType,
-            required int bankAccountId,
+            Value<int?> bankAccountId = const Value.absent(),
             required String paymentMethod,
           }) =>
               EntityPaymentMethodsCompanion.insert(

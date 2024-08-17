@@ -76,8 +76,9 @@ class EntityPaymentMethods extends Table {
   IntColumn get id => integer().autoIncrement()();
   IntColumn get entityId => integer()();
   TextColumn get entityType => text().withLength(min: 1, max: 50)();
-  IntColumn get bankAccountId =>
-      integer().customConstraint('REFERENCES bankAccounts(id) NOT NULL')();
+  IntColumn get bankAccountId => integer()
+      .nullable()
+      .customConstraint('REFERENCES bankAccounts(id) NULL')();
   TextColumn get paymentMethod => text().withLength(min: 1, max: 50)();
 }
 
