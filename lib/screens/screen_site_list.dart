@@ -1,7 +1,6 @@
 import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
 import 'package:hisab/database/app_database.dart';
-import 'package:hisab/database/schemas.dart';
 import 'package:hisab/main.dart';
 import 'package:hisab/routes/route.dart';
 import 'package:hisab/screens/screen_site_detail.dart';
@@ -264,7 +263,6 @@ class ScreenSiteListing extends StatelessWidget {
   }
 
   void _editSitePressed(BuildContext context, Site site) async {
-
     final nameController = TextEditingController(text: site.name);
     final addressController = TextEditingController(text: site.address);
     final firmNameController = TextEditingController();
