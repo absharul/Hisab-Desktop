@@ -45,6 +45,7 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
   final formKeys = List.generate(3, (_) => GlobalKey<FormState>());
 
   final dropDownKey = GlobalKey();
+
   // USER DROPDOWN
   List<dynamic> fromUsers = [], toUsers = [];
   dynamic selectedFromUser, selectedToUser;
@@ -99,6 +100,7 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
   // Loaders
 
   bool isLoading = false;
+
   @override
   void initState() {
     super.initState();
@@ -153,8 +155,14 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
   void getAllSubCategories({
     required int categoryId,
   }) async {
-    subCategories = await database.getSubcategoryByCategoryId(categoryId);
-    setState(() {});
+    // Fetch all subcategories for the given categoryId
+    final subCategoryList =
+        await database.getSubcategoryByCategoryId(categoryId);
+
+    // Update the state with the fetched list
+    setState(() {
+      subCategories = subCategoryList;
+    });
   }
 
   void getAllBankAccounts({bool isFrom = false}) async {

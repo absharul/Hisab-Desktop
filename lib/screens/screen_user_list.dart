@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
+import 'package:hisab/controllers/user_controller.dart';
 import 'package:hisab/database/app_database.dart';
 import 'package:hisab/main.dart';
 import 'package:hisab/routes/route.dart';
@@ -36,12 +37,12 @@ class _ScreenUserListingState extends State<ScreenUserListing> {
             return const Center(child: CircularProgressIndicator());
           }
 
-          final sites = snapshot.data ?? [];
+          final users = snapshot.data ?? [];
 
           return ListView.builder(
-            itemCount: sites.length,
+            itemCount: users.length,
             itemBuilder: (context, index) {
-              final site = sites[index];
+              final user = users[index];
 
               return InkWell(
                 // onTap: () {
@@ -70,7 +71,7 @@ class _ScreenUserListingState extends State<ScreenUserListing> {
                       ), // Icon to make it look different
                       const SizedBox(width: 10),
                       Text(
-                        site.name,
+                        user.name,
                         style: const TextStyle(
                           fontFamily: 'Courier', // Old-school font
                           fontSize: 16.0,
@@ -96,8 +97,43 @@ class _ScreenUserListingState extends State<ScreenUserListing> {
                         children: [
                           IconButton(
                             icon: const Icon(Icons.delete),
-                            onPressed: () {
-                              // Add your delete functionality here
+                            onPressed: () async {
+                              final confirm = await showDialog(
+                                context: context,
+                                builder: (ctx) => AlertDialog(
+                                  title: const Text('Delete User'),
+                                  content: const Text(
+                                      'Are you sure you want to delete this user?'),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(ctx).pop(false),
+                                      child: const Text('Cancel'),
+                                    ),
+                                    TextButton(
+                                      onPressed: () =>
+                                          Navigator.of(ctx).pop(true),
+                                      child: const Text('Delete'),
+                                    ),
+                                  ],
+                                ),
+                              );
+
+                              if (confirm == true) {
+                                try {
+                                  await userController.delete(user);
+                                  HFunction.showFlushBarSuccess(
+                                    context: context,
+                                    message: "Successfully deleted the category",
+                                  );
+                                } catch (error) {
+                                  HFunction.showFlushBarError(
+                                    context: context,
+                                    message:
+                                    "Failed to delete the category: $error",
+                                  );
+                                }
+                              }
                             },
                           ),
                           const Text("Delete"),
