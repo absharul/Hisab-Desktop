@@ -1,6 +1,7 @@
 import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
 import 'package:hisab/database/app_database.dart';
+import 'package:hisab/database/schemas.dart';
 import 'package:hisab/main.dart';
 import 'package:hisab/routes/route.dart';
 import 'package:hisab/screens/screen_site_detail.dart';
@@ -82,7 +83,7 @@ class ScreenSiteListing extends StatelessWidget {
                           IconButton(
                             icon: const Icon(Icons.edit),
                             onPressed: () {
-                              // Add your edit functionality here
+                              _editSitePressed(context, site);
                             },
                           ),
                           const Text("Edit"),
@@ -254,6 +255,86 @@ class ScreenSiteListing extends StatelessWidget {
                     ),
                   ],
                 )
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _editSitePressed(BuildContext context, Site site) async {
+
+    final nameController = TextEditingController(text: site.name);
+    final addressController = TextEditingController(text: site.address);
+    final firmNameController = TextEditingController();
+
+    Firm? selectedFirm;
+    final List<Firm> firms = await database.getAllFirms();
+
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return Dialog(
+          child: Container(
+            width: 200,
+            height: 260,
+            padding: const EdgeInsets.all(10),
+            color: Colors.white,
+            child: Column(
+              children: [
+                const Text("Edit Firm"),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: nameController,
+                  decoration: const InputDecoration(hintText: "Name"),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: addressController,
+                  decoration: const InputDecoration(hintText: "Address"),
+                ),
+                const SizedBox(height: 10),
+                DropdownButtonFormField<Firm>(
+                  value: selectedFirm,
+                  decoration: const InputDecoration(
+                    labelText: "Select Firm",
+                    border: OutlineInputBorder(),
+                  ),
+                  items: firms.map((Firm firm) {
+                    return DropdownMenuItem<Firm>(
+                      value: firm,
+                      child: Text(firm.name),
+                    );
+                  }).toList(),
+                  onChanged: (value) {
+                    if (value != null) {
+                      selectedFirm = value;
+                      firmNameController.text = value.name;
+                    }
+                  },
+                ),
+                const SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: () async {
+                    try {
+                      final updatedFirm = site.copyWith(
+                        name: nameController.text,
+                        address: addressController.text,
+                      );
+                      await siteController.update(updatedFirm);
+                      Navigator.of(context).pop(); // Close the dialog
+                      HFunction.showFlushBarSuccess(
+                        context: context,
+                        message: "Successfully Updated the firm",
+                      );
+                    } catch (e) {
+                      HFunction.showFlushBarError(
+                          context: context, message: e.toString());
+                    }
+                  },
+                  child: const Text("Update"),
+                ),
               ],
             ),
           ),
