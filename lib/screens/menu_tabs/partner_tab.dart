@@ -118,10 +118,18 @@ class _PartnerTabState extends State<PartnerTab> {
                     ],
                     controller: shareController,
                     validator: (value) {
-                      if (value != null &&
-                          value.isNotEmpty &&
-                          int.parse(value) > 100) {
-                        return "Value must be less than 100";
+                      if (value == null || value.isEmpty) {
+                        return "Please enter a value";
+                      }
+
+                      try {
+                        int parsedValue = int.parse(value);
+
+                        if (parsedValue > 100) {
+                          return "Value must be less than \nor equal to 100";
+                        }
+                      } catch (e) {
+                        return "Invalid number";
                       }
 
                       return null;
