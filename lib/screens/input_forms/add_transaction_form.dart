@@ -32,6 +32,7 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
     transactionForm = ModelTransactionForm(
         paymentMethod: EnumPaymentMethod.cash,
         fromEntity: "Site",
+        fromBankAccountOption: EnumBankAccount.chooseexisting,
         fromUser: widget.site);
   }
 
@@ -54,7 +55,7 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
             curve: Curves.easeInOut,
           );
         }).onError((error, stackTrace) {
-          showError(error.toString());
+          showError(error.toString(), stackTrace);
         });
       } else {
         // Handle form submission on the last page
@@ -168,12 +169,12 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
       setState(() {
         isLoading = false;
       });
-    } catch (error) {
+    } catch (error, st) {
       setState(() {
         isLoading = false;
       });
       // Handle the error, e.g., show a snackbar or dialog
-      showError(error);
+      showError(error, st);
     }
   }
 
@@ -194,9 +195,9 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
       );
       int result = await database.insertEntityPaymentMethod(paymentEntity);
       return result;
-    } catch (error) {
+    } catch (error, st) {
       // Handle the error, e.g., log it or show a message
-      showError(error);
+      showError(error, st);
       rethrow;
     }
   }
@@ -215,9 +216,9 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
         siteId: drift.Value(widget.site.id),
       );
       await database.insertTransaction(transaction);
-    } catch (error) {
+    } catch (error, st) {
       // Handle the error, e.g., log it or show a message
-      showError(error);
+      showError(error, st);
       rethrow;
     }
   }
@@ -254,14 +255,12 @@ class _AddTransactionFormState extends State<AddTransactionForm> {
       setState(() {
         isLoading = false;
       });
-      // Handle the error, e.g., show a snackbar or dialog
-      log("st : ${st}");
-      showError(error);
+      showError(error, st);
     }
   }
 
-  void showError(Object error) {
-    log(error.toString());
+  void showError(Object error, StackTrace st) {
+    log("Error : $error \n Stacktrace: $st");
     HFunction.showFlushBarError(context: context, message: error.toString());
   }
 }

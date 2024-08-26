@@ -1,5 +1,3 @@
-import 'dart:developer';
-
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -21,25 +19,18 @@ class FormOne extends StatefulWidget {
 class _FormOneState extends State<FormOne> {
   // Entity
   List<String> entityTypes = ["User", "Site", "Firm"];
-  String? entityType;
 
-  // User
-  dynamic selectedUser;
   List<dynamic> users = [];
 
   // Category
-  Category? category;
   List<Category> categories = [];
 
   // SubCategory
-  SubCategory? subCategory;
   List<SubCategory> subCategories = [];
 
   // Bank
   List<BankAccount> listOfBanks = <BankAccount>[];
   BankAccount? selectedBankAccount;
-  int? selectedBankAccountId;
-  EnumBankAccount bankAccountRadioOption = EnumBankAccount.chooseexisting;
 
   // Controllers
   final TextEditingController accountNumberController = TextEditingController();
@@ -52,9 +43,10 @@ class _FormOneState extends State<FormOne> {
     bool isFrom = true,
   }) async {
     List<dynamic> list = [];
-    switch (entityType) {
+    switch (widget.form.fromEntity) {
       case "User":
-        list = await database.getUsersByCategoryId(subCategory!.id);
+        list = await database
+            .getUsersByCategoryId(widget.form.fromSubCategory!.id);
         break;
       case "Firm":
         list = await database.getAllFirms();
@@ -65,7 +57,9 @@ class _FormOneState extends State<FormOne> {
       default:
         list = await database.getUsers();
     }
-    users = list;
+    setState(() {
+      users = list;
+    });
   }
 
   void getAllSubCategories({
@@ -85,14 +79,22 @@ class _FormOneState extends State<FormOne> {
     setState(() {});
   }
 
+  void getAllCategories() async {
+    final categoryList = await database.getCategory();
+    setState(() {
+      categories = categoryList;
+    });
+  }
+
   @override
   void initState() {
     super.initState();
     if (widget.form.fromEntity == "Site") {
-      entityType = "Site";
       getFromAllUsers(isFrom: true);
-      selectedUser = widget.form.fromUser;
+      widget.form.fromUser = widget.form.fromUser;
     }
+
+    getAllCategories();
   }
 
   @override
@@ -110,7 +112,7 @@ class _FormOneState extends State<FormOne> {
               ),
               const SizedBox(height: 10),
               DropdownButtonFormField<String>(
-                value: entityType,
+                value: widget.form.fromEntity,
                 decoration: const InputDecoration(
                   labelText: 'Entity Type',
                   border: OutlineInputBorder(),
@@ -123,20 +125,20 @@ class _FormOneState extends State<FormOne> {
                 }).toList(),
                 onChanged: (String? newValue) {
                   setState(() {
-                    entityType = newValue;
-                    selectedUser = null;
-                    category = null;
-                    subCategory = null;
+                    widget.form.fromEntity = newValue;
+                    widget.form.fromUser = null;
+                    widget.form.fromCategory = null;
+                    widget.form.fromSubCategory = null;
                   });
 
                   getFromAllUsers();
                 },
               ),
-              if (entityType == "User")
+              if (widget.form.fromEntity == "User")
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   child: DropdownButtonFormField<Category>(
-                    value: category,
+                    value: widget.form.fromCategory,
                     decoration: const InputDecoration(
                       labelText: 'Category',
                       border: OutlineInputBorder(),
@@ -149,19 +151,19 @@ class _FormOneState extends State<FormOne> {
                     }).toList(),
                     onChanged: (Category? newValue) {
                       setState(() {
-                        selectedUser = null;
-                        category = newValue;
-                        subCategory = null;
+                        widget.form.fromUser = null;
+                        widget.form.fromCategory = newValue;
+                        widget.form.fromSubCategory = null;
                       });
                       getAllSubCategories(categoryId: newValue!.id);
                     },
                   ),
                 ),
-              if (entityType == "User")
+              if (widget.form.fromEntity == "User")
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 10),
                   child: DropdownButtonFormField<SubCategory>(
-                    value: subCategory,
+                    value: widget.form.fromSubCategory,
                     decoration: const InputDecoration(
                       labelText: 'Sub Category',
                       border: OutlineInputBorder(),
@@ -174,8 +176,8 @@ class _FormOneState extends State<FormOne> {
                     }).toList(),
                     onChanged: (SubCategory? newValue) {
                       setState(() {
-                        subCategory = newValue;
-                        selectedUser = null;
+                        widget.form.fromSubCategory = newValue;
+                        widget.form.fromUser = null;
                       });
                       getFromAllUsers();
                     },
@@ -187,7 +189,6 @@ class _FormOneState extends State<FormOne> {
                   showSelectedItems: false,
                   showSearchBox: true,
                   itemBuilder: (context, dynamic item, bool isSelected) {
-                    log("Dropdown: ${item}");
                     return ListTile(
                       title: Text(item.name),
                     );
@@ -196,25 +197,26 @@ class _FormOneState extends State<FormOne> {
                 items: users,
                 dropdownDecoratorProps: DropDownDecoratorProps(
                   dropdownSearchDecoration: InputDecoration(
-                    labelText: entityType,
-                    hintText: "Select $entityType",
+                    labelText: widget.form.fromEntity,
+                    hintText: "Select ${widget.form.fromEntity}",
                   ),
                 ),
                 onChanged: (value) {
                   setState(() {
-                    users = value;
+                    widget.form.fromUser = value;
                     selectedBankAccount = null;
                   });
-                  getAllBankAccounts(userId: value.id, entityType: entityType!);
+                  getAllBankAccounts(
+                      userId: value.id, entityType: widget.form.fromEntity!);
                 },
-                dropdownBuilder: (selectedUser != null)
+                dropdownBuilder: (widget.form.fromUser != null)
                     ? (ctx, value) {
                         return ListTile(
                           title: Text(value.name),
                         );
                       }
                     : null,
-                selectedItem: selectedUser,
+                selectedItem: widget.form.fromUser,
               ),
               const SizedBox(height: 10),
               Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
@@ -255,10 +257,10 @@ class _FormOneState extends State<FormOne> {
                       title: const Text('Add Bank Account'),
                       leading: Radio(
                         value: EnumBankAccount.addnew,
-                        groupValue: bankAccountRadioOption,
+                        groupValue: widget.form.fromBankAccountOption,
                         onChanged: (EnumBankAccount? value) {
                           setState(() {
-                            bankAccountRadioOption = value!;
+                            widget.form.fromBankAccountOption = value!;
                           });
                         },
                       ),
@@ -269,10 +271,10 @@ class _FormOneState extends State<FormOne> {
                       title: const Text('Choose existing one'),
                       leading: Radio(
                         value: EnumBankAccount.chooseexisting,
-                        groupValue: bankAccountRadioOption,
+                        groupValue: widget.form.fromBankAccountOption,
                         onChanged: (EnumBankAccount? value) {
                           setState(() {
-                            bankAccountRadioOption = value!;
+                            widget.form.fromBankAccountOption = value!;
                           });
                         },
                       ),
@@ -280,7 +282,7 @@ class _FormOneState extends State<FormOne> {
                   ),
                 ]),
               if (widget.form.paymentMethod == EnumPaymentMethod.cheque &&
-                  bankAccountRadioOption == EnumBankAccount.addnew)
+                  widget.form.fromBankAccountOption == EnumBankAccount.addnew)
                 Column(
                   children: [
                     const SizedBox(height: 10),
@@ -294,6 +296,9 @@ class _FormOneState extends State<FormOne> {
                         border: OutlineInputBorder(),
                         labelText: 'Account Number',
                       ),
+                      onChanged: (value) {
+                        widget.form.fromAccountNumber = value;
+                      },
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter the account number';
@@ -308,6 +313,9 @@ class _FormOneState extends State<FormOne> {
                         border: OutlineInputBorder(),
                         labelText: 'Bank Name',
                       ),
+                      onChanged: (value) {
+                        widget.form.fromBankName = value;
+                      },
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter the bank name';
@@ -322,6 +330,9 @@ class _FormOneState extends State<FormOne> {
                         border: OutlineInputBorder(),
                         labelText: 'IFSC',
                       ),
+                      onChanged: (value) {
+                        widget.form.fromIfscCode = value;
+                      },
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter the IFSC code';
@@ -336,6 +347,9 @@ class _FormOneState extends State<FormOne> {
                         border: OutlineInputBorder(),
                         labelText: 'Holder Name',
                       ),
+                      onChanged: (value) {
+                        widget.form.fromAccountHolderName = value;
+                      },
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Please enter the holder name';
@@ -346,7 +360,8 @@ class _FormOneState extends State<FormOne> {
                   ],
                 ),
               if (widget.form.paymentMethod == EnumPaymentMethod.cheque &&
-                  bankAccountRadioOption == EnumBankAccount.chooseexisting)
+                  widget.form.fromBankAccountOption ==
+                      EnumBankAccount.chooseexisting)
                 DropdownButtonFormField<BankAccount>(
                   value: selectedBankAccount,
                   decoration: const InputDecoration(
@@ -361,7 +376,7 @@ class _FormOneState extends State<FormOne> {
                   }).toList(),
                   onChanged: (BankAccount? newValue) {
                     selectedBankAccount = newValue;
-                    selectedBankAccountId = newValue!.id;
+                    widget.form.fromBankAccountId = newValue!.id;
                   },
                 ),
             ],

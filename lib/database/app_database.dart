@@ -65,6 +65,8 @@ class AppDatabase extends _$AppDatabase {
 
   // SUBCATEGORY
   Future<List<SubCategory>> getSubCategory() => select(subCategories).get();
+  Future<SubCategory?> getSubCategoryByName(String name) =>
+      (select(subCategories)..where((t) => t.name.equals(name))).getSingle();
   Future<List<SubCategory>> getSubcategoryByCategoryId(int categoryId) =>
       (select(subCategories)..where((t) => t.categoryId.equals(categoryId)))
           .get();

@@ -41,6 +41,9 @@ class _FormThreeState extends State<FormThree> {
               labelText: 'Amount',
               border: OutlineInputBorder(),
             ),
+            onChanged: (value) {
+              widget.form.totalAmount = double.parse(value);
+            },
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return 'Please enter a amount';
@@ -61,6 +64,9 @@ class _FormThreeState extends State<FormThree> {
                   labelText: 'Cheque Number',
                   border: OutlineInputBorder(),
                 ),
+                onChanged: (value) {
+                  widget.form.chequeNumber = value;
+                },
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Please enter a description';
@@ -77,6 +83,9 @@ class _FormThreeState extends State<FormThree> {
               labelText: 'Remarks',
               border: OutlineInputBorder(),
             ),
+            onChanged: (value) {
+              widget.form.remarks = value;
+            },
             validator: (value) {
               if (value == null || value.isEmpty) {
                 return 'Please enter a description';

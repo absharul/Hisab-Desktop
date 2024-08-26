@@ -21,25 +21,19 @@ class FormTwo extends StatefulWidget {
 class _FormTwoState extends State<FormTwo> {
   // Entity
   List<String> entityTypes = ["User", "Site", "Firm"];
-  String? entityType;
 
   // User
-  dynamic selectedUser;
   List<dynamic> users = [];
 
   // Category
-  Category? category;
   List<Category> categories = [];
 
   // SubCategory
-  SubCategory? subCategory;
   List<SubCategory> subCategories = [];
 
   // Bank
   List<BankAccount> listOfBanks = <BankAccount>[];
   BankAccount? selectedBankAccount;
-  int? selectedBankAccountId;
-  EnumBankAccount bankAccountRadioOption = EnumBankAccount.chooseexisting;
 
   // Controllers
   final TextEditingController accountNumberController = TextEditingController();
@@ -52,9 +46,10 @@ class _FormTwoState extends State<FormTwo> {
     bool isFrom = true,
   }) async {
     List<dynamic> list = [];
-    switch (entityType) {
+    switch (widget.form.toEntity) {
       case "User":
-        list = await database.getUsersByCategoryId(subCategory!.id);
+        list =
+            await database.getUsersByCategoryId(widget.form.toSubCategory!.id);
         break;
       case "Firm":
         list = await database.getAllFirms();
@@ -68,7 +63,7 @@ class _FormTwoState extends State<FormTwo> {
     users = list;
 
     setState(() {
-      selectedUser = null;
+      widget.form.toUser = null;
     });
   }
 
@@ -116,7 +111,7 @@ class _FormTwoState extends State<FormTwo> {
             ),
             const SizedBox(height: 10),
             DropdownButtonFormField<String>(
-              value: entityType,
+              value: widget.form.toEntity,
               decoration: const InputDecoration(
                 labelText: 'Entity Type',
                 border: OutlineInputBorder(),
@@ -129,19 +124,19 @@ class _FormTwoState extends State<FormTwo> {
               }).toList(),
               onChanged: (String? newValue) {
                 setState(() {
-                  entityType = newValue;
-                  selectedUser = null;
-                  category = null;
-                  subCategory = null;
+                  widget.form.toEntity = newValue;
+                  widget.form.toUser = null;
+                  widget.form.toCategory = null;
+                  widget.form.toSubCategory = null;
                 });
                 getFromAllUsers(isFrom: false);
               },
             ),
-            if (entityType == "User")
+            if (widget.form.toEntity == "User")
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 child: DropdownButtonFormField<Category>(
-                  value: category,
+                  value: widget.form.toCategory,
                   decoration: const InputDecoration(
                     labelText: 'Category',
                     border: OutlineInputBorder(),
@@ -154,19 +149,19 @@ class _FormTwoState extends State<FormTwo> {
                   }).toList(),
                   onChanged: (Category? newValue) {
                     setState(() {
-                      selectedUser = null;
-                      category = newValue;
-                      subCategory = null;
+                      widget.form.toUser = null;
+                      widget.form.toCategory = newValue;
+                      widget.form.toSubCategory = null;
                     });
                     getAllSubCategories(categoryId: newValue!.id);
                   },
                 ),
               ),
-            if (entityType == "User")
+            if (widget.form.toEntity == "User")
               Padding(
                 padding: const EdgeInsets.symmetric(vertical: 10),
                 child: DropdownButtonFormField<SubCategory>(
-                  value: subCategory,
+                  value: widget.form.toSubCategory,
                   decoration: const InputDecoration(
                     labelText: 'Sub Category',
                     border: OutlineInputBorder(),
@@ -179,8 +174,8 @@ class _FormTwoState extends State<FormTwo> {
                   }).toList(),
                   onChanged: (SubCategory? newValue) {
                     setState(() {
-                      subCategory = newValue;
-                      selectedUser = null;
+                      widget.form.toSubCategory = newValue;
+                      widget.form.toUser = null;
                     });
                     getFromAllUsers(isFrom: false);
                   },
@@ -200,38 +195,40 @@ class _FormTwoState extends State<FormTwo> {
               items: users,
               dropdownDecoratorProps: DropDownDecoratorProps(
                 dropdownSearchDecoration: InputDecoration(
-                  labelText: entityType,
-                  hintText: "Select $entityType",
+                  labelText: widget.form.toEntity,
+                  hintText: "Select ${widget.form.toEntity}",
                 ),
               ),
               onChanged: (value) {
                 setState(() {
-                  selectedUser = value;
+                  widget.form.toUser = value;
                   selectedBankAccount = null;
                 });
-                getAllBankAccounts(userId: value.id, entityType: entityType!);
+                getAllBankAccounts(
+                    userId: value.id, entityType: widget.form.toEntity!);
               },
-              dropdownBuilder: (selectedUser != null)
+              dropdownBuilder: (widget.form.toUser != null)
                   ? (ctx, value) {
                       return ListTile(
                         title: Text(value.name),
                       );
                     }
                   : null,
-              selectedItem: selectedUser,
+              selectedItem: widget.form.toUser,
             ),
             const SizedBox(height: 10),
-            if (widget.form.paymentMethod == EnumPaymentMethod.cheque)
+            if (widget.form.toCategory?.name != "Vendor" &&
+                widget.form.paymentMethod == EnumPaymentMethod.cheque)
               Row(crossAxisAlignment: CrossAxisAlignment.center, children: [
                 Expanded(
                   child: ListTile(
                     title: const Text('Add Bank Account'),
                     leading: Radio(
                       value: EnumBankAccount.addnew,
-                      groupValue: bankAccountRadioOption,
+                      groupValue: widget.form.toBankAccountOption,
                       onChanged: (EnumBankAccount? value) {
                         setState(() {
-                          bankAccountRadioOption = value!;
+                          widget.form.toBankAccountOption = value!;
                         });
                       },
                     ),
@@ -242,17 +239,18 @@ class _FormTwoState extends State<FormTwo> {
                     title: const Text('Choose existing one'),
                     leading: Radio(
                       value: EnumBankAccount.chooseexisting,
-                      groupValue: bankAccountRadioOption,
+                      groupValue: widget.form.toBankAccountOption,
                       onChanged: (EnumBankAccount? value) {
                         setState(() {
-                          bankAccountRadioOption = value!;
+                          widget.form.toBankAccountOption = value!;
                         });
                       },
                     ),
                   ),
                 ),
               ]),
-            if (bankAccountRadioOption == EnumBankAccount.addnew &&
+            if (widget.form.toCategory?.name != "Vendor" &&
+                widget.form.toBankAccountOption == EnumBankAccount.addnew &&
                 widget.form.paymentMethod == EnumPaymentMethod.cheque)
               Column(
                 children: [
@@ -267,6 +265,9 @@ class _FormTwoState extends State<FormTwo> {
                       border: OutlineInputBorder(),
                       labelText: 'Account Number',
                     ),
+                    onChanged: (value) {
+                      widget.form.toAccountNumber = value;
+                    },
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter the account number';
@@ -281,6 +282,9 @@ class _FormTwoState extends State<FormTwo> {
                       border: OutlineInputBorder(),
                       labelText: 'Bank Name',
                     ),
+                    onChanged: (value) {
+                      widget.form.toBankName = value;
+                    },
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter the bank name';
@@ -295,6 +299,9 @@ class _FormTwoState extends State<FormTwo> {
                       border: OutlineInputBorder(),
                       labelText: 'IFSC',
                     ),
+                    onChanged: (value) {
+                      widget.form.toIfscCode = value;
+                    },
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter the IFSC code';
@@ -309,6 +316,9 @@ class _FormTwoState extends State<FormTwo> {
                       border: OutlineInputBorder(),
                       labelText: 'Holder Name',
                     ),
+                    onChanged: (value) {
+                      widget.form.toAccountHolderName = value;
+                    },
                     validator: (value) {
                       if (value == null || value.isEmpty) {
                         return 'Please enter the holder name';
@@ -318,7 +328,8 @@ class _FormTwoState extends State<FormTwo> {
                   ),
                 ],
               ),
-            if (bankAccountRadioOption == EnumBankAccount.chooseexisting &&
+            if (widget.form.toBankAccountOption ==
+                    EnumBankAccount.chooseexisting &&
                 widget.form.paymentMethod == EnumPaymentMethod.cheque)
               DropdownButtonFormField<BankAccount>(
                 value: selectedBankAccount,
@@ -334,7 +345,7 @@ class _FormTwoState extends State<FormTwo> {
                 }).toList(),
                 onChanged: (BankAccount? newValue) {
                   selectedBankAccount = newValue;
-                  selectedBankAccountId = newValue!.id;
+                  widget.form.toBankAccountId = newValue!.id;
                 },
               ),
           ],

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:hisab/database/app_database.dart';
 import 'package:hisab/main.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
-import 'package:intl/intl.dart'; // Import for date formatting
+import 'package:hisab/utils/helper_functions.dart';
+import 'package:intl/intl.dart';
 
 class WidgetTransactionCard extends StatefulWidget {
   final Transaction transaction;
@@ -30,20 +30,16 @@ class _WidgetTransactionCardState extends State<WidgetTransactionCard> {
     final toEntity =
         await database.getEntityPaymentMethod(widget.transaction.toId);
 
-    await database.getUserById(fromEntity.entityId).then((value) {
-      from = value.name;
-    });
-    await database.getUserById(toEntity.entityId).then((value) {
-      to = value.name;
-    });
+    final fromUser = await HFunction.getFromUser(
+        entityId: fromEntity.entityId, entityType: fromEntity.entityType);
 
-    // final fromBank =
-    // await database.getBankAccountById(fromEntity.bankAccountId);
-    // final toBank = await database.getBankAccountById(toEntity.bankAccountId);
-    // setState(() {
-    //   fromBankName = fromBank.bankName;
-    //   toBankName = toBank.bankName;
-    // });
+    final toUser = await HFunction.getFromUser(
+        entityType: toEntity.entityType, entityId: toEntity.entityId);
+
+    setState(() {
+      from = fromUser.name;
+      to = toUser.name;
+    });
   }
 
   @override
@@ -85,16 +81,16 @@ class _WidgetTransactionCardState extends State<WidgetTransactionCard> {
                       fontWeight: FontWeight.normal,
                     ),
                   ),
-                  const SizedBox(width: 10),
-                  Text(
-                    'Bank: $fromBankName',
-                    style: const TextStyle(
-                      fontFamily: 'Courier', // Old-school font
-                      fontSize: 16.0,
-                      color: Colors.black,
-                      fontWeight: FontWeight.normal,
-                    ),
-                  ),
+                  // const SizedBox(width: 10),
+                  // Text(
+                  //   'Bank: $fromBankName',
+                  //   style: const TextStyle(
+                  //     fontFamily: 'Courier', // Old-school font
+                  //     fontSize: 16.0,
+                  //     color: Colors.black,
+                  //     fontWeight: FontWeight.normal,
+                  //   ),
+                  // ),
                 ],
               ),
               const SizedBox(height: 5),
@@ -109,21 +105,21 @@ class _WidgetTransactionCardState extends State<WidgetTransactionCard> {
                       fontWeight: FontWeight.normal,
                     ),
                   ),
-                  const SizedBox(width: 10),
-                  Text(
-                    'Bank: $toBankName',
-                    style: const TextStyle(
-                      fontFamily: 'Courier', // Old-school font
-                      fontSize: 16.0,
-                      color: Colors.black,
-                      fontWeight: FontWeight.normal,
-                    ),
-                  ),
+                  // const SizedBox(width: 10),
+                  // Text(
+                  //   'Bank: $toBankName',
+                  //   style: const TextStyle(
+                  //     fontFamily: 'Courier', // Old-school font
+                  //     fontSize: 16.0,
+                  //     color: Colors.black,
+                  //     fontWeight: FontWeight.normal,
+                  //   ),
+                  // ),
                 ],
               ),
               const SizedBox(height: 5),
               Text(
-                'Amount: \$ ${widget.transaction.amount}',
+                'Amount: ₹ ${widget.transaction.amount}',
                 style: const TextStyle(
                   fontFamily: 'Courier', // Old-school font
                   fontSize: 16.0,
@@ -184,7 +180,7 @@ class _WidgetTransactionCardState extends State<WidgetTransactionCard> {
                       child: SizedBox(width: 20),
                     ),
                     TextSpan(
-                      text: DateFormat('HH:mm')
+                      text: DateFormat('HH:mm a')
                           .format(widget.transaction.createdAt),
                       style: const TextStyle(
                         fontFamily: 'Courier',
@@ -199,42 +195,42 @@ class _WidgetTransactionCardState extends State<WidgetTransactionCard> {
             ],
           ),
           const Expanded(child: SizedBox()),
-          Column(
-            children: [
-              IconButton(
-                icon: Icon(
-                  PhosphorIcons.pencilSimple(),
-                  size: 30.0,
-                ),
-                onPressed: () {
-                  // Add your desired action here
-                  print("Edit button pressed");
-                },
-                tooltip: "Edit Transaction", // For accessibility
-              ),
-              const Text(
-                "Edit",
-                style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
-          const SizedBox(width: 100),
-          Column(
-            children: [
-              IconButton(
-                icon: const Icon(Icons.delete),
-                onPressed: () {
-                  // Add your desired action here
-                  print("Delete button pressed");
-                },
-                tooltip: "Delete", // For accessibility
-              ),
-              const Text(
-                "Delete",
-                style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
-              ),
-            ],
-          ),
+          // Column(
+          //   children: [
+          //     IconButton(
+          //       icon: Icon(
+          //         PhosphorIcons.pencilSimple(),
+          //         size: 30.0,
+          //       ),
+          //       onPressed: () {
+          //         // Add your desired action here
+          //         print("Edit button pressed");
+          //       },
+          //       tooltip: "Edit Transaction", // For accessibility
+          //     ),
+          //     const Text(
+          //       "Edit",
+          //       style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+          //     ),
+          //   ],
+          // ),
+          // const SizedBox(width: 100),
+          // Column(
+          //   children: [
+          //     IconButton(
+          //       icon: const Icon(Icons.delete),
+          //       onPressed: () {
+          //         // Add your desired action here
+          //         print("Delete button pressed");
+          //       },
+          //       tooltip: "Delete", // For accessibility
+          //     ),
+          //     const Text(
+          //       "Delete",
+          //       style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+          //     ),
+          //   ],
+          // ),
         ],
       ),
     );

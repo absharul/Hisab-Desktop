@@ -1,5 +1,6 @@
 import 'package:another_flushbar/flushbar.dart';
 import 'package:flutter/material.dart';
+import 'package:hisab/main.dart';
 
 class HFunction {
   static Future<void> showFlushBar(
@@ -36,5 +37,21 @@ class HFunction {
         afterPop();
       }
     });
+  }
+
+  static dynamic getFromUser({
+    required String entityType,
+    required int entityId,
+  }) async {
+    switch (entityType) {
+      case "User":
+        return await database.getUserById(entityId);
+      case "Firm":
+        return await database.getFirm(entityId);
+      case "Site":
+        return await database.getSite(entityId);
+      default:
+        return await database.getUserById(entityId);
+    }
   }
 }
