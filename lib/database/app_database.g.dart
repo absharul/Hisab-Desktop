@@ -3213,9 +3213,9 @@ class $TransactionsTable extends Transactions
       requiredDuringInsert: true);
   static const VerificationMeta _amountMeta = const VerificationMeta('amount');
   @override
-  late final GeneratedColumn<int> amount = GeneratedColumn<int>(
+  late final GeneratedColumn<double> amount = GeneratedColumn<double>(
       'amount', aliasedName, false,
-      type: DriftSqlType.int, requiredDuringInsert: true);
+      type: DriftSqlType.double, requiredDuringInsert: true);
   static const VerificationMeta _chequeNoMeta =
       const VerificationMeta('chequeNo');
   @override
@@ -3340,7 +3340,7 @@ class $TransactionsTable extends Transactions
       remarks: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}remarks'])!,
       amount: attachedDatabase.typeMapping
-          .read(DriftSqlType.int, data['${effectivePrefix}amount'])!,
+          .read(DriftSqlType.double, data['${effectivePrefix}amount'])!,
       chequeNo: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}cheque_no']),
       fromId: attachedDatabase.typeMapping
@@ -3365,7 +3365,7 @@ class $TransactionsTable extends Transactions
 class Transaction extends DataClass implements Insertable<Transaction> {
   final int id;
   final String remarks;
-  final int amount;
+  final double amount;
   final String? chequeNo;
   final int fromId;
   final int toId;
@@ -3387,7 +3387,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['remarks'] = Variable<String>(remarks);
-    map['amount'] = Variable<int>(amount);
+    map['amount'] = Variable<double>(amount);
     if (!nullToAbsent || chequeNo != null) {
       map['cheque_no'] = Variable<String>(chequeNo);
     }
@@ -3421,7 +3421,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     return Transaction(
       id: serializer.fromJson<int>(json['id']),
       remarks: serializer.fromJson<String>(json['remarks']),
-      amount: serializer.fromJson<int>(json['amount']),
+      amount: serializer.fromJson<double>(json['amount']),
       chequeNo: serializer.fromJson<String?>(json['chequeNo']),
       fromId: serializer.fromJson<int>(json['fromId']),
       toId: serializer.fromJson<int>(json['toId']),
@@ -3436,7 +3436,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'remarks': serializer.toJson<String>(remarks),
-      'amount': serializer.toJson<int>(amount),
+      'amount': serializer.toJson<double>(amount),
       'chequeNo': serializer.toJson<String?>(chequeNo),
       'fromId': serializer.toJson<int>(fromId),
       'toId': serializer.toJson<int>(toId),
@@ -3449,7 +3449,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
   Transaction copyWith(
           {int? id,
           String? remarks,
-          int? amount,
+          double? amount,
           Value<String?> chequeNo = const Value.absent(),
           int? fromId,
           int? toId,
@@ -3518,7 +3518,7 @@ class Transaction extends DataClass implements Insertable<Transaction> {
 class TransactionsCompanion extends UpdateCompanion<Transaction> {
   final Value<int> id;
   final Value<String> remarks;
-  final Value<int> amount;
+  final Value<double> amount;
   final Value<String?> chequeNo;
   final Value<int> fromId;
   final Value<int> toId;
@@ -3539,7 +3539,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
   TransactionsCompanion.insert({
     this.id = const Value.absent(),
     required String remarks,
-    required int amount,
+    required double amount,
     this.chequeNo = const Value.absent(),
     required int fromId,
     required int toId,
@@ -3554,7 +3554,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
   static Insertable<Transaction> custom({
     Expression<int>? id,
     Expression<String>? remarks,
-    Expression<int>? amount,
+    Expression<double>? amount,
     Expression<String>? chequeNo,
     Expression<int>? fromId,
     Expression<int>? toId,
@@ -3578,7 +3578,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
   TransactionsCompanion copyWith(
       {Value<int>? id,
       Value<String>? remarks,
-      Value<int>? amount,
+      Value<double>? amount,
       Value<String?>? chequeNo,
       Value<int>? fromId,
       Value<int>? toId,
@@ -3608,7 +3608,7 @@ class TransactionsCompanion extends UpdateCompanion<Transaction> {
       map['remarks'] = Variable<String>(remarks.value);
     }
     if (amount.present) {
-      map['amount'] = Variable<int>(amount.value);
+      map['amount'] = Variable<double>(amount.value);
     }
     if (chequeNo.present) {
       map['cheque_no'] = Variable<String>(chequeNo.value);
@@ -5122,7 +5122,7 @@ typedef $$TransactionsTableCreateCompanionBuilder = TransactionsCompanion
     Function({
   Value<int> id,
   required String remarks,
-  required int amount,
+  required double amount,
   Value<String?> chequeNo,
   required int fromId,
   required int toId,
@@ -5134,7 +5134,7 @@ typedef $$TransactionsTableUpdateCompanionBuilder = TransactionsCompanion
     Function({
   Value<int> id,
   Value<String> remarks,
-  Value<int> amount,
+  Value<double> amount,
   Value<String?> chequeNo,
   Value<int> fromId,
   Value<int> toId,
@@ -5162,7 +5162,7 @@ class $$TransactionsTableTableManager extends RootTableManager<
           updateCompanionCallback: ({
             Value<int> id = const Value.absent(),
             Value<String> remarks = const Value.absent(),
-            Value<int> amount = const Value.absent(),
+            Value<double> amount = const Value.absent(),
             Value<String?> chequeNo = const Value.absent(),
             Value<int> fromId = const Value.absent(),
             Value<int> toId = const Value.absent(),
@@ -5184,7 +5184,7 @@ class $$TransactionsTableTableManager extends RootTableManager<
           createCompanionCallback: ({
             Value<int> id = const Value.absent(),
             required String remarks,
-            required int amount,
+            required double amount,
             Value<String?> chequeNo = const Value.absent(),
             required int fromId,
             required int toId,
@@ -5219,7 +5219,7 @@ class $$TransactionsTableFilterComposer
       builder: (column, joinBuilders) =>
           ColumnFilters(column, joinBuilders: joinBuilders));
 
-  ColumnFilters<int> get amount => $state.composableBuilder(
+  ColumnFilters<double> get amount => $state.composableBuilder(
       column: $state.table.amount,
       builder: (column, joinBuilders) =>
           ColumnFilters(column, joinBuilders: joinBuilders));
@@ -5275,7 +5275,7 @@ class $$TransactionsTableOrderingComposer
       builder: (column, joinBuilders) =>
           ColumnOrderings(column, joinBuilders: joinBuilders));
 
-  ColumnOrderings<int> get amount => $state.composableBuilder(
+  ColumnOrderings<double> get amount => $state.composableBuilder(
       column: $state.table.amount,
       builder: (column, joinBuilders) =>
           ColumnOrderings(column, joinBuilders: joinBuilders));

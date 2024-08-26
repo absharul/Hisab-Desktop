@@ -96,7 +96,7 @@ class Partners extends Table {
 class Transactions extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get remarks => text().withLength(min: 1, max: 20)();
-  IntColumn get amount => integer()();
+  RealColumn get amount => real()();
   TextColumn get chequeNo => text().nullable()();
   IntColumn get fromId => integer()
       .customConstraint('REFERENCES entityPaymentMethods(id) NOT NULL')();

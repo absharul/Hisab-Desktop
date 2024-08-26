@@ -63,12 +63,11 @@ class AppDatabase extends _$AppDatabase {
       update(categories).replace(category);
   Stream<List<Category>> watchCategory() => select(categories).watch();
 
-
-
   // SUBCATEGORY
   Future<List<SubCategory>> getSubCategory() => select(subCategories).get();
   Future<List<SubCategory>> getSubcategoryByCategoryId(int categoryId) =>
-      (select(subCategories)..where((t) => t.categoryId.equals(categoryId))).get();
+      (select(subCategories)..where((t) => t.categoryId.equals(categoryId)))
+          .get();
   Future<SubCategory> getSubCategoryById(int id) =>
       (select(subCategories)..where((t) => t.id.equals(id))).getSingle();
   Future<int> insertSubCategory(Insertable<SubCategory> subCategory) =>
@@ -89,9 +88,9 @@ class AppDatabase extends _$AppDatabase {
   Future<bool> updateUser(User user) => update(users).replace(user);
   Future<int> deleteUser(Insertable<User> user) => delete(users).delete(user);
   Stream<List<User>> watchUser() => (select(users)
-    ..orderBy([
+        ..orderBy([
           (t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc)
-    ]))
+        ]))
       .watch();
 
   // FLATS
@@ -141,8 +140,13 @@ class AppDatabase extends _$AppDatabase {
   Future<int> insertBankAccountOne(Insertable<BankAccount> bankAccount) =>
       into(bankAccounts).insert(bankAccount);
   Future<List<BankAccount>> getBankAccounts() => select(bankAccounts).get();
-  Future<List<BankAccount>> getBankAccountByEntityId(int entityId) =>
-      (select(bankAccounts)..where((t) => t.entityId.equals(entityId))).get();
+  Future<List<BankAccount>> getBankAccountByEntityId(
+          int entityId, String entityType) =>
+      (select(bankAccounts)
+            ..where((t) =>
+                t.entityId.equals(entityId) & t.entityType.equals(entityType)))
+          .get();
+
   Future<BankAccount> getBankAccountById(int id) =>
       (select(bankAccounts)..where((t) => t.id.equals(id))).getSingle();
 
