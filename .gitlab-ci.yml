@@ -6,16 +6,18 @@ variables:
   FLUTTER_VERSION: "3.0.0"  # Replace with your desired Flutter version
 
 before_script:
-  - git clone https://github.com/flutter/flutter.git --branch $FLUTTER_CHANNEL --depth 1
-  - set PATH=%PATH%;%CD%\flutter\bin
-  - flutter doctor
-  - flutter config --enable-windows-desktop
+  # Use Windows CMD syntax here
+  - cmd.exe /C git clone https://github.com/flutter/flutter.git --branch %FLUTTER_CHANNEL% --depth 1
+  - cmd.exe /C set PATH=%PATH%;%CD%\flutter\bin
+  - cmd.exe /C flutter doctor
+  - cmd.exe /C flutter config --enable-windows-desktop
 
 build_windows:
   stage: build
   script:
-    - flutter pub get
-    - flutter build windows
+    # Use CMD syntax
+    - cmd.exe /C flutter pub get
+    - cmd.exe /C flutter build windows
   artifacts:
     paths:
       - build/windows/runner/Release/
