@@ -1,5 +1,6 @@
 import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:hisab/database/app_database.dart';
 import 'package:hisab/main.dart';
 import 'package:hisab/routes/route.dart';
@@ -31,10 +32,7 @@ class ScreenSiteListing extends StatelessWidget {
 
               return InkWell(
                 onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                      builder: (ctx) => ScreenSiteDetails(
-                            site: site,
-                          )));
+                  context.go('/screesite_details', extra: site);
                 },
                 child: Container(
                   margin: const EdgeInsets.symmetric(

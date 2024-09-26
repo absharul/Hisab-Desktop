@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:hisab/routes/route.dart';
 import 'package:hisab/screens/menu_tabs/flats_tab.dart';
 import 'package:hisab/screens/menu_tabs/transaction_tab.dart';
 import 'package:phosphor_flutter/phosphor_flutter.dart';
@@ -15,14 +17,19 @@ class ScreenSiteDetails extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(
-          site.name,),
+          site.name,
+        ),
         centerTitle: true,
+        leading: IconButton(
+          onPressed: () => context.go('/'),
+          icon: const Icon(Icons.arrow_back),
+        ),
       ),
       body: DefaultTabController(
         length: 3,
         child: Column(
           children: [
-             TabBar(
+            TabBar(
               tabs: [
                 Tab(
                     icon: Icon(

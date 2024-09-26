@@ -39,24 +39,51 @@ class _FormOneState extends State<FormOne> {
   final TextEditingController holderNameController = TextEditingController();
 
   // QUERY
+  // void getFromAllUsers({
+  //   bool isFrom = true,
+  // }) async {
+  //   List<dynamic> list = [];
+  //   switch (widget.form.fromEntity) {
+  //     case "User":
+  //       list = await database
+  //           .getUsersByCategoryId(widget.form.fromSubCategory!.id);
+  //       break;
+  //     case "Firm":
+  //       list = await database.getAllFirms();
+  //       break;
+  //     case "Site":
+  //       list = await database.getAllSites();
+  //       break;
+  //     default:
+  //       list = await database.getUsers();
+  //   }
+  //   setState(() {
+  //     users = list;
+  //   });
+  // }
   void getFromAllUsers({
     bool isFrom = true,
   }) async {
     List<dynamic> list = [];
-    switch (widget.form.fromEntity) {
-      case "User":
+
+    // Ensure that category or subcategory are non-null before querying.
+    if (widget.form.fromEntity == "User") {
+      if (widget.form.fromSubCategory != null) {
         list = await database
             .getUsersByCategoryId(widget.form.fromSubCategory!.id);
-        break;
-      case "Firm":
-        list = await database.getAllFirms();
-        break;
-      case "Site":
-        list = await database.getAllSites();
-        break;
-      default:
+      } else if (widget.form.fromCategory != null) {
+        list =
+            await database.getUsersByCategoryId(widget.form.fromCategory!.id);
+      } else {
+        // If no category/subcategory, get all users
         list = await database.getUsers();
+      }
+    } else if (widget.form.fromEntity == "Firm") {
+      list = await database.getAllFirms();
+    } else if (widget.form.fromEntity == "Site") {
+      list = await database.getAllSites();
     }
+
     setState(() {
       users = list;
     });

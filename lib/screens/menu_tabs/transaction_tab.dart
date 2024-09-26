@@ -12,7 +12,8 @@ class TransactionTab extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       body: StreamBuilder<List<Transaction>>(
-          stream: database.watchAllTransactions(site.id),
+          // stream: database.watchAllTransactions(),
+          stream: database.getTransactionById(site.id),
           builder: (context, snapshot) {
             if (snapshot.connectionState == ConnectionState.waiting) {
               return const Center(child: CircularProgressIndicator());

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:hisab/controllers/partner_controller.dart';
 import 'package:hisab/database/app_database.dart';
 import 'package:hisab/main.dart';
-import 'package:phosphor_flutter/phosphor_flutter.dart';
+import 'package:hisab/utils/helper_functions.dart';
 
 class WidgetPartnerCard extends StatefulWidget {
   final Partner partner;
@@ -69,10 +70,7 @@ class _WidgetPartnerCardState extends State<WidgetPartnerCard> {
           Column(
             children: [
               IconButton(
-                icon: Icon(
-                  PhosphorIcons.pencilSimple(),
-                  size: 30.0,
-                ),
+                icon: const Icon(Icons.edit),
                 onPressed: () {
                   // Add your desired action here
                   print("Edit partners detail");
@@ -90,10 +88,44 @@ class _WidgetPartnerCardState extends State<WidgetPartnerCard> {
             children: [
               IconButton(
                 icon: const Icon(Icons.delete),
-                onPressed: () {
-                  // Add your desired action here
-                  print("Delete button pressed");
+                onPressed: () async {
+                  final confirm = await showDialog(
+                    context: context,
+                    builder: (ctx) => AlertDialog(
+                      title: const Text('Delete Transaction'),
+                      content: const Text(
+                          'Are you sure you want to delete this Transaction?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(ctx).pop(false),
+                          child: const Text('Cancel'),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.of(ctx).pop(true),
+                          child: const Text('Delete'),
+                        ),
+                      ],
+                    ),
+                  );
+
+                  if (confirm == true) {
+                    try {
+                      await partnerController.delete(widget.partner);
+                      HFunction.showFlushBarSuccess(
+                        // ignore: use_build_context_synchronously
+                        context: context,
+                        message: "Successfully deleted the Transaction",
+                      );
+                    } catch (error) {
+                      HFunction.showFlushBarError(
+                        // ignore: use_build_context_synchronously
+                        context: context,
+                        message: "Failed to delete the Transaction: $error",
+                      );
+                    }
+                  }
                 },
+
                 tooltip: "Delete", // For accessibility
               ),
               const Text(

@@ -4,7 +4,7 @@ import 'package:drift/drift.dart';
 class Firms extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text().withLength(min: 1, max: 50)();
-  TextColumn get address => text().withLength(min: 1, max: 50)();
+  TextColumn get address => text().withLength(min: 1, max: 50).nullable()();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
 }

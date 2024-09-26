@@ -95,7 +95,7 @@ class AppDatabase extends _$AppDatabase {
         ]))
       .watch();
 
-  // FLATS
+// FLATS
   Future<List<Flat>> getAllFlats() => select(flats).get();
   Future<int> insertFlat(Insertable<Flat> flat) => into(flats).insert(flat);
   Stream<List<Flat>> watchAllFlats(int siteId) => (select(flats)
@@ -116,27 +116,44 @@ class AppDatabase extends _$AppDatabase {
 
   // PARTNERS
   Future<List<Partner>> getAllPartners() => select(partners).get();
+  Future<Partner> getPartnerById(int id) =>
+      (select(partners)..where((t) => t.id.equals(id))).getSingle();
   Stream<List<Partner>> watchPartners(int siteId) => (select(partners)
         ..where((t) => t.siteId.equals(siteId))
         ..orderBy([
           (t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc)
         ]))
       .watch();
+  Future<bool> updatePartner(Partner partner) =>
+      update(partners).replace(partner);
+  Future<List<Partner>> getAllPartnersBySite(int siteId) =>
+      (select(partners)..where((t) => t.siteId.equals(siteId))).get();
   Future<int> insertPartner(Insertable<Partner> partner) =>
       into(partners).insert(partner);
+  Future<int> deletePartner(Insertable<Partner> partner) {
+    return delete(partners).delete(partner);
+  }
 
   // TRANSACTIONS
   Future<List<Transaction>> getAllTransactions() => select(transactions).get();
-  Stream<List<Transaction>> watchAllTransactions(int siteId) =>
-      (select(transactions)
-            ..where((t) => t.siteId.equals(siteId))
-            ..orderBy([
-              (t) =>
-                  OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc)
-            ]))
-          .watch();
+  Stream<List<Transaction>> watchAllTransactions() => (select(transactions)
+        ..orderBy([
+          (t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc)
+        ]))
+      .watch();
+  Stream<List<Transaction>> getTransactionById(int siteId) {
+    return (select(transactions)..where((tbl) => tbl.siteId.equals(siteId)))
+        .watch();
+  }
+
   Future<int> insertTransaction(Insertable<Transaction> transaction) =>
       into(transactions).insert(transaction);
+  Future<int> deleteTransaction(Insertable<Transaction> transaction) =>
+      delete(transactions).delete(transaction);
+  Future<Transaction> getTransaction(int id) =>
+      (select(transactions)..where((t) => t.id.equals(id))).getSingle();
+  Future<bool> updateTransaction(Transaction transaction) =>
+      update(transactions).replace(transaction);
 
   // Bank Accounts
   Future<int> insertBankAccountOne(Insertable<BankAccount> bankAccount) =>
@@ -148,7 +165,6 @@ class AppDatabase extends _$AppDatabase {
             ..where((t) =>
                 t.entityId.equals(entityId) & t.entityType.equals(entityType)))
           .get();
-
   Future<BankAccount> getBankAccountById(int id) =>
       (select(bankAccounts)..where((t) => t.id.equals(id))).getSingle();
 
@@ -158,6 +174,14 @@ class AppDatabase extends _$AppDatabase {
       into(entityPaymentMethods).insert(entityPaymentMethod);
   Future<EntityPaymentMethod> getEntityPaymentMethod(int id) =>
       (select(entityPaymentMethods)..where((t) => t.id.equals(id))).getSingle();
+
+  deletePartner(Partner model) {}
+
+  updatePartner(Partner model) {}
+
+  getAllPartnersBySite(int siteId) {}
+
+  getPartnerById(int id) {}
 }
 
 LazyDatabase _openConnection() {

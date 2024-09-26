@@ -21,18 +21,13 @@ class _PartnerTabState extends State<PartnerTab> {
   @override
   void initState() {
     super.initState();
-    getAllUsers();
+    getLists();
   }
 
-  void getAllUsers() async {
-    SubCategory? partnerCategory =
-        await database.getSubCategoryByName("Partner");
-    final users = partnerCategory != null
-        ? await database.getUsersByCategoryId(partnerCategory.id)
-        : await database.getUsers();
-    setState(() {
-      usersList = users;
-    });
+  getLists() async {
+    usersList =
+        await database.getUsers(); // Ensure this returns valid user data
+    setState(() {}); // Trigger a rebuild
   }
 
   final formKey = GlobalKey<FormState>();
@@ -80,10 +75,20 @@ class _PartnerTabState extends State<PartnerTab> {
     required BuildContext context,
     required Site site,
     required List<User> users,
-  }) {
+    User? selectedUser,
+  }) async {
     final TextEditingController shareController = TextEditingController();
 
-    User? selectedUser;
+    // Fetch existing partners for this site
+    final existingPartners = await database.watchPartners(site.id).first;
+
+    // Calculate the total existing share
+    int totalExistingShare =
+        existingPartners.fold<int>(0, (sum, partner) => sum + partner.share);
+
+    // Calculate remaining share
+    int remainingShare = 100 - totalExistingShare;
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -125,8 +130,13 @@ class _PartnerTabState extends State<PartnerTab> {
                       try {
                         int parsedValue = int.parse(value);
 
-                        if (parsedValue > 100) {
-                          return "Value must be less than \nor equal to 100";
+                        // Check if input share exceeds remaining share
+                        if (parsedValue > remainingShare) {
+                          return "The total share cannot exceed $remainingShare";
+                        }
+
+                        if (parsedValue <= 0) {
+                          return "Value must be greater than 0";
                         }
                       } catch (e) {
                         return "Invalid number";
@@ -134,10 +144,10 @@ class _PartnerTabState extends State<PartnerTab> {
 
                       return null;
                     },
-                    decoration: const InputDecoration(
-                      hintText: 'Share Price',
+                    decoration: InputDecoration(
+                      hintText: 'Share (Founder: $remainingShare%)',
                     ),
-                  )
+                  ),
                 ],
               ),
             ),

@@ -43,15 +43,30 @@ class HFunction {
     required String entityType,
     required int entityId,
   }) async {
-    switch (entityType) {
-      case "User":
-        return await database.getUserById(entityId);
-      case "Firm":
-        return await database.getFirm(entityId);
-      case "Site":
-        return await database.getSite(entityId);
-      default:
-        return await database.getUserById(entityId);
+    try {
+      if (entityId <= 0) {
+        throw Exception("Invalid entity ID");
+      }
+
+      switch (entityType) {
+        case "User":
+          final user = await database.getUserById(entityId);
+          return user;
+
+        case "Firm":
+          final firm = await database.getFirm(entityId);
+          return firm;
+
+        case "Site":
+          final site = await database.getSite(entityId);
+          return site;
+
+        default:
+          throw Exception("Invalid entity type: $entityType");
+      }
+    } catch (e) {
+      debugPrint("Error in getFromUser: $e");
+      return null; // or handle the error accordingly
     }
   }
 }

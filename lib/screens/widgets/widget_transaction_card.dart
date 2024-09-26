@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:hisab/controllers/transaction_controller.dart';
 import 'package:hisab/database/app_database.dart';
 import 'package:hisab/main.dart';
 import 'package:hisab/utils/helper_functions.dart';
@@ -30,16 +31,23 @@ class _WidgetTransactionCardState extends State<WidgetTransactionCard> {
     final toEntity =
         await database.getEntityPaymentMethod(widget.transaction.toId);
 
-    final fromUser = await HFunction.getFromUser(
-        entityId: fromEntity.entityId, entityType: fromEntity.entityType);
+    if (fromEntity != null && toEntity != null) {
+      final fromUser = await HFunction.getFromUser(
+          entityId: fromEntity.entityId, entityType: fromEntity.entityType);
 
-    final toUser = await HFunction.getFromUser(
-        entityType: toEntity.entityType, entityId: toEntity.entityId);
+      final toUser = await HFunction.getFromUser(
+          entityType: toEntity.entityType, entityId: toEntity.entityId);
 
-    setState(() {
-      from = fromUser.name;
-      to = toUser.name;
-    });
+      setState(() {
+        from = fromUser?.name ?? "Unknown User"; // Fallback value
+        to = toUser?.name ?? "Unknown User"; // Fallback value
+      });
+    } else {
+      setState(() {
+        from = "Unknown Entity"; // Handle missing fromEntity
+        to = "Unknown Entity"; // Handle missing toEntity
+      });
+    }
   }
 
   @override
@@ -81,16 +89,6 @@ class _WidgetTransactionCardState extends State<WidgetTransactionCard> {
                       fontWeight: FontWeight.normal,
                     ),
                   ),
-                  // const SizedBox(width: 10),
-                  // Text(
-                  //   'Bank: $fromBankName',
-                  //   style: const TextStyle(
-                  //     fontFamily: 'Courier', // Old-school font
-                  //     fontSize: 16.0,
-                  //     color: Colors.black,
-                  //     fontWeight: FontWeight.normal,
-                  //   ),
-                  // ),
                 ],
               ),
               const SizedBox(height: 5),
@@ -105,16 +103,6 @@ class _WidgetTransactionCardState extends State<WidgetTransactionCard> {
                       fontWeight: FontWeight.normal,
                     ),
                   ),
-                  // const SizedBox(width: 10),
-                  // Text(
-                  //   'Bank: $toBankName',
-                  //   style: const TextStyle(
-                  //     fontFamily: 'Courier', // Old-school font
-                  //     fontSize: 16.0,
-                  //     color: Colors.black,
-                  //     fontWeight: FontWeight.normal,
-                  //   ),
-                  // ),
                 ],
               ),
               const SizedBox(height: 5),
@@ -195,42 +183,53 @@ class _WidgetTransactionCardState extends State<WidgetTransactionCard> {
             ],
           ),
           const Expanded(child: SizedBox()),
-          // Column(
-          //   children: [
-          //     IconButton(
-          //       icon: Icon(
-          //         PhosphorIcons.pencilSimple(),
-          //         size: 30.0,
-          //       ),
-          //       onPressed: () {
-          //         // Add your desired action here
-          //         print("Edit button pressed");
-          //       },
-          //       tooltip: "Edit Transaction", // For accessibility
-          //     ),
-          //     const Text(
-          //       "Edit",
-          //       style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
-          //     ),
-          //   ],
-          // ),
-          // const SizedBox(width: 100),
-          // Column(
-          //   children: [
-          //     IconButton(
-          //       icon: const Icon(Icons.delete),
-          //       onPressed: () {
-          //         // Add your desired action here
-          //         print("Delete button pressed");
-          //       },
-          //       tooltip: "Delete", // For accessibility
-          //     ),
-          //     const Text(
-          //       "Delete",
-          //       style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
-          //     ),
-          //   ],
-          // ),
+          const SizedBox(width: 100),
+          Column(
+            children: [
+              IconButton(
+                icon: const Icon(Icons.delete),
+                onPressed: () async {
+                  final confirm = await showDialog(
+                    context: context,
+                    builder: (ctx) => AlertDialog(
+                      title: const Text('Delete Transaction'),
+                      content: const Text(
+                          'Are you sure you want to delete this Transaction?'),
+                      actions: [
+                        TextButton(
+                          onPressed: () => Navigator.of(ctx).pop(false),
+                          child: const Text('Cancel'),
+                        ),
+                        TextButton(
+                          onPressed: () => Navigator.of(ctx).pop(true),
+                          child: const Text('Delete'),
+                        ),
+                      ],
+                    ),
+                  );
+
+                  if (confirm == true) {
+                    try {
+                      await transactionController.delete(widget.transaction);
+                      HFunction.showFlushBarSuccess(
+                        // ignore: use_build_context_synchronously
+                        context: context,
+                        message: "Successfully deleted the Transaction",
+                      );
+                    } catch (error) {
+                      HFunction.showFlushBarError(
+                        // ignore: use_build_context_synchronously
+                        context: context,
+                        message: "Failed to delete the Transaction: $error",
+                      );
+                    }
+                  }
+                },
+              ),
+              const Text("Delete"),
+            ],
+          ),
+          const SizedBox(width: 50),
         ],
       ),
     );
