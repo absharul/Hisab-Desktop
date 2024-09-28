@@ -89,8 +89,6 @@ class Partners extends Table {
   IntColumn get siteId =>
       integer().customConstraint('REFERENCES sites(id) NOT NULL')();
   IntColumn get share => integer()();
-  DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
-  DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
 }
 
 class Transactions extends Table {

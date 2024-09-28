@@ -24,6 +24,32 @@ class ScreenSiteDetails extends StatelessWidget {
           onPressed: () => context.go('/'),
           icon: const Icon(Icons.arrow_back),
         ),
+        actions: [
+          InkWell(
+            onTap: () {
+              context.go("/analytic_page", extra: site);
+            },
+            child: const Padding(
+              padding: EdgeInsets.only(top: 10.0),
+              child: Column(
+                children: [
+                  Icon(
+                    Icons.analytics_outlined,
+                    size: 20.0,
+                  ),
+                  Text(
+                    "Analytics",
+                    style: TextStyle(
+                        color: Colors.white, fontWeight: FontWeight.w600),
+                  ),
+                ],
+              ),
+            ),
+          ),
+          const SizedBox(
+            width: 50.0,
+          )
+        ],
       ),
       body: DefaultTabController(
         length: 3,

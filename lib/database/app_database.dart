@@ -1,9 +1,12 @@
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
+import 'package:flutter/foundation.dart';
 import 'package:hisab/database/schemas.dart';
-import 'dart:io';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
+import 'dart:io';
+
+import 'package:rxdart/rxdart.dart';
 
 part 'app_database.g.dart';
 
@@ -17,7 +20,7 @@ part 'app_database.g.dart';
   BankAccounts,
   EntityPaymentMethods,
   Partners,
-  Transactions
+  Transactions,
 ])
 class AppDatabase extends _$AppDatabase {
   AppDatabase() : super(_openConnection());
@@ -80,7 +83,7 @@ class AppDatabase extends _$AppDatabase {
       update(subCategories).replace(subCategory);
   Stream<List<SubCategory>> watchSubCategory() => select(subCategories).watch();
 
-// USERS
+  // USERS
   Future<List<User>> getUsers() => select(users).get();
   Future<List<User>> getUsersByCategoryId(int categoryId) =>
       (select(users)..where((t) => t.subCategory.equals(categoryId))).get();
@@ -95,7 +98,7 @@ class AppDatabase extends _$AppDatabase {
         ]))
       .watch();
 
-// FLATS
+  // FLATS
   Future<List<Flat>> getAllFlats() => select(flats).get();
   Future<int> insertFlat(Insertable<Flat> flat) => into(flats).insert(flat);
   Stream<List<Flat>> watchAllFlats(int siteId) => (select(flats)
@@ -130,9 +133,8 @@ class AppDatabase extends _$AppDatabase {
       (select(partners)..where((t) => t.siteId.equals(siteId))).get();
   Future<int> insertPartner(Insertable<Partner> partner) =>
       into(partners).insert(partner);
-  Future<int> deletePartner(Insertable<Partner> partner) {
-    return delete(partners).delete(partner);
-  }
+  Future<int> deletePartner(Insertable<Partner> partner) =>
+      delete(partners).delete(partner);
 
   // TRANSACTIONS
   Future<List<Transaction>> getAllTransactions() => select(transactions).get();
@@ -141,11 +143,8 @@ class AppDatabase extends _$AppDatabase {
           (t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc)
         ]))
       .watch();
-  Stream<List<Transaction>> getTransactionById(int siteId) {
-    return (select(transactions)..where((tbl) => tbl.siteId.equals(siteId)))
-        .watch();
-  }
-
+  Stream<List<Transaction>> getTransactionById(int siteId) =>
+      (select(transactions)..where((tbl) => tbl.siteId.equals(siteId))).watch();
   Future<int> insertTransaction(Insertable<Transaction> transaction) =>
       into(transactions).insert(transaction);
   Future<int> deleteTransaction(Insertable<Transaction> transaction) =>
@@ -154,6 +153,32 @@ class AppDatabase extends _$AppDatabase {
       (select(transactions)..where((t) => t.id.equals(id))).getSingle();
   Future<bool> updateTransaction(Transaction transaction) =>
       update(transactions).replace(transaction);
+
+  // Fetch total incoming transactions for a site
+  Stream<List<Transaction>> getTotalIncomingForSite(int siteId) {
+    return (select(transactions)..where((tbl) => tbl.toId.equals(siteId)))
+        .watch();
+  }
+
+  // Fetch total outgoing transactions for a site
+  Stream<List<Transaction>> getTotalOutgoingForSite(int siteId) {
+    return (select(transactions)..where((tbl) => tbl.fromId.equals(siteId)))
+        .watch();
+  }
+
+  // Calculate net profit for a site (incoming - outgoing)
+  Stream<double> getNetProfitForSite(int siteId) {
+    final incomingStream = getTotalIncomingForSite(siteId).map((transactions) =>
+        transactions.fold(0.0, (sum, transaction) => sum + transaction.amount));
+
+    final outgoingStream = getTotalOutgoingForSite(siteId).map((transactions) =>
+        transactions.fold(0.0, (sum, transaction) => sum + transaction.amount));
+
+    return Rx.combineLatest2(incomingStream, outgoingStream,
+        (double totalIncoming, double totalOutgoing) {
+      return totalIncoming - totalOutgoing;
+    });
+  }
 
   // Bank Accounts
   Future<int> insertBankAccountOne(Insertable<BankAccount> bankAccount) =>
@@ -174,14 +199,6 @@ class AppDatabase extends _$AppDatabase {
       into(entityPaymentMethods).insert(entityPaymentMethod);
   Future<EntityPaymentMethod> getEntityPaymentMethod(int id) =>
       (select(entityPaymentMethods)..where((t) => t.id.equals(id))).getSingle();
-
-  deletePartner(Partner model) {}
-
-  updatePartner(Partner model) {}
-
-  getAllPartnersBySite(int siteId) {}
-
-  getPartnerById(int id) {}
 }
 
 LazyDatabase _openConnection() {
