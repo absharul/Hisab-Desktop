@@ -28,35 +28,21 @@ class _ScreenAnalyticsState extends State<ScreenAnalytics> {
 
   Future<void> _loadAnalyticsData() async {
     try {
-      final incomingStream = database.getTotalIncomingForSite(widget.site.id);
-      final outgoingStream = database.getTotalOutgoingForSite(widget.site.id);
-      final profitStream = database.getNetProfitForSite(widget.site.id);
-
-      // Listen to incoming transactions
-      incomingStream.listen((incomingTransactions) {
-        setState(() {
-          incoming = incomingTransactions.fold(
-              0, (sum, transaction) => sum + transaction.amount);
-        });
-      });
-
-      // Listen to outgoing transactions
-      outgoingStream.listen((outgoingTransactions) {
-        setState(() {
-          outgoing = outgoingTransactions.fold(
-              0, (sum, transaction) => sum + transaction.amount);
-        });
-      });
+      final income =
+          await database.getPLforSite(widget.site.id, isIncoming: true);
+      final expenditure =
+          await database.getPLforSite(widget.site.id, isIncoming: false);
+      final profitData = await database.getNetProfitForSite(widget.site.id);
 
       // Calculate net profit
-      profitStream.listen((profit) {
-        setState(() {
-          netProfit = profit; // Update net profit from the stream
-        });
-      });
-      // Load partner data
+
       final sitePartners = await database.getAllPartnersBySite(widget.site.id);
       partners = sitePartners;
+      setState(() {
+        incoming = income;
+        outgoing = expenditure;
+        netProfit = profitData;
+      });
 
       // Load usernames for partners asynchronously
       await Future.forEach<Partner>(partners, (partner) async {
