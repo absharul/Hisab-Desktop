@@ -1,13 +1,9 @@
 import 'package:drift/drift.dart';
 import 'package:drift/native.dart';
-import 'package:flutter/foundation.dart';
 import 'package:hisab/database/schemas.dart';
 import 'package:path/path.dart' as p;
 import 'package:path_provider/path_provider.dart';
 import 'dart:io';
-
-import 'package:rxdart/rxdart.dart';
-
 part 'app_database.g.dart';
 
 @DriftDatabase(tables: [
@@ -137,9 +133,9 @@ class AppDatabase extends _$AppDatabase {
 // Method to revoke the sale of a flat
   Future<int> revokeFlatSoldStatus({required int flatId}) =>
       (update(flats)..where((t) => t.id.equals(flatId))).write(
-        FlatsCompanion(
-          isSold: const Value(false),
-          buyerId: const Value(null), // Reset the buyerId
+        const FlatsCompanion(
+          isSold: Value(false),
+          buyerId: Value(null), // Reset the buyerId
         ),
       );
 
@@ -180,30 +176,32 @@ class AppDatabase extends _$AppDatabase {
   Future<bool> updateTransaction(Transaction transaction) =>
       update(transactions).replace(transaction);
 
-  // Fetch total incoming transactions for a site
-  Stream<List<Transaction>> getTotalIncomingForSite(int siteId) {
-    return (select(transactions)..where((tbl) => tbl.toId.equals(siteId)))
-        .watch();
-  }
+  Future<double> getPLforSite(int siteId, {bool isIncoming = false}) async {
+    List<Transaction> data = [];
+    double finalAmount = 0;
+    final entityIds = await (select(entityPaymentMethods)
+          ..where((tbl) => tbl.entityId.equals(siteId)))
+        .get();
 
-  // Fetch total outgoing transactions for a site
-  Stream<List<Transaction>> getTotalOutgoingForSite(int siteId) {
-    return (select(transactions)..where((tbl) => tbl.fromId.equals(siteId)))
-        .watch();
+    if (entityIds.isNotEmpty) {
+      final toIds = entityIds.map((entity) => entity.id).toList();
+
+      data = await (select(transactions)
+            ..where((tbl) =>
+                (isIncoming) ? tbl.toId.isIn(toIds) : tbl.fromId.isIn(toIds)))
+          .get();
+    }
+    for (Transaction data in data) {
+      finalAmount += data.amount;
+    }
+    return finalAmount;
   }
 
   // Calculate net profit for a site (incoming - outgoing)
-  Stream<double> getNetProfitForSite(int siteId) {
-    final incomingStream = getTotalIncomingForSite(siteId).map((transactions) =>
-        transactions.fold(0.0, (sum, transaction) => sum + transaction.amount));
-
-    final outgoingStream = getTotalOutgoingForSite(siteId).map((transactions) =>
-        transactions.fold(0.0, (sum, transaction) => sum + transaction.amount));
-
-    return Rx.combineLatest2(incomingStream, outgoingStream,
-        (double totalIncoming, double totalOutgoing) {
-      return totalIncoming - totalOutgoing;
-    });
+  Future<double> getNetProfitForSite(int siteId) async {
+    final income = await getPLforSite(siteId, isIncoming: true);
+    final expenditure = await getPLforSite(siteId, isIncoming: false);
+    return income - expenditure;
   }
 
   // Bank Accounts
