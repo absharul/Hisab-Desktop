@@ -65,18 +65,23 @@ class FlatItem extends StatefulWidget {
 
 class _FlatItemState extends State<FlatItem> {
   late Flat _flat;
-  User? selectedUserToSold;
   List<User> users = [];
+  User? selectedUserToSold;
+
   @override
   void initState() {
     super.initState();
     _flat = widget.flat;
-    getLists(); // Initialize with the passed flat
+    _fetchCustomers();
+    // Initialize with the passed flat
   }
 
-  getLists() async {
-    users = await database.getUsers();
-    setState(() {});
+  Future<void> _fetchCustomers() async {
+    final fetchedUsers = await database.getUsersByCustomersCategory();
+    print('Fetched users: $fetchedUsers');
+    setState(() {
+      users = fetchedUsers;
+    });
   }
 
   @override
@@ -154,9 +159,22 @@ class _FlatItemState extends State<FlatItem> {
                   ),
                   backgroundColor: Colors.deepOrange,
                 ),
-                onPressed: () async {
-                  // Create a new Flat object with the updated isSold status
-                  showFlatsInputDialog(context: context);
+                // onPressed: selectedUserToSold != null && !_flat.isSold
+                //     ? () async {
+                //         // Create a new Flat object with the updated isSold status
+                //         showFlatsInputDialog(context: context);
+                //       }
+                //     : null,
+                // child: Text(
+                //   _flat.isSold ? 'Revoke' : 'Sell',
+                //   style: const TextStyle(color: Colors.white),
+                // ),
+                onPressed: () {
+                  if (_flat.isSold) {
+                    _revokeSale(); // Revoke sale
+                  } else {
+                    _sellFlat(); // Sell flat
+                  }
                 },
                 child: Text(
                   _flat.isSold ? 'Revoke' : 'Sell',
@@ -170,9 +188,10 @@ class _FlatItemState extends State<FlatItem> {
     );
   }
 
-  showFlatsInputDialog({BuildContext? context}) {
+  // Function to handle selling a flat
+  void _sellFlat() {
     showDialog(
-      context: context!,
+      context: context,
       builder: (context) {
         return Dialog(
           child: Container(
@@ -196,16 +215,21 @@ class _FlatItemState extends State<FlatItem> {
                       );
                     }).toList(),
                     onChanged: (User? newValue) {
-                      selectedUserToSold = newValue;
+                      setState(() {
+                        selectedUserToSold = newValue;
+                      });
                     },
                   ),
                   const SizedBox(height: 10),
                   ElevatedButton(
                     onPressed: () async {
-                      try {
-                        await database.updateFlatSoldStatus(
-                            flatId: _flat.id, userId: selectedUserToSold!.id);
-                        HFunction.showFlushBarError(
+                      if (selectedUserToSold != null) {
+                        try {
+                          await database.updateFlatSoldStatus(
+                            flatId: _flat.id,
+                            userId: selectedUserToSold!.id,
+                          );
+                          HFunction.showFlushBarError(
                             context: context,
                             message: "Sold Flat Successfully",
                             afterPop: () {
@@ -214,11 +238,15 @@ class _FlatItemState extends State<FlatItem> {
                               setState(() {
                                 _flat = updatedFlat;
                               });
-                              router.pop();
-                            });
-                      } catch (error) {
-                        HFunction.showFlushBarError(
-                            context: context, message: error.toString());
+                              Navigator.pop(context);
+                            },
+                          );
+                        } catch (error) {
+                          HFunction.showFlushBarError(
+                            context: context,
+                            message: error.toString(),
+                          );
+                        }
                       }
                     },
                     child: const Text("Sell Flat"),
@@ -230,5 +258,24 @@ class _FlatItemState extends State<FlatItem> {
         );
       },
     );
+  }
+
+  // Function to handle revoking a sale
+  Future<void> _revokeSale() async {
+    try {
+      await database.revokeFlatSoldStatus(flatId: _flat.id);
+      HFunction.showFlushBarError(
+        context: context,
+        message: "Revoked Sale Successfully",
+        afterPop: () {
+          final updatedFlat = _flat.copyWith(isSold: false);
+          setState(() {
+            _flat = updatedFlat;
+          });
+        },
+      );
+    } catch (error) {
+      HFunction.showFlushBarError(context: context, message: error.toString());
+    }
   }
 }

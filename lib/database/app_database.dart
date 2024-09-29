@@ -97,6 +97,24 @@ class AppDatabase extends _$AppDatabase {
           (t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc)
         ]))
       .watch();
+  Future<Category?> getCustomersCategory() async {
+    final category = await (select(categories)
+          ..where((c) => c.name.equals('Customers')))
+        .getSingleOrNull();
+    print('Fetched category: $category'); // Log the result
+    return category;
+  }
+
+  Future<List<User>> getUsersByCustomersCategory() async {
+    final category = await getCustomersCategory();
+    if (category != null) {
+      print('Category ID: ${category.id}');
+      return await getUsersByCategoryId(category.id);
+    } else {
+      print('Customers category not found.');
+      return []; // Return an empty list if the category doesn't exist
+    }
+  }
 
   // FLATS
   Future<List<Flat>> getAllFlats() => select(flats).get();
@@ -114,6 +132,14 @@ class AppDatabase extends _$AppDatabase {
         FlatsCompanion(
           isSold: const Value(true),
           buyerId: Value(userId),
+        ),
+      );
+// Method to revoke the sale of a flat
+  Future<int> revokeFlatSoldStatus({required int flatId}) =>
+      (update(flats)..where((t) => t.id.equals(flatId))).write(
+        FlatsCompanion(
+          isSold: const Value(false),
+          buyerId: const Value(null), // Reset the buyerId
         ),
       );
 
