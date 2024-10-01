@@ -130,6 +130,13 @@ class AppDatabase extends _$AppDatabase {
           buyerId: Value(null), // Reset the buyerId
         ),
       );
+  Future<void> updateFlat(Flat flat) async {
+    await (update(flats)..where((t) => t.id.equals(flat.id))).write(flat);
+  }
+  Future<int> deleteFlat(Flat flat) {
+    return (delete(flats)..where((t) => t.id.equals(flat.id))).go();
+  }
+
 
   // PARTNERS
   Future<List<Partner>> getAllPartners() => select(partners).get();

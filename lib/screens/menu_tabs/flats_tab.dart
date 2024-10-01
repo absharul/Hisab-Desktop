@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:hisab/controllers/flat_controller.dart';
 import 'package:hisab/database/app_database.dart';
 import 'package:hisab/main.dart';
-import 'package:hisab/routes/route.dart';
 import 'package:hisab/utils/helper_functions.dart';
 import '../input_forms/add_flats.dart';
 
@@ -73,7 +73,6 @@ class _FlatItemState extends State<FlatItem> {
     super.initState();
     _flat = widget.flat;
     _fetchCustomers();
-    // Initialize with the passed flat
   }
 
   Future<void> _fetchCustomers() async {
@@ -184,6 +183,81 @@ class _FlatItemState extends State<FlatItem> {
               ),
             ],
           ),
+          const Expanded(child: SizedBox()),
+          Padding(
+            padding: const EdgeInsets.all(50.0),
+            child: Column(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.edit),
+                  onPressed: () {
+                    // Add your desired action here
+                    _editFlat();
+                    print("Edit Flat detail");
+                  },
+                  tooltip: "Edit Flat list", // For accessibility
+                ),
+                const Text(
+                  "Edit",
+                  style: TextStyle(fontSize: 16.0,),
+                ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(50.0),
+            child: Column(
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.delete),
+                  onPressed: () async {
+                    final confirm = await showDialog(
+                      context: context,
+                      builder: (ctx) => AlertDialog(
+                        title: const Text('Delete Flat'),
+                        content: const Text(
+                            'Are you sure you want to delete this Flat?'),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(ctx).pop(false),
+                            child: const Text('Cancel'),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.of(ctx).pop(true),
+                            child: const Text('Delete'),
+                          ),
+                        ],
+                      ),
+                    );
+
+                    if (confirm == true) {
+                      try {
+                        await flatContoller.deleteFlat(widget.flat);
+                        HFunction.showFlushBarSuccess(
+                          // ignore: use_build_context_synchronously
+                          context: context,
+                          message: "Successfully deleted the Flat",
+                        );
+                      } catch (error) {
+                        HFunction.showFlushBarError(
+                          // ignore: use_build_context_synchronously
+                          context: context,
+                          message: "Failed to delete the Transaction: $error",
+                        );
+                      }
+                    }
+                  },
+
+                  tooltip: "Delete", // For accessibility
+                ),
+                const Text(
+                  "Delete",
+                  style: TextStyle(fontSize: 16.0,),
+                ),
+                const SizedBox(width: 100),
+              ],
+            ),
+          ),
         ],
       ),
     );
@@ -279,4 +353,79 @@ class _FlatItemState extends State<FlatItem> {
       HFunction.showFlushBarError(context: context, message: error.toString());
     }
   }
+
+
+  // Function to handle editing a flat
+  void _editFlat() {
+    final nameController = TextEditingController(text: _flat.name);
+    final areaController = TextEditingController(text: _flat.area.toString());
+    final rateController = TextEditingController(text: _flat.rate.toString());
+    final typeController = TextEditingController(text: _flat.type);
+
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Edit Flat'),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              TextField(
+                controller: nameController,
+                decoration: const InputDecoration(labelText: 'Name'),
+              ),
+              const SizedBox(height: 8.0,),
+              TextField(
+                controller: areaController,
+                decoration: const InputDecoration(labelText: 'Area (sqft)'),
+                keyboardType: TextInputType.number,
+              ),
+              const SizedBox(height: 8.0,),
+              TextField(
+                controller: rateController,
+                decoration: const InputDecoration(labelText: 'Rate per sqft'),
+                keyboardType: TextInputType.number,
+              ),
+              const SizedBox(height: 8.0,),
+              TextField(
+                controller: typeController,
+                decoration: const InputDecoration(labelText: 'Type'),
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                try {
+                  final updatedFlat = _flat.copyWith(
+                    name: nameController.text,
+                    area: int.tryParse(areaController.text) ?? _flat.area,
+                    rate: int.tryParse(rateController.text) ?? _flat.rate,
+                    type: typeController.text,
+                  );
+                  await flatContoller.updateFlat(updatedFlat);  // Use FlatController
+                  setState(() {
+                    _flat = updatedFlat;
+                  });
+                  Navigator.of(context).pop();
+                  HFunction.showFlushBarSuccess(context: context, message: 'Flat updated successfully');
+                } catch (e) {
+                  HFunction.showFlushBarError(context: context, message: 'Error updating flat: $e');
+                }
+              },
+              child: const Text('Save'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
 }
+

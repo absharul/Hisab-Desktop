@@ -71,13 +71,6 @@ class _ScreenAnalyticsState extends State<ScreenAnalytics> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text("${widget.site.name} Analytics"),
-        leading: IconButton(
-          onPressed: () => context.go('/screesite_details', extra: widget.site),
-          icon: const Icon(Icons.arrow_back),
-        ),
-      ),
       body: isLoading
           ? const Center(child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -101,58 +94,65 @@ class _ScreenAnalyticsState extends State<ScreenAnalytics> {
               ],
             ),
           ),
-          // Padding(
-          //   padding: EdgeInsets.all(0),
-          //   child: Row(
-          //     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          //     children: [
-          //       Container(
-          //         width: 400,
-          //         child: Row(
-          //           children: [
-          //             Padding(
-          //               padding: EdgeInsets.all(8.0),
-          //               child: Text("Description",
-          //                   style: TextStyle(
-          //                       fontWeight: FontWeight.bold,
-          //                       fontSize: 25.0
-          //                   )),
-          //             ),
-          //             Padding(
-          //               padding: EdgeInsets.all(8.0),
-          //               child: Text("Amount", style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25.0)),
-          //             ),
-          //           ],
-          //         ),
-          //       ),
-          //       Container(
-          //         width: 400,
-          //         child: Row(
-          //           children: [
-          //             Padding(
-          //               padding: EdgeInsets.all(8.0),
-          //               child: Text("Partner",
-          //                   style: TextStyle(
-          //                       fontWeight: FontWeight.bold,
-          //                       fontSize: 25.0
-          //                   )),
-          //             ),
-          //             Padding(
-          //               padding: EdgeInsets.all(8.0),
-          //               child: Text("Share", style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25.0)),
-          //             ),
-          //             Padding(
-          //               padding: EdgeInsets.all(8.0),
-          //               child: Text("Amount", style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25.0)),
-          //             ),
-          //           ],
-          //         ),
-          //       )
-          //     ],
-          //   ),
-          // ),
           Padding(
-            padding: const EdgeInsets.all(2.0),
+            padding: EdgeInsets.all(0),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              children: [
+                Container(
+                  decoration: BoxDecoration(color: Colors.grey[200]),
+                  width: 400,
+                  child: const Row(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Text("Description",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 25.0
+                            )),
+                      ),
+                      Expanded(child: SizedBox()),
+                      Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Text("Amount", style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25.0)),
+                      ),
+                      SizedBox(width: 80)
+                    ],
+                  ),
+                ),
+                Container(
+                  width: 500,
+                  decoration: BoxDecoration(color: Colors.grey[200]),
+                  child: const Row(
+                    children: [
+                      Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Text("Partner",
+                            style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 25.0
+                            )),
+                      ),
+                      Expanded(child: SizedBox()),
+                      Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Text("Share", style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25.0)),
+                      ),
+                      SizedBox(width: 20,),
+                      Padding(
+                        padding: EdgeInsets.all(8.0),
+                        child: Text("Amount", style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25.0)),
+                      ),
+                      SizedBox(width: 85,)
+                    ],
+                  ),
+                )
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 2.0,right: 2.0, bottom: 2.0),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
@@ -164,23 +164,6 @@ class _ScreenAnalyticsState extends State<ScreenAnalytics> {
                     1: FixedColumnWidth(200),
                   },
                   children: [
-                    TableRow(
-                      decoration: BoxDecoration(color: Colors.grey[200]), // Header background color
-                      children: const [
-                        Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text("Description",
-                              style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                                fontSize: 25.0
-                              )),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text("Amount", style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25.0)),
-                        ),
-                      ],
-                    ),
                     TableRow(
                       children: [
                         const Padding(padding: EdgeInsets.all(8.0),
@@ -237,43 +220,43 @@ class _ScreenAnalyticsState extends State<ScreenAnalytics> {
                     2: FixedColumnWidth(200),
                   },
                   children: [
-                    TableRow(
-                      decoration: BoxDecoration(color: Colors.grey[200]), // Header background color
-                      children: const [
-                        Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text("Partner",
-                              style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                fontSize: 25.0
-                              )),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text("Share", style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25.0)),
-                        ),
-                        Padding(
-                          padding: EdgeInsets.all(8.0),
-                          child: Text("Amount", style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25.0)),
-                        ),
-                      ],
-                    ),
+                    // TableRow(
+                    //   decoration: BoxDecoration(color: Colors.grey[200]), // Header background color
+                    //   children: const [
+                    //     Padding(
+                    //       padding: EdgeInsets.all(8.0),
+                    //       child: Text("Partner",
+                    //           style: TextStyle(
+                    //               fontWeight: FontWeight.bold,
+                    //             fontSize: 25.0
+                    //           )),
+                    //     ),
+                    //     Padding(
+                    //       padding: EdgeInsets.all(8.0),
+                    //       child: Text("Share", style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25.0)),
+                    //     ),
+                    //     Padding(
+                    //       padding: EdgeInsets.all(8.0),
+                    //       child: Text("Amount", style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25.0)),
+                    //     ),
+                    //   ],
+                    // ),
                     ...partners.map((partner) {
                       double amount = (partner.share / 100) * netProfit;
                       return TableRow(
                         children: [
-                          Padding(padding: const EdgeInsets.all(8.0),
+                          Padding(padding: const EdgeInsets.only(right: 8.0,bottom: 8.0,left: 8.0),
                               child: Text("${partnerUsernames[partner.builderId] ?? 'Unknown'}",
                                 style: const TextStyle(
                                   fontSize: 18.0,
                                 ),
                               )),
-                          Padding(padding: const EdgeInsets.all(8.0), child: Text("${partner.share}%",
+                          Padding(padding: const EdgeInsets.only(right: 8.0,bottom: 8.0,left: 8.0), child: Text("${partner.share}%",
                             style: const TextStyle(
                               fontSize: 18.0,
                             ),
                           )),
-                          Padding(padding: const EdgeInsets.all(8.0), child: Text(formatCurrency(amount),
+                          Padding(padding: const EdgeInsets.only(right: 8.0,bottom: 8.0,left: 8.0), child: Text(formatCurrency(amount),
                             style: const TextStyle(
                               fontSize: 18.0,
                             ),

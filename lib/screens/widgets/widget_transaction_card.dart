@@ -258,7 +258,7 @@ class WidgetTransactionCard extends StatefulWidget {
 class _WidgetTransactionCardState extends State<WidgetTransactionCard> {
   String from = "";
   String to = "";
-  IconData? transactionIcon; // To hold the icon data
+  bool transactAmount = false;
 
   @override
   void initState() {
@@ -283,21 +283,22 @@ class _WidgetTransactionCardState extends State<WidgetTransactionCard> {
         to = toUser?.name ?? "Unknown User"; // Fallback value
 
         // Determine the transaction direction
-        if (widget.transaction.fromId == widget.site.id) {
+        if (fromEntity.entityType.contains('User')) {
           // Replace 'siteId' with actual site ID
-          transactionIcon = Icons.arrow_upward; // Credit icon
+          transactAmount = true; // Credit icon
         } else {
-          transactionIcon = Icons.arrow_downward; // Debit icon
+          transactAmount = false; // Debit icon
         }
       });
     } else {
       setState(() {
         from = "Unknown Entity"; // Handle missing fromEntity
         to = "Unknown Entity"; // Handle missing toEntity
-        transactionIcon = Icons.error; // Default icon for error
+        // Default icon for error
       });
     }
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -344,15 +345,6 @@ class _WidgetTransactionCardState extends State<WidgetTransactionCard> {
                 ),
               ),
               const SizedBox(height: 5),
-              Text(
-                'Amount: ₹ ${widget.transaction.amount}',
-                style: const TextStyle(
-                  fontFamily: 'Courier',
-                  fontSize: 16.0,
-                  color: Colors.black,
-                ),
-              ),
-              const SizedBox(height: 5),
               RichText(
                 text: TextSpan(
                   children: [
@@ -391,14 +383,13 @@ class _WidgetTransactionCardState extends State<WidgetTransactionCard> {
           ),
           const Expanded(child: SizedBox()),
           const SizedBox(width: 10),
-          // Icon displaying logic
-          Icon(
-            transactionIcon ??
-                Icons.error, // Show default error icon if not set
-            size: 24.0,
-            color: transactionIcon == Icons.arrow_upward
-                ? Colors.red
-                : Colors.green,
+          Text(
+            "₹ ${widget.transaction.amount}",
+            style: TextStyle(
+              color: transactAmount ? Colors.green : Colors.red, // Conditional color
+              fontSize: 18.0, // You can customize the font size here
+              fontFamily: 'Courier', // Ensure consistent styling
+            ),
           ),
           const SizedBox(width: 50),
           Column(

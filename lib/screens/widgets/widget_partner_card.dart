@@ -73,6 +73,7 @@ class _WidgetPartnerCardState extends State<WidgetPartnerCard> {
                 icon: const Icon(Icons.edit),
                 onPressed: () {
                   // Add your desired action here
+                  _editPartner(context);
                   print("Edit partners detail");
                 },
                 tooltip: "Edit Partner list", // For accessibility
@@ -137,6 +138,64 @@ class _WidgetPartnerCardState extends State<WidgetPartnerCard> {
           ),
         ],
       ),
+    );
+  }
+
+  void _editPartner(BuildContext context) {
+    final nameController = TextEditingController(text: userName);
+    final shareController = TextEditingController(text: widget.partner.share.toString());
+
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          title: const Text("Edit Partner"),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                TextField(
+                  controller: nameController,
+                  decoration: const InputDecoration(hintText: "Name"),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: shareController,
+                  keyboardType: TextInputType.number,
+                  decoration: const InputDecoration(hintText: "Share"),
+                ),
+              ],
+            ),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(ctx).pop(); // Close the dialog
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () async {
+                try {
+                  final updatedPartner = widget.partner.copyWith(
+                    builderId: widget.partner.builderId, // Keep existing ID
+                    share: int.parse(shareController.text),
+                  );
+                  await partnerController.update(updatedPartner);
+                  Navigator.of(ctx).pop(); // Close the dialog
+                  HFunction.showFlushBarSuccess(
+                    context: context,
+                    message: "Successfully updated the partner",
+                  );
+                } catch (e) {
+                  HFunction.showFlushBarError(context: context, message: e.toString());
+                }
+              },
+              child: const Text('Update'),
+            ),
+          ],
+        );
+      },
     );
   }
 }
