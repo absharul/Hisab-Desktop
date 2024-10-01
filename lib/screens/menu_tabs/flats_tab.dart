@@ -152,14 +152,24 @@ class _FlatItemState extends State<FlatItem> {
                 ),
               ),
               const SizedBox(height: 5),
-              Text(
-                'Status: ${_flat.isSold ? 'Sold' : 'Available'}',
-                style: const TextStyle(
-                  fontFamily: 'Courier', // Old-school font
-                  fontSize: 16.0,
-                  color: Colors.black,
-                  fontWeight: FontWeight.normal,
-                ),
+              Row(
+                children: [ // Add some space between the icon and text
+                  Text(
+                    'Status: ${_flat.isSold ? 'Sold' : 'Available'}',
+                    style: const TextStyle(
+                      fontFamily: 'Courier',
+                      fontSize: 16.0,
+                      color: Colors.black, // Keep the text color black
+                      fontWeight: FontWeight.normal,
+                    ),
+                  ),
+                  const SizedBox(width: 8.0),
+                  Icon(
+                    _flat.isSold ? Icons.check_circle : Icons.circle,
+                    color: _flat.isSold ? Colors.red : Colors.green,
+                    size: 18.0,
+                  ),
+                ],
               ),
               const SizedBox(height: 10),
               ElevatedButton(

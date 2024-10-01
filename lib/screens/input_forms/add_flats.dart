@@ -100,17 +100,6 @@ void showFlatsInputDialog(
                       },
                     ),
                     const SizedBox(height: 5.0),
-                    Row(
-                      children: [
-                        Checkbox(
-                          value: isSold,
-                          onChanged: (bool? value) {
-                            isSold = value ?? false;
-                          },
-                        ),
-                        const Text('Is Sold ?')
-                      ],
-                    ),
                   ],
                 ),
               )
