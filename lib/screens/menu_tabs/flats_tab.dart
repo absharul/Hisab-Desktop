@@ -77,13 +77,24 @@ class _FlatItemState extends State<FlatItem> {
   }
 
   Future<void> _fetchCustomers() async {
-    final fetchedUsers = await database.getUsersByCustomersCategory();
-    print('Fetched users: $fetchedUsers');
-    setState(() {
-      users = fetchedUsers;
-    });
-  }
+    try {
+      // Get the subcategories for the "Customer" category
+      final subCategories = await database.getSubcategoriesForCategory('Customer');
 
+      // Extract the subcategory IDs
+      final subCategoryIds = subCategories.map((subCat) => subCat.id).toList();
+
+      // Fetch users belonging to those subcategories
+      final fetchedUsers = await database.getUsersBySubCategoryIds(subCategoryIds);
+
+      print('Fetched users: $fetchedUsers');
+      setState(() {
+        users = fetchedUsers; // Update the state with fetched users
+      });
+    } catch (e) {
+      print('Error fetching users: $e');
+    }
+  }
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -133,7 +144,7 @@ class _FlatItemState extends State<FlatItem> {
               ),
               const SizedBox(height: 5),
               Text(
-                'Rate per sqft: ${_flat.rate}',
+                'Rate per sqft: ₹ ${_flat.rate}',
                 style: const TextStyle(
                   fontFamily: 'Courier', // Old-school font
                   fontSize: 16.0,
@@ -159,16 +170,6 @@ class _FlatItemState extends State<FlatItem> {
                   ),
                   backgroundColor: Colors.deepOrange,
                 ),
-                // onPressed: selectedUserToSold != null && !_flat.isSold
-                //     ? () async {
-                //         // Create a new Flat object with the updated isSold status
-                //         showFlatsInputDialog(context: context);
-                //       }
-                //     : null,
-                // child: Text(
-                //   _flat.isSold ? 'Revoke' : 'Sell',
-                //   style: const TextStyle(color: Colors.white),
-                // ),
                 onPressed: () {
                   if (_flat.isSold) {
                     _revokeSale(); // Revoke sale

@@ -171,12 +171,12 @@ class _ScreenUserListingState extends State<ScreenUserListing> {
           return Dialog(
             child: Container(
               width: 200,
-              height: 260,
+              height: 270,
               padding: const EdgeInsets.all(10),
               color: Colors.white,
               child: Column(
                 children: [
-                  const Text("Add Sites"),
+                  const Text("Add Sites",style: TextStyle(fontWeight: FontWeight.w600,fontSize: 18.0),),
                   const SizedBox(height: 10),
                   TextField(
                     controller: nameController,

@@ -30,7 +30,7 @@ class TransactionTab extends StatelessWidget {
               itemCount: transactions.length,
               itemBuilder: (BuildContext context, int index) {
                 final transaction = transactions[index];
-                return WidgetTransactionCard(transaction: transaction);
+                return WidgetTransactionCard(transaction: transaction, site: site,);
               },
             );
           }),

@@ -139,7 +139,7 @@ class ScreenFirmListing extends StatelessWidget {
     );
   }
 
-  void addFirmPressed(BuildContext context) async {
+void addFirmPressed(BuildContext context) async {
     final nameController = TextEditingController();
     final addressController = TextEditingController();
     showDialog(
@@ -163,7 +163,7 @@ class ScreenFirmListing extends StatelessWidget {
                 TextField(
                   controller: addressController,
                   decoration: const InputDecoration(
-                      labelText: "Optional", hintText: "Address"),
+                      labelText: "Address (optional)"),
                 ),
                 const SizedBox(height: 10),
                 ElevatedButton(

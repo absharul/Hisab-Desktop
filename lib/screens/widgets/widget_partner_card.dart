@@ -48,9 +48,9 @@ class _WidgetPartnerCardState extends State<WidgetPartnerCard> {
                 "Name: $userName",
                 style: const TextStyle(
                   fontFamily: 'Courier', // Old-school font
-                  fontSize: 20.0,
+                  fontSize: 18.0,
                   color: Colors.black,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
               const SizedBox(height: 10),
@@ -58,9 +58,9 @@ class _WidgetPartnerCardState extends State<WidgetPartnerCard> {
                 "Share: ${widget.partner.share}",
                 style: const TextStyle(
                   fontFamily: 'Courier', // Old-school font
-                  fontSize: 20.0,
+                  fontSize: 18.0,
                   color: Colors.black,
-                  fontWeight: FontWeight.bold,
+                  fontWeight: FontWeight.w500,
                 ),
               ),
               // Add more text or widgets here if needed
@@ -79,7 +79,7 @@ class _WidgetPartnerCardState extends State<WidgetPartnerCard> {
               ),
               const Text(
                 "Edit",
-                style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 16.0,),
               ),
             ],
           ),
@@ -130,8 +130,9 @@ class _WidgetPartnerCardState extends State<WidgetPartnerCard> {
               ),
               const Text(
                 "Delete",
-                style: TextStyle(fontSize: 16.0, fontWeight: FontWeight.bold),
+                style: TextStyle(fontSize: 16.0,),
               ),
+              const SizedBox(width: 100),
             ],
           ),
         ],

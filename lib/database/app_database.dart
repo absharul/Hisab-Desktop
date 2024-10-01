@@ -93,23 +93,15 @@ class AppDatabase extends _$AppDatabase {
           (t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc)
         ]))
       .watch();
-  Future<Category?> getCustomersCategory() async {
-    final category = await (select(categories)
-          ..where((c) => c.name.equals('Customers')))
-        .getSingleOrNull();
-    print('Fetched category: $category'); // Log the result
-    return category;
-  }
-
-  Future<List<User>> getUsersByCustomersCategory() async {
-    final category = await getCustomersCategory();
-    if (category != null) {
-      print('Category ID: ${category.id}');
-      return await getUsersByCategoryId(category.id);
-    } else {
-      print('Customers category not found.');
-      return []; // Return an empty list if the category doesn't exist
+  Future<List<SubCategory>> getSubcategoriesForCategory(String categoryName) async {
+    final category = await (select(categories)..where((t) => t.name.equals(categoryName))).getSingleOrNull();
+    if (category == null) {
+      return [];
     }
+    return (select(subCategories)..where((t) => t.categoryId.equals(category.id))).get();
+  }
+  Future<List<User>> getUsersBySubCategoryIds(List<int> subCategoryIds) async {
+    return (select(users)..where((t) => t.subCategory.isIn(subCategoryIds))).get();
   }
 
   // FLATS
