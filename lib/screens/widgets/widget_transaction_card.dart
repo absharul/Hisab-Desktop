@@ -248,7 +248,8 @@ import 'package:intl/intl.dart';
 class WidgetTransactionCard extends StatefulWidget {
   final Transaction transaction;
   final Site site;
-  const WidgetTransactionCard({super.key, required this.transaction,required this.site});
+  const WidgetTransactionCard(
+      {super.key, required this.transaction, required this.site});
 
   @override
   State<WidgetTransactionCard> createState() => _WidgetTransactionCardState();
@@ -267,9 +268,9 @@ class _WidgetTransactionCardState extends State<WidgetTransactionCard> {
 
   void initializeData() async {
     final fromEntity =
-    await database.getEntityPaymentMethod(widget.transaction.fromId);
+        await database.getEntityPaymentMethod(widget.transaction.fromId);
     final toEntity =
-    await database.getEntityPaymentMethod(widget.transaction.toId);
+        await database.getEntityPaymentMethod(widget.transaction.toId);
 
     if (fromEntity != null && toEntity != null) {
       final fromUser = await HFunction.getFromUser(
@@ -282,7 +283,8 @@ class _WidgetTransactionCardState extends State<WidgetTransactionCard> {
         to = toUser?.name ?? "Unknown User"; // Fallback value
 
         // Determine the transaction direction
-        if (widget.transaction.fromId == widget.site.id) { // Replace 'siteId' with actual site ID
+        if (widget.transaction.fromId == widget.site.id) {
+          // Replace 'siteId' with actual site ID
           transactionIcon = Icons.arrow_upward; // Credit icon
         } else {
           transactionIcon = Icons.arrow_downward; // Debit icon
@@ -364,7 +366,8 @@ class _WidgetTransactionCardState extends State<WidgetTransactionCard> {
                     ),
                     const WidgetSpan(child: SizedBox(width: 100)),
                     TextSpan(
-                      text: '${DateFormat('dd/MM/yyyy').format(widget.transaction.createdAt)} ',
+                      text:
+                          '${DateFormat('dd/MM/yyyy').format(widget.transaction.createdAt)} ',
                       style: const TextStyle(
                         fontFamily: 'Courier',
                         fontSize: 16.0,
@@ -373,7 +376,8 @@ class _WidgetTransactionCardState extends State<WidgetTransactionCard> {
                     ),
                     const WidgetSpan(child: SizedBox(width: 20)),
                     TextSpan(
-                      text: DateFormat('HH:mm a').format(widget.transaction.createdAt),
+                      text: DateFormat('HH:mm a')
+                          .format(widget.transaction.createdAt),
                       style: const TextStyle(
                         fontFamily: 'Courier',
                         fontSize: 16.0,
@@ -389,9 +393,12 @@ class _WidgetTransactionCardState extends State<WidgetTransactionCard> {
           const SizedBox(width: 10),
           // Icon displaying logic
           Icon(
-            transactionIcon ?? Icons.error, // Show default error icon if not set
+            transactionIcon ??
+                Icons.error, // Show default error icon if not set
             size: 24.0,
-            color: transactionIcon == Icons.arrow_upward ? Colors.green : Colors.red,
+            color: transactionIcon == Icons.arrow_upward
+                ? Colors.red
+                : Colors.green,
           ),
           const SizedBox(width: 50),
           Column(
@@ -403,7 +410,8 @@ class _WidgetTransactionCardState extends State<WidgetTransactionCard> {
                     context: context,
                     builder: (ctx) => AlertDialog(
                       title: const Text('Delete Transaction'),
-                      content: const Text('Are you sure you want to delete this Transaction?'),
+                      content: const Text(
+                          'Are you sure you want to delete this Transaction?'),
                       actions: [
                         TextButton(
                           onPressed: () => Navigator.of(ctx).pop(false),
