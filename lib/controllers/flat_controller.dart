@@ -10,17 +10,14 @@ class FlatController {
     return database.getAllFlats();
   }
 
-  // Add a new flat
   Future<void> addFlat(Flat flat) async {
     await database.insertFlat(flat);
   }
 
-  // Update an existing flat
   Future<void> updateFlat(Flat flat) async {
     await database.updateFlat(flat);
   }
 
-  // Delete a flat
   Future<void> deleteFlat(Flat flat) async {
     await database.deleteFlat(flat);
   }

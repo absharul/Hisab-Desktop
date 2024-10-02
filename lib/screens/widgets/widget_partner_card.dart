@@ -126,7 +126,6 @@ class _WidgetPartnerCardState extends State<WidgetPartnerCard> {
                     }
                   }
                 },
-
                 tooltip: "Delete", // For accessibility
               ),
               const Text(

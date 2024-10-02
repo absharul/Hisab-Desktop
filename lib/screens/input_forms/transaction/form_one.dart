@@ -6,7 +6,6 @@ import 'package:hisab/models/model_transaction_form.dart';
 import '../../../main.dart';
 import '../../../utils/enums.dart';
 
-// ignore: must_be_immutable
 class FormOne extends StatefulWidget {
   ModelTransactionForm form;
   final GlobalKey formKey;
@@ -38,29 +37,6 @@ class _FormOneState extends State<FormOne> {
   final TextEditingController ifscController = TextEditingController();
   final TextEditingController holderNameController = TextEditingController();
 
-  // QUERY
-  // void getFromAllUsers({
-  //   bool isFrom = true,
-  // }) async {
-  //   List<dynamic> list = [];
-  //   switch (widget.form.fromEntity) {
-  //     case "User":
-  //       list = await database
-  //           .getUsersByCategoryId(widget.form.fromSubCategory!.id);
-  //       break;
-  //     case "Firm":
-  //       list = await database.getAllFirms();
-  //       break;
-  //     case "Site":
-  //       list = await database.getAllSites();
-  //       break;
-  //     default:
-  //       list = await database.getUsers();
-  //   }
-  //   setState(() {
-  //     users = list;
-  //   });
-  // }
   void getFromAllUsers({
     bool isFrom = true,
   }) async {

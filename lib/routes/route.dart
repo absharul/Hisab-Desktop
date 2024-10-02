@@ -6,7 +6,6 @@ import 'package:hisab/screens/screen_site_detail.dart';
 import 'package:hisab/screens/screen_site_list.dart';
 import '../screens/screen_firm_list.dart';
 
-// GoRouter configuration
 final router = GoRouter(
   routes: [
     GoRoute(
@@ -27,11 +26,5 @@ final router = GoRouter(
           final site = state.extra as Site;
           return ScreenSiteDetails(site: site);
         }),
-    GoRoute(
-        path: "/analytic_page",
-        builder: (context, state) {
-          final site = state.extra as Site;
-          return ScreenAnalytics(site: site);
-        })
   ],
 );

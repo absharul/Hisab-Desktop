@@ -2,6 +2,7 @@ import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
 import 'package:hisab/controllers/user_controller.dart';
 import 'package:hisab/database/app_database.dart';
+import 'package:hisab/database/schemas.dart';
 import 'package:hisab/main.dart';
 import 'package:hisab/routes/route.dart';
 import 'package:hisab/utils/helper_functions.dart';
@@ -45,12 +46,6 @@ class _ScreenUserListingState extends State<ScreenUserListing> {
               final user = users[index];
 
               return InkWell(
-                // onTap: () {
-                //   Navigator.of(context).push(MaterialPageRoute(
-                //       builder: (ctx) => ScreenSiteDetails(
-                //             site: site,
-                //           )));
-                // },
                 child: Container(
                   margin: const EdgeInsets.symmetric(
                       vertical: 8.0, horizontal: 16.0),
@@ -84,7 +79,7 @@ class _ScreenUserListingState extends State<ScreenUserListing> {
                           IconButton(
                             icon: const Icon(Icons.edit),
                             onPressed: () {
-                              // Add your edit functionality here
+                              _editUser(user);
                             },
                           ),
                           const Text("Edit"),
@@ -234,5 +229,76 @@ class _ScreenUserListingState extends State<ScreenUserListing> {
             ),
           );
         });
+  }
+
+  void _editUser(User user) {
+    final nameController = TextEditingController(text: user.name);
+    final typeController = TextEditingController(text: user.type);
+    SubCategory? selectedSubCategory;
+
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return Dialog(
+          child: Container(
+            width: 300,
+            height: 300,
+            padding: const EdgeInsets.all(10),
+            color: Colors.white,
+            child: Column(
+              children: [
+                const Text("Edit User", style: TextStyle(fontWeight: FontWeight.w600, fontSize: 18.0)),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: nameController,
+                  decoration: const InputDecoration(hintText: "Name"),
+                ),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: typeController,
+                  decoration: const InputDecoration(hintText: "Type"),
+                ),
+                const SizedBox(height: 10),
+                DropdownButtonFormField<SubCategory>(
+                  value: selectedSubCategory,
+                  decoration: const InputDecoration(labelText: 'Select Sub-Category'),
+                  items: subCategories.map<DropdownMenuItem<SubCategory>>((SubCategory value) {
+                    return DropdownMenuItem<SubCategory>(
+                      value: value,
+                      child: Text(value.name),
+                    );
+                  }).toList(),
+                  onChanged: (SubCategory? newValue) {
+                    selectedSubCategory = newValue;
+                  },
+                ),
+                const SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: () async {
+                    try {
+                      // Create an updated User object
+                      final updatedUser = user.copyWith(
+                        id: user.id, // Keep the same ID
+                        name: nameController.text,
+                        type: typeController.text,
+                        subCategory: selectedSubCategory!.id,
+                      );
+
+                      // Update the user in the database
+                      await userController.update(updatedUser);
+                      Navigator.of(ctx).pop(); // Close the dialog
+                      HFunction.showFlushBarSuccess(context: context, message: "Successfully updated the user");
+                    } catch (error) {
+                      HFunction.showFlushBarError(context: context, message: error.toString());
+                    }
+                  },
+                  child: const Text("Update"),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
   }
 }

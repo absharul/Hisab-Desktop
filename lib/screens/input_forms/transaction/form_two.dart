@@ -1,13 +1,11 @@
 import 'package:dropdown_search/dropdown_search.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-
 import '../../../database/app_database.dart';
 import '../../../main.dart';
 import '../../../models/model_transaction_form.dart';
 import '../../../utils/enums.dart';
 
-// ignore: must_be_immutable
 class FormTwo extends StatefulWidget {
   ModelTransactionForm form;
   final GlobalKey formKey;

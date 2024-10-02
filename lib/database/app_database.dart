@@ -122,7 +122,6 @@ class AppDatabase extends _$AppDatabase {
           buyerId: Value(userId),
         ),
       );
-// Method to revoke the sale of a flat
   Future<int> revokeFlatSoldStatus({required int flatId}) =>
       (update(flats)..where((t) => t.id.equals(flatId))).write(
         const FlatsCompanion(
@@ -196,7 +195,6 @@ class AppDatabase extends _$AppDatabase {
     return finalAmount;
   }
 
-  // Calculate net profit for a site (incoming - outgoing)
   Future<double> getNetProfitForSite(int siteId) async {
     final income = await getPLforSite(siteId, isIncoming: true);
     final expenditure = await getPLforSite(siteId, isIncoming: false);

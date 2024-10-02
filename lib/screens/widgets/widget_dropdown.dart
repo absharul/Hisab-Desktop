@@ -1,5 +1,4 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:hisab/controllers/firm_controller.dart';
 import 'package:hisab/models/model_dropdown.dart';
@@ -31,26 +30,6 @@ class _WidgetDropdownState extends State<WidgetDropdown> {
     selectedValue = widget.selectedValue;
   }
 
-  // void initializeList() {
-  //   firmController.readAll().then((value) {
-  //     log(value.toString());
-  //     setState(() {
-  //       items = (value)
-  //           .map((e) => ModelDropdown(
-  //                 id: e.id,
-  //                 name: e.name,
-  //               ))
-  //           .toList();
-  //
-  //       if (selectedValue != null && !items.contains(selectedValue)) {
-  //         selectedValue = null;
-  //       }
-  //       if (selectedValue == null && items.isNotEmpty) {
-  //         selectedValue = items.first;
-  //       }
-  //     });
-  //   });
-  // }
   void initializeList() {
     firmController.readAll().then((value) {
       log(value.toString());

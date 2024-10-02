@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:go_router/go_router.dart';
 import 'package:hisab/database/app_database.dart';
 import 'package:hisab/main.dart';
-import 'package:intl/intl.dart'; // For number formatting
+import 'package:intl/intl.dart';
 
 class ScreenAnalytics extends StatefulWidget {
   final Site site;
@@ -34,8 +33,6 @@ class _ScreenAnalyticsState extends State<ScreenAnalytics> {
           await database.getPLforSite(widget.site.id, isIncoming: false);
       final profitData = await database.getNetProfitForSite(widget.site.id);
 
-      // Calculate net profit
-
       final sitePartners = await database.getAllPartnersBySite(widget.site.id);
       partners = sitePartners;
       setState(() {
@@ -44,7 +41,6 @@ class _ScreenAnalyticsState extends State<ScreenAnalytics> {
         netProfit = profitData;
       });
 
-      // Load usernames for partners asynchronously
       await Future.forEach<Partner>(partners, (partner) async {
         final user = await database.getUserById(partner.builderId);
         if (user != null) {
@@ -52,7 +48,6 @@ class _ScreenAnalyticsState extends State<ScreenAnalytics> {
               user.name; // Assuming user has a name field
         }
       });
-
       setState(() {
         isLoading = false; // Data loading complete
       });
@@ -156,9 +151,7 @@ class _ScreenAnalyticsState extends State<ScreenAnalytics> {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                // Transactions Table
                 Table(
-                  // border: TableBorder.all(),
                   columnWidths: const {
                     0: FixedColumnWidth(200),
                     1: FixedColumnWidth(200),
@@ -220,27 +213,6 @@ class _ScreenAnalyticsState extends State<ScreenAnalytics> {
                     2: FixedColumnWidth(200),
                   },
                   children: [
-                    // TableRow(
-                    //   decoration: BoxDecoration(color: Colors.grey[200]), // Header background color
-                    //   children: const [
-                    //     Padding(
-                    //       padding: EdgeInsets.all(8.0),
-                    //       child: Text("Partner",
-                    //           style: TextStyle(
-                    //               fontWeight: FontWeight.bold,
-                    //             fontSize: 25.0
-                    //           )),
-                    //     ),
-                    //     Padding(
-                    //       padding: EdgeInsets.all(8.0),
-                    //       child: Text("Share", style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25.0)),
-                    //     ),
-                    //     Padding(
-                    //       padding: EdgeInsets.all(8.0),
-                    //       child: Text("Amount", style: TextStyle(fontWeight: FontWeight.bold,fontSize: 25.0)),
-                    //     ),
-                    //   ],
-                    // ),
                     ...partners.map((partner) {
                       double amount = (partner.share / 100) * netProfit;
                       return TableRow(

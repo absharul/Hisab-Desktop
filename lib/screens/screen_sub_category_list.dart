@@ -74,7 +74,7 @@ class _ScreenSubCategoryListState extends State<ScreenSubCategoryList> {
                           IconButton(
                             icon: const Icon(Icons.edit),
                             onPressed: () {
-                              // Add your edit functionality here
+                              _editSubCategory(context, subCategory);
                             },
                           ),
                           const Text("Edit"),
@@ -214,4 +214,77 @@ class _ScreenSubCategoryListState extends State<ScreenSubCategoryList> {
           );
         });
   }
+  void _editSubCategory(BuildContext context, SubCategory subCategory) {
+    final nameController = TextEditingController(text: subCategory.name);
+    Category? selectedCategory = categories.firstWhere((cat) => cat.id == subCategory.categoryId);
+
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return Dialog(
+          child: Container(
+            width: 300,
+            height: 200,
+            padding: const EdgeInsets.all(10),
+            color: Colors.white,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Text("Edit Sub Category"),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: nameController,
+                  decoration: const InputDecoration(hintText: "Name"),
+                ),
+                const SizedBox(height: 10),
+                DropdownButtonFormField<Category>(
+                  value: selectedCategory,
+                  decoration: const InputDecoration(
+                    labelText: 'Select Category',
+                  ),
+                  items: categories
+                      .map<DropdownMenuItem<Category>>((Category value) {
+                    return DropdownMenuItem<Category>(
+                      value: value,
+                      child: Text(value.name),
+                    );
+                  }).toList(),
+                  onChanged: (Category? newValue) {
+                    selectedCategory = newValue;
+                  },
+                ),
+                const SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: () async {
+                    if (selectedCategory != null) {
+                      try {
+                        final updatedSubCategory = subCategory.copyWith(
+                          name: nameController.text,
+                          categoryId: selectedCategory!.id,
+                        );
+
+                        await subCategoryController.update(updatedSubCategory);
+                        Navigator.of(context).pop(); // Close the dialog
+                        HFunction.showFlushBarSuccess(
+                          context: context,
+                          message: "Successfully updated the subcategory",
+                        );
+                      } catch (error) {
+                        HFunction.showFlushBarError(
+                          context: context,
+                          message: "Failed to update the subcategory: $error",
+                        );
+                      }
+                    }
+                  },
+                  child: const Text("Update"),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
 }

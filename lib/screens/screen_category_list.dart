@@ -29,12 +29,6 @@ class ScreenCategoryList extends StatelessWidget {
               final category = categories[index];
 
               return InkWell(
-                // onTap: () {
-                //   Navigator.of(context).push(MaterialPageRoute(
-                //       builder: (ctx) => ScreenSiteDetails(
-                //             site: site,
-                //           )));
-                // },
                 child: Container(
                   margin: const EdgeInsets.symmetric(
                       vertical: 8.0, horizontal: 16.0),
@@ -67,7 +61,7 @@ class ScreenCategoryList extends StatelessWidget {
                           IconButton(
                             icon: const Icon(Icons.edit),
                             onPressed: () {
-                              // Add your edit functionality here
+                              _editCategory(context, category);
                             },
                           ),
                           const Text("Edit"),
@@ -188,4 +182,54 @@ class ScreenCategoryList extends StatelessWidget {
           );
         });
   }
+  void _editCategory(BuildContext context, Category category) {
+    final nameController = TextEditingController(text: category.name);
+
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return Dialog(
+          child: Container(
+            width: 200,
+            height: 150,
+            padding: const EdgeInsets.all(10),
+            color: Colors.white,
+            child: Column(
+              children: [
+                const Text("Edit Category"),
+                const SizedBox(height: 10),
+                TextField(
+                  controller: nameController,
+                  decoration: const InputDecoration(hintText: "Name"),
+                ),
+                const SizedBox(height: 10),
+                ElevatedButton(
+                  onPressed: () async {
+                    try {
+                      final updatedCategory = category.copyWith(
+                        name: nameController.text,
+                      );
+                      await categoryController.update(updatedCategory);
+                      Navigator.of(context).pop(); // Close the dialog
+                      HFunction.showFlushBarSuccess(
+                        context: context,
+                        message: "Successfully updated the category",
+                      );
+                    } catch (error) {
+                      HFunction.showFlushBarError(
+                        context: context,
+                        message: "Failed to update the category: $error",
+                      );
+                    }
+                  },
+                  child: const Text("Update"),
+                ),
+              ],
+            ),
+          ),
+        );
+      },
+    );
+  }
+
 }
