@@ -15,7 +15,7 @@ class ScreenSubCategoryList extends StatefulWidget {
 }
 
 class _ScreenSubCategoryListState extends State<ScreenSubCategoryList> {
-  List<Category> categories = [];
+  List<Category> realCategories = [];
   @override
   void initState() {
     super.initState();
@@ -23,7 +23,7 @@ class _ScreenSubCategoryListState extends State<ScreenSubCategoryList> {
   }
 
   void getCategoryList() async {
-    categories = await database.getCategory();
+    realCategories = await database.getCategory();
     setState(() {});
   }
 
@@ -43,6 +43,7 @@ class _ScreenSubCategoryListState extends State<ScreenSubCategoryList> {
             itemCount: categories.length,
             itemBuilder: (context, index) {
               final subCategory = categories[index];
+              final fetchCategory = realCategories[index];
               return InkWell(
                 child: Container(
                   margin: const EdgeInsets.symmetric(
@@ -60,13 +61,26 @@ class _ScreenSubCategoryListState extends State<ScreenSubCategoryList> {
                         PhosphorIcons.stack(),
                       ), // Icon to make it look different
                       const SizedBox(width: 10),
-                      Text(
-                        subCategory.name,
-                        style: const TextStyle(
-                          fontFamily: 'Courier', // Old-school font
-                          fontSize: 16.0,
-                          color: Colors.black,
-                        ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                          subCategory.name,
+                          style: const TextStyle(
+                            fontFamily: 'Courier', // Old-school font
+                            fontSize: 16.0,
+                            color: Colors.black,
+                          ),
+                          ),
+                          Text(
+                            fetchCategory.name,
+                            style: const TextStyle(
+                              fontFamily: 'Courier', // Old-school font
+                              fontSize: 12.0,
+                              color: Colors.black,
+                            ),
+                          )
+                        ],
                       ),
                       const Expanded(child: SizedBox()),
                       Column(
@@ -175,7 +189,7 @@ class _ScreenSubCategoryListState extends State<ScreenSubCategoryList> {
                     decoration: const InputDecoration(
                       labelText: 'Select Category',
                     ),
-                    items: categories
+                    items: realCategories
                         .map<DropdownMenuItem<Category>>((Category value) {
                       return DropdownMenuItem<Category>(
                         value: value,
@@ -216,7 +230,7 @@ class _ScreenSubCategoryListState extends State<ScreenSubCategoryList> {
   }
   void _editSubCategory(BuildContext context, SubCategory subCategory) {
     final nameController = TextEditingController(text: subCategory.name);
-    Category? selectedCategory = categories.firstWhere((cat) => cat.id == subCategory.categoryId);
+    Category? selectedCategory = realCategories.firstWhere((cat) => cat.id == subCategory.categoryId);
 
     showDialog(
       context: context,
@@ -242,7 +256,7 @@ class _ScreenSubCategoryListState extends State<ScreenSubCategoryList> {
                   decoration: const InputDecoration(
                     labelText: 'Select Category',
                   ),
-                  items: categories
+                  items: realCategories
                       .map<DropdownMenuItem<Category>>((Category value) {
                     return DropdownMenuItem<Category>(
                       value: value,

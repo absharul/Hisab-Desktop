@@ -141,12 +141,18 @@ class AppDatabase extends _$AppDatabase {
   Future<List<Partner>> getAllPartners() => select(partners).get();
   Future<Partner> getPartnerById(int id) =>
       (select(partners)..where((t) => t.id.equals(id))).getSingle();
-  Stream<List<Partner>> watchPartners(int siteId) => (select(partners)
-        ..where((t) => t.siteId.equals(siteId))
-        ..orderBy([
-          (t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc)
-        ]))
-      .watch();
+  // Stream<List<Partner>> watchPartners(int siteId) => (select(partners)
+  //       ..where((t) => t.siteId.equals(siteId))
+  //       ..orderBy([
+  //         (t) => OrderingTerm(expression: t.createdAt, mode: OrderingMode.desc)
+  //       ]))
+  //     .watch();
+  Stream<List<Partner>> watchPartners(int siteId) {
+    return (select(partners)
+      ..where((t) => t.siteId.equals(siteId)))
+        .watch();
+  }
+
   Future<bool> updatePartner(Partner partner) =>
       update(partners).replace(partner);
   Future<List<Partner>> getAllPartnersBySite(int siteId) =>

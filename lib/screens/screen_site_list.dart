@@ -63,7 +63,7 @@ class ScreenSiteListing extends StatelessWidget {
                             ),
                           ),
                           Text(
-                            site.address,
+                            site.address.toString(),
                             style: const TextStyle(
                               fontFamily: 'Courier', // Old-school font
                               fontSize: 16.0,
@@ -315,7 +315,7 @@ class ScreenSiteListing extends StatelessWidget {
                     try {
                       final updatedFirm = site.copyWith(
                         name: nameController.text,
-                        address: addressController.text,
+                        address: drift.Value(addressController.text),
                       );
                       await siteController.update(updatedFirm);
                       Navigator.of(context).pop(); // Close the dialog

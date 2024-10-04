@@ -314,7 +314,7 @@ class _FlatItemState extends State<FlatItem> {
                             flatId: _flat.id,
                             userId: selectedUserToSold!.id,
                           );
-                          HFunction.showFlushBarError(
+                          HFunction.showFlushBarSuccess(
                             context: context,
                             message: "Sold Flat Successfully",
                             afterPop: () {

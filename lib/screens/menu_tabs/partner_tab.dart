@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:hisab/main.dart';
 import 'package:hisab/screens/widgets/widget_partner_card.dart';
 import '../../database/app_database.dart';
@@ -7,7 +6,6 @@ import '../input_forms/add_partner.dart';
 
 class PartnerTab extends StatefulWidget {
   final Site site;
-
   const PartnerTab({super.key, required this.site});
 
   @override
@@ -16,17 +14,28 @@ class PartnerTab extends StatefulWidget {
 
 class _PartnerTabState extends State<PartnerTab> {
   List<User> usersList = [];
+
   @override
   void initState() {
     super.initState();
-    getLists();
+   _fetchPartners();
   }
 
-  getLists() async {
-    usersList =
-        await database.getUsers(); // Ensure this returns valid user data
-    setState(() {}); // Trigger a rebuild
+  Future<void> _fetchPartners() async {
+    try {
+      final subCategories = await database.getSubcategoriesForCategory('Partner');
+      final subCategoryIds = subCategories.map((subCat) => subCat.id).toList();
+      final fetchedUsers = await database.getUsersBySubCategoryIds(subCategoryIds);
+
+      print('Fetched users: $fetchedUsers');
+      setState(() {
+        usersList = fetchedUsers;
+      });
+    } catch (e) {
+      print('Error fetching users: $e');
+    }
   }
+
 
   @override
   Widget build(BuildContext context) {

@@ -71,7 +71,7 @@ class ScreenSiteDetails extends StatelessWidget {
                   ScreenAnalytics(site: site),
                   FlatsTab(site: site),
                   TransactionTab(site: site),
-                  PartnerTab(site: site)
+                  PartnerTab(site: site),
                 ],
               ),
             ),

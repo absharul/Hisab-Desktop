@@ -52,7 +52,7 @@ class ScreenFirmListing extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          firm.address,
+                          firm.address.toString(),
                           style: const TextStyle(
                             fontFamily: 'Courier', // Old-school font
                             fontSize: 16.0,
@@ -225,7 +225,7 @@ void addFirmPressed(BuildContext context) async {
                     try {
                       final updatedFirm = firm.copyWith(
                         name: nameController.text,
-                        address: addressController.text,
+                        address: drift.Value(addressController.text),
                       );
                       await firmController.update(updatedFirm);
                       Navigator.of(context).pop(); // Close the dialog

@@ -20,10 +20,13 @@ class _WidgetPartnerCardState extends State<WidgetPartnerCard> {
     initializeData();
   }
 
+  bool isLoading = true;
+
   initializeData() async {
     final user = await database.getUserById(widget.partner.builderId);
     setState(() {
-      userName = user.name;
+      userName = user?.name ?? "Unknown User";
+      isLoading = false; // Update loading state
     });
   }
 

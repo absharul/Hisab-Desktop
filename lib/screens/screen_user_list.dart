@@ -2,7 +2,6 @@ import 'package:drift/drift.dart' as drift;
 import 'package:flutter/material.dart';
 import 'package:hisab/controllers/user_controller.dart';
 import 'package:hisab/database/app_database.dart';
-import 'package:hisab/database/schemas.dart';
 import 'package:hisab/main.dart';
 import 'package:hisab/routes/route.dart';
 import 'package:hisab/utils/helper_functions.dart';
@@ -17,6 +16,8 @@ class ScreenUserListing extends StatefulWidget {
 
 class _ScreenUserListingState extends State<ScreenUserListing> {
   List<SubCategory> subCategories = [];
+  Map<int, String> subCategoryMap = {}; // Map for subcategory lookup
+
   @override
   void initState() {
     super.initState();
@@ -25,8 +26,12 @@ class _ScreenUserListingState extends State<ScreenUserListing> {
 
   void getAllSubCategories() async {
     subCategories = await database.getSubCategory();
+    subCategoryMap = {
+      for (var subCategory in subCategories) subCategory.id: subCategory.name,
+    };
     setState(() {});
   }
+
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +42,9 @@ class _ScreenUserListingState extends State<ScreenUserListing> {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return const Center(child: CircularProgressIndicator());
           }
-
+          if (snapshot.hasError) {
+            return Center(child: Text('Error: ${snapshot.error}'));
+          }
           final users = snapshot.data ?? [];
 
           return ListView.builder(
@@ -65,13 +72,26 @@ class _ScreenUserListingState extends State<ScreenUserListing> {
                         PhosphorIcons.user(),
                       ), // Icon to make it look different
                       const SizedBox(width: 10),
-                      Text(
-                        user.name,
-                        style: const TextStyle(
-                          fontFamily: 'Courier', // Old-school font
-                          fontSize: 16.0,
-                          color: Colors.black,
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children:[
+                          Text(
+                          user.name,
+                          style: const TextStyle(
+                            fontFamily: 'Courier', // Old-school font
+                            fontSize: 16.0,
+                            color: Colors.black,
+                          ),
                         ),
+                          Text(
+                            subCategoryMap[user.subCategory] ?? 'Unknown Subactegory',
+                            style: const TextStyle(
+                              fontFamily: 'Courier', // Old-school font
+                              fontSize: 12.0,
+                              color: Colors.black,
+                            ),
+                          ),
+                       ]
                       ),
                       const Expanded(child: SizedBox()),
                       Column(
@@ -156,7 +176,6 @@ class _ScreenUserListingState extends State<ScreenUserListing> {
 
   void addSitePressed(BuildContext context) async {
     final nameController = TextEditingController();
-    final addressController = TextEditingController();
 
     SubCategory? selectedSubCategory;
 
@@ -176,11 +195,6 @@ class _ScreenUserListingState extends State<ScreenUserListing> {
                   TextField(
                     controller: nameController,
                     decoration: const InputDecoration(hintText: "Name"),
-                  ),
-                  const SizedBox(height: 10),
-                  TextField(
-                    controller: addressController,
-                    decoration: const InputDecoration(hintText: "Type"),
                   ),
                   const SizedBox(height: 10),
                   DropdownButtonFormField<SubCategory>(
@@ -206,7 +220,6 @@ class _ScreenUserListingState extends State<ScreenUserListing> {
                         if (selectedSubCategory != null) {
                           final site = UsersCompanion(
                             name: drift.Value(nameController.text),
-                            type: drift.Value(addressController.text),
                             subCategory: drift.Value(selectedSubCategory!.id),
                           );
 
@@ -233,7 +246,6 @@ class _ScreenUserListingState extends State<ScreenUserListing> {
 
   void _editUser(User user) {
     final nameController = TextEditingController(text: user.name);
-    final typeController = TextEditingController(text: user.type);
     SubCategory? selectedSubCategory;
 
     showDialog(
@@ -252,11 +264,6 @@ class _ScreenUserListingState extends State<ScreenUserListing> {
                 TextField(
                   controller: nameController,
                   decoration: const InputDecoration(hintText: "Name"),
-                ),
-                const SizedBox(height: 10),
-                TextField(
-                  controller: typeController,
-                  decoration: const InputDecoration(hintText: "Type"),
                 ),
                 const SizedBox(height: 10),
                 DropdownButtonFormField<SubCategory>(
@@ -280,7 +287,6 @@ class _ScreenUserListingState extends State<ScreenUserListing> {
                       final updatedUser = user.copyWith(
                         id: user.id, // Keep the same ID
                         name: nameController.text,
-                        type: typeController.text,
                         subCategory: selectedSubCategory!.id,
                       );
 

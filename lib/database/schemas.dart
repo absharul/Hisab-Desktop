@@ -4,7 +4,7 @@ import 'package:drift/drift.dart';
 class Firms extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text().withLength(min: 1, max: 50)();
-  TextColumn get address => text().withLength(min: 1, max: 50).nullable()();
+  TextColumn get address => text().nullable()();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
   DateTimeColumn get updatedAt => dateTime().withDefault(currentDateAndTime)();
 }
@@ -12,7 +12,7 @@ class Firms extends Table {
 class Sites extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text().withLength(min: 1, max: 50)();
-  TextColumn get address => text().withLength(min: 1, max: 50)();
+  TextColumn get address => text().nullable()();
   IntColumn get firmId =>
       integer().customConstraint('REFERENCES firms(id) NOT NULL')();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();
@@ -53,7 +53,6 @@ class SubCategories extends Table {
 class Users extends Table {
   IntColumn get id => integer().autoIncrement()();
   TextColumn get name => text().withLength(min: 1, max: 50)();
-  TextColumn get type => text().withLength(min: 1, max: 50)();
   IntColumn get subCategory =>
       integer().customConstraint('REFERENCES subCategories(id) NOT NULL')();
   DateTimeColumn get createdAt => dateTime().withDefault(currentDateAndTime)();

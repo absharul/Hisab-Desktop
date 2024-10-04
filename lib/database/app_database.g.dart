@@ -29,11 +29,8 @@ class $FirmsTable extends Firms with TableInfo<$FirmsTable, Firm> {
       const VerificationMeta('address');
   @override
   late final GeneratedColumn<String> address = GeneratedColumn<String>(
-      'address', aliasedName, false,
-      additionalChecks:
-          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 50),
-      type: DriftSqlType.string,
-      requiredDuringInsert: true);
+      'address', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _createdAtMeta =
       const VerificationMeta('createdAt');
   @override
@@ -75,8 +72,6 @@ class $FirmsTable extends Firms with TableInfo<$FirmsTable, Firm> {
     if (data.containsKey('address')) {
       context.handle(_addressMeta,
           address.isAcceptableOrUnknown(data['address']!, _addressMeta));
-    } else if (isInserting) {
-      context.missing(_addressMeta);
     }
     if (data.containsKey('created_at')) {
       context.handle(_createdAtMeta,
@@ -100,7 +95,7 @@ class $FirmsTable extends Firms with TableInfo<$FirmsTable, Firm> {
       name: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
       address: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}address'])!,
+          .read(DriftSqlType.string, data['${effectivePrefix}address']),
       createdAt: attachedDatabase.typeMapping
           .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
       updatedAt: attachedDatabase.typeMapping
@@ -117,13 +112,13 @@ class $FirmsTable extends Firms with TableInfo<$FirmsTable, Firm> {
 class Firm extends DataClass implements Insertable<Firm> {
   final int id;
   final String name;
-  final String address;
+  final String? address;
   final DateTime createdAt;
   final DateTime updatedAt;
   const Firm(
       {required this.id,
       required this.name,
-      required this.address,
+      this.address,
       required this.createdAt,
       required this.updatedAt});
   @override
@@ -131,7 +126,9 @@ class Firm extends DataClass implements Insertable<Firm> {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['name'] = Variable<String>(name);
-    map['address'] = Variable<String>(address);
+    if (!nullToAbsent || address != null) {
+      map['address'] = Variable<String>(address);
+    }
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
@@ -141,7 +138,9 @@ class Firm extends DataClass implements Insertable<Firm> {
     return FirmsCompanion(
       id: Value(id),
       name: Value(name),
-      address: Value(address),
+      address: address == null && nullToAbsent
+          ? const Value.absent()
+          : Value(address),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
     );
@@ -153,7 +152,7 @@ class Firm extends DataClass implements Insertable<Firm> {
     return Firm(
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
-      address: serializer.fromJson<String>(json['address']),
+      address: serializer.fromJson<String?>(json['address']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
@@ -164,7 +163,7 @@ class Firm extends DataClass implements Insertable<Firm> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
-      'address': serializer.toJson<String>(address),
+      'address': serializer.toJson<String?>(address),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
@@ -173,13 +172,13 @@ class Firm extends DataClass implements Insertable<Firm> {
   Firm copyWith(
           {int? id,
           String? name,
-          String? address,
+          Value<String?> address = const Value.absent(),
           DateTime? createdAt,
           DateTime? updatedAt}) =>
       Firm(
         id: id ?? this.id,
         name: name ?? this.name,
-        address: address ?? this.address,
+        address: address.present ? address.value : this.address,
         createdAt: createdAt ?? this.createdAt,
         updatedAt: updatedAt ?? this.updatedAt,
       );
@@ -221,7 +220,7 @@ class Firm extends DataClass implements Insertable<Firm> {
 class FirmsCompanion extends UpdateCompanion<Firm> {
   final Value<int> id;
   final Value<String> name;
-  final Value<String> address;
+  final Value<String?> address;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   const FirmsCompanion({
@@ -234,11 +233,10 @@ class FirmsCompanion extends UpdateCompanion<Firm> {
   FirmsCompanion.insert({
     this.id = const Value.absent(),
     required String name,
-    required String address,
+    this.address = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
-  })  : name = Value(name),
-        address = Value(address);
+  }) : name = Value(name);
   static Insertable<Firm> custom({
     Expression<int>? id,
     Expression<String>? name,
@@ -258,7 +256,7 @@ class FirmsCompanion extends UpdateCompanion<Firm> {
   FirmsCompanion copyWith(
       {Value<int>? id,
       Value<String>? name,
-      Value<String>? address,
+      Value<String?>? address,
       Value<DateTime>? createdAt,
       Value<DateTime>? updatedAt}) {
     return FirmsCompanion(
@@ -330,11 +328,8 @@ class $SitesTable extends Sites with TableInfo<$SitesTable, Site> {
       const VerificationMeta('address');
   @override
   late final GeneratedColumn<String> address = GeneratedColumn<String>(
-      'address', aliasedName, false,
-      additionalChecks:
-          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 50),
-      type: DriftSqlType.string,
-      requiredDuringInsert: true);
+      'address', aliasedName, true,
+      type: DriftSqlType.string, requiredDuringInsert: false);
   static const VerificationMeta _firmIdMeta = const VerificationMeta('firmId');
   @override
   late final GeneratedColumn<int> firmId = GeneratedColumn<int>(
@@ -383,8 +378,6 @@ class $SitesTable extends Sites with TableInfo<$SitesTable, Site> {
     if (data.containsKey('address')) {
       context.handle(_addressMeta,
           address.isAcceptableOrUnknown(data['address']!, _addressMeta));
-    } else if (isInserting) {
-      context.missing(_addressMeta);
     }
     if (data.containsKey('firm_id')) {
       context.handle(_firmIdMeta,
@@ -414,7 +407,7 @@ class $SitesTable extends Sites with TableInfo<$SitesTable, Site> {
       name: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
       address: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}address'])!,
+          .read(DriftSqlType.string, data['${effectivePrefix}address']),
       firmId: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}firm_id'])!,
       createdAt: attachedDatabase.typeMapping
@@ -433,14 +426,14 @@ class $SitesTable extends Sites with TableInfo<$SitesTable, Site> {
 class Site extends DataClass implements Insertable<Site> {
   final int id;
   final String name;
-  final String address;
+  final String? address;
   final int firmId;
   final DateTime createdAt;
   final DateTime updatedAt;
   const Site(
       {required this.id,
       required this.name,
-      required this.address,
+      this.address,
       required this.firmId,
       required this.createdAt,
       required this.updatedAt});
@@ -449,7 +442,9 @@ class Site extends DataClass implements Insertable<Site> {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['name'] = Variable<String>(name);
-    map['address'] = Variable<String>(address);
+    if (!nullToAbsent || address != null) {
+      map['address'] = Variable<String>(address);
+    }
     map['firm_id'] = Variable<int>(firmId);
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
@@ -460,7 +455,9 @@ class Site extends DataClass implements Insertable<Site> {
     return SitesCompanion(
       id: Value(id),
       name: Value(name),
-      address: Value(address),
+      address: address == null && nullToAbsent
+          ? const Value.absent()
+          : Value(address),
       firmId: Value(firmId),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
@@ -473,7 +470,7 @@ class Site extends DataClass implements Insertable<Site> {
     return Site(
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
-      address: serializer.fromJson<String>(json['address']),
+      address: serializer.fromJson<String?>(json['address']),
       firmId: serializer.fromJson<int>(json['firmId']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
@@ -485,7 +482,7 @@ class Site extends DataClass implements Insertable<Site> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
-      'address': serializer.toJson<String>(address),
+      'address': serializer.toJson<String?>(address),
       'firmId': serializer.toJson<int>(firmId),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
@@ -495,14 +492,14 @@ class Site extends DataClass implements Insertable<Site> {
   Site copyWith(
           {int? id,
           String? name,
-          String? address,
+          Value<String?> address = const Value.absent(),
           int? firmId,
           DateTime? createdAt,
           DateTime? updatedAt}) =>
       Site(
         id: id ?? this.id,
         name: name ?? this.name,
-        address: address ?? this.address,
+        address: address.present ? address.value : this.address,
         firmId: firmId ?? this.firmId,
         createdAt: createdAt ?? this.createdAt,
         updatedAt: updatedAt ?? this.updatedAt,
@@ -549,7 +546,7 @@ class Site extends DataClass implements Insertable<Site> {
 class SitesCompanion extends UpdateCompanion<Site> {
   final Value<int> id;
   final Value<String> name;
-  final Value<String> address;
+  final Value<String?> address;
   final Value<int> firmId;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
@@ -564,12 +561,11 @@ class SitesCompanion extends UpdateCompanion<Site> {
   SitesCompanion.insert({
     this.id = const Value.absent(),
     required String name,
-    required String address,
+    this.address = const Value.absent(),
     required int firmId,
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
   })  : name = Value(name),
-        address = Value(address),
         firmId = Value(firmId);
   static Insertable<Site> custom({
     Expression<int>? id,
@@ -592,7 +588,7 @@ class SitesCompanion extends UpdateCompanion<Site> {
   SitesCompanion copyWith(
       {Value<int>? id,
       Value<String>? name,
-      Value<String>? address,
+      Value<String?>? address,
       Value<int>? firmId,
       Value<DateTime>? createdAt,
       Value<DateTime>? updatedAt}) {
@@ -666,14 +662,6 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
           GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 50),
       type: DriftSqlType.string,
       requiredDuringInsert: true);
-  static const VerificationMeta _typeMeta = const VerificationMeta('type');
-  @override
-  late final GeneratedColumn<String> type = GeneratedColumn<String>(
-      'type', aliasedName, false,
-      additionalChecks:
-          GeneratedColumn.checkTextLength(minTextLength: 1, maxTextLength: 50),
-      type: DriftSqlType.string,
-      requiredDuringInsert: true);
   static const VerificationMeta _subCategoryMeta =
       const VerificationMeta('subCategory');
   @override
@@ -700,7 +688,7 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
       defaultValue: currentDateAndTime);
   @override
   List<GeneratedColumn> get $columns =>
-      [id, name, type, subCategory, createdAt, updatedAt];
+      [id, name, subCategory, createdAt, updatedAt];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -719,12 +707,6 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
           _nameMeta, name.isAcceptableOrUnknown(data['name']!, _nameMeta));
     } else if (isInserting) {
       context.missing(_nameMeta);
-    }
-    if (data.containsKey('type')) {
-      context.handle(
-          _typeMeta, type.isAcceptableOrUnknown(data['type']!, _typeMeta));
-    } else if (isInserting) {
-      context.missing(_typeMeta);
     }
     if (data.containsKey('sub_category')) {
       context.handle(
@@ -755,8 +737,6 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
           .read(DriftSqlType.int, data['${effectivePrefix}id'])!,
       name: attachedDatabase.typeMapping
           .read(DriftSqlType.string, data['${effectivePrefix}name'])!,
-      type: attachedDatabase.typeMapping
-          .read(DriftSqlType.string, data['${effectivePrefix}type'])!,
       subCategory: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}sub_category'])!,
       createdAt: attachedDatabase.typeMapping
@@ -775,14 +755,12 @@ class $UsersTable extends Users with TableInfo<$UsersTable, User> {
 class User extends DataClass implements Insertable<User> {
   final int id;
   final String name;
-  final String type;
   final int subCategory;
   final DateTime createdAt;
   final DateTime updatedAt;
   const User(
       {required this.id,
       required this.name,
-      required this.type,
       required this.subCategory,
       required this.createdAt,
       required this.updatedAt});
@@ -791,7 +769,6 @@ class User extends DataClass implements Insertable<User> {
     final map = <String, Expression>{};
     map['id'] = Variable<int>(id);
     map['name'] = Variable<String>(name);
-    map['type'] = Variable<String>(type);
     map['sub_category'] = Variable<int>(subCategory);
     map['created_at'] = Variable<DateTime>(createdAt);
     map['updated_at'] = Variable<DateTime>(updatedAt);
@@ -802,7 +779,6 @@ class User extends DataClass implements Insertable<User> {
     return UsersCompanion(
       id: Value(id),
       name: Value(name),
-      type: Value(type),
       subCategory: Value(subCategory),
       createdAt: Value(createdAt),
       updatedAt: Value(updatedAt),
@@ -815,7 +791,6 @@ class User extends DataClass implements Insertable<User> {
     return User(
       id: serializer.fromJson<int>(json['id']),
       name: serializer.fromJson<String>(json['name']),
-      type: serializer.fromJson<String>(json['type']),
       subCategory: serializer.fromJson<int>(json['subCategory']),
       createdAt: serializer.fromJson<DateTime>(json['createdAt']),
       updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
@@ -827,7 +802,6 @@ class User extends DataClass implements Insertable<User> {
     return <String, dynamic>{
       'id': serializer.toJson<int>(id),
       'name': serializer.toJson<String>(name),
-      'type': serializer.toJson<String>(type),
       'subCategory': serializer.toJson<int>(subCategory),
       'createdAt': serializer.toJson<DateTime>(createdAt),
       'updatedAt': serializer.toJson<DateTime>(updatedAt),
@@ -837,14 +811,12 @@ class User extends DataClass implements Insertable<User> {
   User copyWith(
           {int? id,
           String? name,
-          String? type,
           int? subCategory,
           DateTime? createdAt,
           DateTime? updatedAt}) =>
       User(
         id: id ?? this.id,
         name: name ?? this.name,
-        type: type ?? this.type,
         subCategory: subCategory ?? this.subCategory,
         createdAt: createdAt ?? this.createdAt,
         updatedAt: updatedAt ?? this.updatedAt,
@@ -853,7 +825,6 @@ class User extends DataClass implements Insertable<User> {
     return User(
       id: data.id.present ? data.id.value : this.id,
       name: data.name.present ? data.name.value : this.name,
-      type: data.type.present ? data.type.value : this.type,
       subCategory:
           data.subCategory.present ? data.subCategory.value : this.subCategory,
       createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
@@ -866,7 +837,6 @@ class User extends DataClass implements Insertable<User> {
     return (StringBuffer('User(')
           ..write('id: $id, ')
           ..write('name: $name, ')
-          ..write('type: $type, ')
           ..write('subCategory: $subCategory, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
@@ -875,15 +845,13 @@ class User extends DataClass implements Insertable<User> {
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, name, type, subCategory, createdAt, updatedAt);
+  int get hashCode => Object.hash(id, name, subCategory, createdAt, updatedAt);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
       (other is User &&
           other.id == this.id &&
           other.name == this.name &&
-          other.type == this.type &&
           other.subCategory == this.subCategory &&
           other.createdAt == this.createdAt &&
           other.updatedAt == this.updatedAt);
@@ -892,14 +860,12 @@ class User extends DataClass implements Insertable<User> {
 class UsersCompanion extends UpdateCompanion<User> {
   final Value<int> id;
   final Value<String> name;
-  final Value<String> type;
   final Value<int> subCategory;
   final Value<DateTime> createdAt;
   final Value<DateTime> updatedAt;
   const UsersCompanion({
     this.id = const Value.absent(),
     this.name = const Value.absent(),
-    this.type = const Value.absent(),
     this.subCategory = const Value.absent(),
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
@@ -907,17 +873,14 @@ class UsersCompanion extends UpdateCompanion<User> {
   UsersCompanion.insert({
     this.id = const Value.absent(),
     required String name,
-    required String type,
     required int subCategory,
     this.createdAt = const Value.absent(),
     this.updatedAt = const Value.absent(),
   })  : name = Value(name),
-        type = Value(type),
         subCategory = Value(subCategory);
   static Insertable<User> custom({
     Expression<int>? id,
     Expression<String>? name,
-    Expression<String>? type,
     Expression<int>? subCategory,
     Expression<DateTime>? createdAt,
     Expression<DateTime>? updatedAt,
@@ -925,7 +888,6 @@ class UsersCompanion extends UpdateCompanion<User> {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (name != null) 'name': name,
-      if (type != null) 'type': type,
       if (subCategory != null) 'sub_category': subCategory,
       if (createdAt != null) 'created_at': createdAt,
       if (updatedAt != null) 'updated_at': updatedAt,
@@ -935,14 +897,12 @@ class UsersCompanion extends UpdateCompanion<User> {
   UsersCompanion copyWith(
       {Value<int>? id,
       Value<String>? name,
-      Value<String>? type,
       Value<int>? subCategory,
       Value<DateTime>? createdAt,
       Value<DateTime>? updatedAt}) {
     return UsersCompanion(
       id: id ?? this.id,
       name: name ?? this.name,
-      type: type ?? this.type,
       subCategory: subCategory ?? this.subCategory,
       createdAt: createdAt ?? this.createdAt,
       updatedAt: updatedAt ?? this.updatedAt,
@@ -957,9 +917,6 @@ class UsersCompanion extends UpdateCompanion<User> {
     }
     if (name.present) {
       map['name'] = Variable<String>(name.value);
-    }
-    if (type.present) {
-      map['type'] = Variable<String>(type.value);
     }
     if (subCategory.present) {
       map['sub_category'] = Variable<int>(subCategory.value);
@@ -978,7 +935,6 @@ class UsersCompanion extends UpdateCompanion<User> {
     return (StringBuffer('UsersCompanion(')
           ..write('id: $id, ')
           ..write('name: $name, ')
-          ..write('type: $type, ')
           ..write('subCategory: $subCategory, ')
           ..write('createdAt: $createdAt, ')
           ..write('updatedAt: $updatedAt')
@@ -2885,25 +2841,8 @@ class $PartnersTable extends Partners with TableInfo<$PartnersTable, Partner> {
   late final GeneratedColumn<int> share = GeneratedColumn<int>(
       'share', aliasedName, false,
       type: DriftSqlType.int, requiredDuringInsert: true);
-  static const VerificationMeta _createdAtMeta =
-      const VerificationMeta('createdAt');
   @override
-  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
-      'created_at', aliasedName, false,
-      type: DriftSqlType.dateTime,
-      requiredDuringInsert: false,
-      defaultValue: currentDateAndTime);
-  static const VerificationMeta _updatedAtMeta =
-      const VerificationMeta('updatedAt');
-  @override
-  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
-      'updated_at', aliasedName, false,
-      type: DriftSqlType.dateTime,
-      requiredDuringInsert: false,
-      defaultValue: currentDateAndTime);
-  @override
-  List<GeneratedColumn> get $columns =>
-      [id, builderId, siteId, share, createdAt, updatedAt];
+  List<GeneratedColumn> get $columns => [id, builderId, siteId, share];
   @override
   String get aliasedName => _alias ?? actualTableName;
   @override
@@ -2935,19 +2874,13 @@ class $PartnersTable extends Partners with TableInfo<$PartnersTable, Partner> {
     } else if (isInserting) {
       context.missing(_shareMeta);
     }
-    if (data.containsKey('created_at')) {
-      context.handle(_createdAtMeta,
-          createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta));
-    }
-    if (data.containsKey('updated_at')) {
-      context.handle(_updatedAtMeta,
-          updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta));
-    }
     return context;
   }
 
   @override
   Set<GeneratedColumn> get $primaryKey => {id};
+
+  get createdAt => null;
   @override
   Partner map(Map<String, dynamic> data, {String? tablePrefix}) {
     final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
@@ -2960,10 +2893,6 @@ class $PartnersTable extends Partners with TableInfo<$PartnersTable, Partner> {
           .read(DriftSqlType.int, data['${effectivePrefix}site_id'])!,
       share: attachedDatabase.typeMapping
           .read(DriftSqlType.int, data['${effectivePrefix}share'])!,
-      createdAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}created_at'])!,
-      updatedAt: attachedDatabase.typeMapping
-          .read(DriftSqlType.dateTime, data['${effectivePrefix}updated_at'])!,
     );
   }
 
@@ -2978,15 +2907,11 @@ class Partner extends DataClass implements Insertable<Partner> {
   final int builderId;
   final int siteId;
   final int share;
-  final DateTime createdAt;
-  final DateTime updatedAt;
   const Partner(
       {required this.id,
       required this.builderId,
       required this.siteId,
-      required this.share,
-      required this.createdAt,
-      required this.updatedAt});
+      required this.share});
   @override
   Map<String, Expression> toColumns(bool nullToAbsent) {
     final map = <String, Expression>{};
@@ -2994,8 +2919,6 @@ class Partner extends DataClass implements Insertable<Partner> {
     map['builder_id'] = Variable<int>(builderId);
     map['site_id'] = Variable<int>(siteId);
     map['share'] = Variable<int>(share);
-    map['created_at'] = Variable<DateTime>(createdAt);
-    map['updated_at'] = Variable<DateTime>(updatedAt);
     return map;
   }
 
@@ -3005,8 +2928,6 @@ class Partner extends DataClass implements Insertable<Partner> {
       builderId: Value(builderId),
       siteId: Value(siteId),
       share: Value(share),
-      createdAt: Value(createdAt),
-      updatedAt: Value(updatedAt),
     );
   }
 
@@ -3018,8 +2939,6 @@ class Partner extends DataClass implements Insertable<Partner> {
       builderId: serializer.fromJson<int>(json['builderId']),
       siteId: serializer.fromJson<int>(json['siteId']),
       share: serializer.fromJson<int>(json['share']),
-      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
-      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
     );
   }
   @override
@@ -3030,25 +2949,15 @@ class Partner extends DataClass implements Insertable<Partner> {
       'builderId': serializer.toJson<int>(builderId),
       'siteId': serializer.toJson<int>(siteId),
       'share': serializer.toJson<int>(share),
-      'createdAt': serializer.toJson<DateTime>(createdAt),
-      'updatedAt': serializer.toJson<DateTime>(updatedAt),
     };
   }
 
-  Partner copyWith(
-          {int? id,
-          int? builderId,
-          int? siteId,
-          int? share,
-          DateTime? createdAt,
-          DateTime? updatedAt}) =>
+  Partner copyWith({int? id, int? builderId, int? siteId, int? share}) =>
       Partner(
         id: id ?? this.id,
         builderId: builderId ?? this.builderId,
         siteId: siteId ?? this.siteId,
         share: share ?? this.share,
-        createdAt: createdAt ?? this.createdAt,
-        updatedAt: updatedAt ?? this.updatedAt,
       );
   Partner copyWithCompanion(PartnersCompanion data) {
     return Partner(
@@ -3056,8 +2965,6 @@ class Partner extends DataClass implements Insertable<Partner> {
       builderId: data.builderId.present ? data.builderId.value : this.builderId,
       siteId: data.siteId.present ? data.siteId.value : this.siteId,
       share: data.share.present ? data.share.value : this.share,
-      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
-      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
     );
   }
 
@@ -3067,16 +2974,13 @@ class Partner extends DataClass implements Insertable<Partner> {
           ..write('id: $id, ')
           ..write('builderId: $builderId, ')
           ..write('siteId: $siteId, ')
-          ..write('share: $share, ')
-          ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt')
+          ..write('share: $share')
           ..write(')'))
         .toString();
   }
 
   @override
-  int get hashCode =>
-      Object.hash(id, builderId, siteId, share, createdAt, updatedAt);
+  int get hashCode => Object.hash(id, builderId, siteId, share);
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
@@ -3084,9 +2988,7 @@ class Partner extends DataClass implements Insertable<Partner> {
           other.id == this.id &&
           other.builderId == this.builderId &&
           other.siteId == this.siteId &&
-          other.share == this.share &&
-          other.createdAt == this.createdAt &&
-          other.updatedAt == this.updatedAt);
+          other.share == this.share);
 }
 
 class PartnersCompanion extends UpdateCompanion<Partner> {
@@ -3094,23 +2996,17 @@ class PartnersCompanion extends UpdateCompanion<Partner> {
   final Value<int> builderId;
   final Value<int> siteId;
   final Value<int> share;
-  final Value<DateTime> createdAt;
-  final Value<DateTime> updatedAt;
   const PartnersCompanion({
     this.id = const Value.absent(),
     this.builderId = const Value.absent(),
     this.siteId = const Value.absent(),
     this.share = const Value.absent(),
-    this.createdAt = const Value.absent(),
-    this.updatedAt = const Value.absent(),
   });
   PartnersCompanion.insert({
     this.id = const Value.absent(),
     required int builderId,
     required int siteId,
     required int share,
-    this.createdAt = const Value.absent(),
-    this.updatedAt = const Value.absent(),
   })  : builderId = Value(builderId),
         siteId = Value(siteId),
         share = Value(share);
@@ -3119,16 +3015,12 @@ class PartnersCompanion extends UpdateCompanion<Partner> {
     Expression<int>? builderId,
     Expression<int>? siteId,
     Expression<int>? share,
-    Expression<DateTime>? createdAt,
-    Expression<DateTime>? updatedAt,
   }) {
     return RawValuesInsertable({
       if (id != null) 'id': id,
       if (builderId != null) 'builder_id': builderId,
       if (siteId != null) 'site_id': siteId,
       if (share != null) 'share': share,
-      if (createdAt != null) 'created_at': createdAt,
-      if (updatedAt != null) 'updated_at': updatedAt,
     });
   }
 
@@ -3136,16 +3028,12 @@ class PartnersCompanion extends UpdateCompanion<Partner> {
       {Value<int>? id,
       Value<int>? builderId,
       Value<int>? siteId,
-      Value<int>? share,
-      Value<DateTime>? createdAt,
-      Value<DateTime>? updatedAt}) {
+      Value<int>? share}) {
     return PartnersCompanion(
       id: id ?? this.id,
       builderId: builderId ?? this.builderId,
       siteId: siteId ?? this.siteId,
       share: share ?? this.share,
-      createdAt: createdAt ?? this.createdAt,
-      updatedAt: updatedAt ?? this.updatedAt,
     );
   }
 
@@ -3164,12 +3052,6 @@ class PartnersCompanion extends UpdateCompanion<Partner> {
     if (share.present) {
       map['share'] = Variable<int>(share.value);
     }
-    if (createdAt.present) {
-      map['created_at'] = Variable<DateTime>(createdAt.value);
-    }
-    if (updatedAt.present) {
-      map['updated_at'] = Variable<DateTime>(updatedAt.value);
-    }
     return map;
   }
 
@@ -3179,9 +3061,7 @@ class PartnersCompanion extends UpdateCompanion<Partner> {
           ..write('id: $id, ')
           ..write('builderId: $builderId, ')
           ..write('siteId: $siteId, ')
-          ..write('share: $share, ')
-          ..write('createdAt: $createdAt, ')
-          ..write('updatedAt: $updatedAt')
+          ..write('share: $share')
           ..write(')'))
         .toString();
   }
@@ -3683,14 +3563,14 @@ abstract class _$AppDatabase extends GeneratedDatabase {
 typedef $$FirmsTableCreateCompanionBuilder = FirmsCompanion Function({
   Value<int> id,
   required String name,
-  required String address,
+  Value<String?> address,
   Value<DateTime> createdAt,
   Value<DateTime> updatedAt,
 });
 typedef $$FirmsTableUpdateCompanionBuilder = FirmsCompanion Function({
   Value<int> id,
   Value<String> name,
-  Value<String> address,
+  Value<String?> address,
   Value<DateTime> createdAt,
   Value<DateTime> updatedAt,
 });
@@ -3714,7 +3594,7 @@ class $$FirmsTableTableManager extends RootTableManager<
           updateCompanionCallback: ({
             Value<int> id = const Value.absent(),
             Value<String> name = const Value.absent(),
-            Value<String> address = const Value.absent(),
+            Value<String?> address = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<DateTime> updatedAt = const Value.absent(),
           }) =>
@@ -3728,7 +3608,7 @@ class $$FirmsTableTableManager extends RootTableManager<
           createCompanionCallback: ({
             Value<int> id = const Value.absent(),
             required String name,
-            required String address,
+            Value<String?> address = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<DateTime> updatedAt = const Value.absent(),
           }) =>
@@ -3816,7 +3696,7 @@ class $$FirmsTableOrderingComposer
 typedef $$SitesTableCreateCompanionBuilder = SitesCompanion Function({
   Value<int> id,
   required String name,
-  required String address,
+  Value<String?> address,
   required int firmId,
   Value<DateTime> createdAt,
   Value<DateTime> updatedAt,
@@ -3824,7 +3704,7 @@ typedef $$SitesTableCreateCompanionBuilder = SitesCompanion Function({
 typedef $$SitesTableUpdateCompanionBuilder = SitesCompanion Function({
   Value<int> id,
   Value<String> name,
-  Value<String> address,
+  Value<String?> address,
   Value<int> firmId,
   Value<DateTime> createdAt,
   Value<DateTime> updatedAt,
@@ -3849,7 +3729,7 @@ class $$SitesTableTableManager extends RootTableManager<
           updateCompanionCallback: ({
             Value<int> id = const Value.absent(),
             Value<String> name = const Value.absent(),
-            Value<String> address = const Value.absent(),
+            Value<String?> address = const Value.absent(),
             Value<int> firmId = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<DateTime> updatedAt = const Value.absent(),
@@ -3865,7 +3745,7 @@ class $$SitesTableTableManager extends RootTableManager<
           createCompanionCallback: ({
             Value<int> id = const Value.absent(),
             required String name,
-            required String address,
+            Value<String?> address = const Value.absent(),
             required int firmId,
             Value<DateTime> createdAt = const Value.absent(),
             Value<DateTime> updatedAt = const Value.absent(),
@@ -4005,7 +3885,6 @@ class $$SitesTableOrderingComposer
 typedef $$UsersTableCreateCompanionBuilder = UsersCompanion Function({
   Value<int> id,
   required String name,
-  required String type,
   required int subCategory,
   Value<DateTime> createdAt,
   Value<DateTime> updatedAt,
@@ -4013,7 +3892,6 @@ typedef $$UsersTableCreateCompanionBuilder = UsersCompanion Function({
 typedef $$UsersTableUpdateCompanionBuilder = UsersCompanion Function({
   Value<int> id,
   Value<String> name,
-  Value<String> type,
   Value<int> subCategory,
   Value<DateTime> createdAt,
   Value<DateTime> updatedAt,
@@ -4038,7 +3916,6 @@ class $$UsersTableTableManager extends RootTableManager<
           updateCompanionCallback: ({
             Value<int> id = const Value.absent(),
             Value<String> name = const Value.absent(),
-            Value<String> type = const Value.absent(),
             Value<int> subCategory = const Value.absent(),
             Value<DateTime> createdAt = const Value.absent(),
             Value<DateTime> updatedAt = const Value.absent(),
@@ -4046,7 +3923,6 @@ class $$UsersTableTableManager extends RootTableManager<
               UsersCompanion(
             id: id,
             name: name,
-            type: type,
             subCategory: subCategory,
             createdAt: createdAt,
             updatedAt: updatedAt,
@@ -4054,7 +3930,6 @@ class $$UsersTableTableManager extends RootTableManager<
           createCompanionCallback: ({
             Value<int> id = const Value.absent(),
             required String name,
-            required String type,
             required int subCategory,
             Value<DateTime> createdAt = const Value.absent(),
             Value<DateTime> updatedAt = const Value.absent(),
@@ -4062,7 +3937,6 @@ class $$UsersTableTableManager extends RootTableManager<
               UsersCompanion.insert(
             id: id,
             name: name,
-            type: type,
             subCategory: subCategory,
             createdAt: createdAt,
             updatedAt: updatedAt,
@@ -4080,11 +3954,6 @@ class $$UsersTableFilterComposer
 
   ColumnFilters<String> get name => $state.composableBuilder(
       column: $state.table.name,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<String> get type => $state.composableBuilder(
-      column: $state.table.type,
       builder: (column, joinBuilders) =>
           ColumnFilters(column, joinBuilders: joinBuilders));
 
@@ -4140,11 +4009,6 @@ class $$UsersTableOrderingComposer
 
   ColumnOrderings<String> get name => $state.composableBuilder(
       column: $state.table.name,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<String> get type => $state.composableBuilder(
-      column: $state.table.type,
       builder: (column, joinBuilders) =>
           ColumnOrderings(column, joinBuilders: joinBuilders));
 
@@ -4959,16 +4823,12 @@ typedef $$PartnersTableCreateCompanionBuilder = PartnersCompanion Function({
   required int builderId,
   required int siteId,
   required int share,
-  Value<DateTime> createdAt,
-  Value<DateTime> updatedAt,
 });
 typedef $$PartnersTableUpdateCompanionBuilder = PartnersCompanion Function({
   Value<int> id,
   Value<int> builderId,
   Value<int> siteId,
   Value<int> share,
-  Value<DateTime> createdAt,
-  Value<DateTime> updatedAt,
 });
 
 class $$PartnersTableTableManager extends RootTableManager<
@@ -4992,32 +4852,24 @@ class $$PartnersTableTableManager extends RootTableManager<
             Value<int> builderId = const Value.absent(),
             Value<int> siteId = const Value.absent(),
             Value<int> share = const Value.absent(),
-            Value<DateTime> createdAt = const Value.absent(),
-            Value<DateTime> updatedAt = const Value.absent(),
           }) =>
               PartnersCompanion(
             id: id,
             builderId: builderId,
             siteId: siteId,
             share: share,
-            createdAt: createdAt,
-            updatedAt: updatedAt,
           ),
           createCompanionCallback: ({
             Value<int> id = const Value.absent(),
             required int builderId,
             required int siteId,
             required int share,
-            Value<DateTime> createdAt = const Value.absent(),
-            Value<DateTime> updatedAt = const Value.absent(),
           }) =>
               PartnersCompanion.insert(
             id: id,
             builderId: builderId,
             siteId: siteId,
             share: share,
-            createdAt: createdAt,
-            updatedAt: updatedAt,
           ),
         ));
 }
@@ -5032,16 +4884,6 @@ class $$PartnersTableFilterComposer
 
   ColumnFilters<int> get share => $state.composableBuilder(
       column: $state.table.share,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<DateTime> get createdAt => $state.composableBuilder(
-      column: $state.table.createdAt,
-      builder: (column, joinBuilders) =>
-          ColumnFilters(column, joinBuilders: joinBuilders));
-
-  ColumnFilters<DateTime> get updatedAt => $state.composableBuilder(
-      column: $state.table.updatedAt,
       builder: (column, joinBuilders) =>
           ColumnFilters(column, joinBuilders: joinBuilders));
 
@@ -5080,16 +4922,6 @@ class $$PartnersTableOrderingComposer
 
   ColumnOrderings<int> get share => $state.composableBuilder(
       column: $state.table.share,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<DateTime> get createdAt => $state.composableBuilder(
-      column: $state.table.createdAt,
-      builder: (column, joinBuilders) =>
-          ColumnOrderings(column, joinBuilders: joinBuilders));
-
-  ColumnOrderings<DateTime> get updatedAt => $state.composableBuilder(
-      column: $state.table.updatedAt,
       builder: (column, joinBuilders) =>
           ColumnOrderings(column, joinBuilders: joinBuilders));
 

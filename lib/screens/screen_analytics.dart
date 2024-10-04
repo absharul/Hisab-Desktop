@@ -149,63 +149,66 @@ class _ScreenAnalyticsState extends State<ScreenAnalytics> {
           Padding(
             padding: const EdgeInsets.only(left: 2.0,right: 2.0, bottom: 2.0),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
-                Table(
-                  columnWidths: const {
-                    0: FixedColumnWidth(200),
-                    1: FixedColumnWidth(200),
-                  },
-                  children: [
-                    TableRow(
-                      children: [
-                        const Padding(padding: EdgeInsets.all(8.0),
-                            child: Text("Incoming Amount:",
-                              style: TextStyle(
-                                fontSize: 18.0,
-                              ),
-                            )),
-                        Padding(padding: const EdgeInsets.all(8.0),
-                            child: Text(formatCurrency(incoming),
-                              style: const TextStyle(
-                                fontSize: 18.0,
-                              ),
-                            )),
-                      ],
-                    ),
-                    TableRow(
-                      children: [
-                        const Padding(padding: EdgeInsets.all(8.0),
-                            child: Text("Outgoing Amount:",
-                              style: TextStyle(
-                                fontSize: 18.0,
-                              ),
-                            )),
-                        Padding(padding: const EdgeInsets.all(8.0),
-                            child: Text(formatCurrency(outgoing),
-                              style: const TextStyle(
-                                fontSize: 18.0,
-                                ),)),
-                      ],
-                    ),
-                    TableRow(
-                      children: [
-                        const Padding(padding: EdgeInsets.all(8.0),
-                            child: Text("Net Profit:",
-                              style: TextStyle(
-                                fontSize: 18.0,
-                              ),
-                            )),
-                        Padding(padding: const EdgeInsets.all(8.0),
-                            child: Text(formatCurrency(netProfit),
-                              style: const TextStyle(
-                                fontSize: 18.0,
-                              ),
-                            )),
-                      ],
-                    ),
-                  ],
+                Padding(
+                  padding: const EdgeInsets.only(left: 120),
+                  child: Table(
+                    columnWidths: const {
+                      0: FixedColumnWidth(200),
+                      1: FixedColumnWidth(200),
+                    },
+                    children: [
+                      TableRow(
+                        children: [
+                          const Padding(padding: EdgeInsets.all(8.0),
+                              child: Text("Incoming Amount:",
+                                style: TextStyle(
+                                  fontSize: 18.0,
+                                ),
+                              )),
+                          Padding(padding: const EdgeInsets.all(8.0),
+                              child: Text(formatCurrency(incoming),
+                                style: const TextStyle(
+                                  fontSize: 18.0,
+                                ),
+                              )),
+                        ],
+                      ),
+                      TableRow(
+                        children: [
+                          const Padding(padding: EdgeInsets.all(8.0),
+                              child: Text("Outgoing Amount:",
+                                style: TextStyle(
+                                  fontSize: 18.0,
+                                ),
+                              )),
+                          Padding(padding: const EdgeInsets.all(8.0),
+                              child: Text(formatCurrency(outgoing),
+                                style: const TextStyle(
+                                  fontSize: 18.0,
+                                  ),)),
+                        ],
+                      ),
+                      TableRow(
+                        children: [
+                          const Padding(padding: EdgeInsets.all(8.0),
+                              child: Text("Net Profit:",
+                                style: TextStyle(
+                                  fontSize: 18.0,
+                                ),
+                              )),
+                          Padding(padding: const EdgeInsets.all(8.0),
+                              child: Text(formatCurrency(netProfit),
+                                style: const TextStyle(
+                                  fontSize: 18.0,
+                                ),
+                              )),
+                        ],
+                      ),
+                    ],
+                  ),
                 ),
+                Expanded(child: SizedBox()),
                 Table(
                   columnWidths: const {
                     0: FixedColumnWidth(200),
@@ -238,6 +241,7 @@ class _ScreenAnalyticsState extends State<ScreenAnalytics> {
                     }).toList(),
                   ],
                 ),
+                SizedBox(width: 110,)
               ],
             ),
           ),
