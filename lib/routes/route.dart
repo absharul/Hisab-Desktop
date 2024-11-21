@@ -1,6 +1,5 @@
 import 'package:go_router/go_router.dart';
 import 'package:hisab/database/app_database.dart';
-import 'package:hisab/screens/screen_analytics.dart';
 import 'package:hisab/screens/screen_home.dart';
 import 'package:hisab/screens/screen_site_detail.dart';
 import 'package:hisab/screens/screen_site_list.dart';
